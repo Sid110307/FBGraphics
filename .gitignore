@@ -1,0 +1,8 @@
+bin/
+
+.vscode/
+.vs/
+.idea/
+
+.DS_Store
+
