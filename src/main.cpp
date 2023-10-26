@@ -1,35 +1,42 @@
-#include <thread>
+#include <complex>
 #include "include/drawing.h"
 
-constexpr unsigned int WIDTH = 1920, HEIGHT = 1080;
+constexpr int WIDTH = 1920, HEIGHT = 1080;
+
+int mandelbrot(const std::complex<double>& c, int maxIterations)
+{
+    std::complex<double> z = 0;
+    int n = 0;
+
+    while (std::abs(z) <= 2.0 && n < maxIterations)
+    {
+        z = z * z + c;
+        n++;
+    }
+
+    return n;
+}
 
 int main()
 {
     Framebuffer framebuffer("/dev/fb0", WIDTH, HEIGHT, 4);
 
-    float x = 100, y = 100, radius = 50;
+    const double realMin = -2.0, realMax = 1.0, imagMin = -1.5, imagMax = 1.5;
+    const int maxIterations = 1000;
+    const double realStep = (realMax - realMin) / WIDTH, imagStep = (imagMax - imagMin) / HEIGHT;
 
-    Circle circle(framebuffer, x, y, radius);
-    circle.draw(0x00FF00FF);
-
-    float velocity = 0;
-    float acceleration = 0.1;
-
-    while (true)
+    for (int y = 0; y < HEIGHT; ++y)
     {
-        circle.setPos(x, y);
-
-        if (x + radius >= WIDTH || x - radius <= 0)
+        for (int x = 0; x < WIDTH; ++x)
         {
-            velocity = -velocity;
-            acceleration = -acceleration;
+            std::complex<double> c(realMin + x * realStep, imagMin + y * imagStep);
+            int value = mandelbrot(c, maxIterations);
+            unsigned int color = (value == maxIterations) ? 0x00FF00FF : 0x00000000;
+
+            framebuffer.drawPixel(x, y, color);
         }
-
-        velocity += acceleration;
-        x += velocity;
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     return EXIT_SUCCESS;
 }
+
