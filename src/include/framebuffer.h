@@ -10,10 +10,11 @@ public:
     ~Framebuffer();
 
     void drawPixel(float x, float y, unsigned int color);
+    void clear(unsigned int color);
 
 private:
     std::fstream fb;
     int width, height, bytesPerPixel, stride, fbSize;
 
-    unsigned int* interpolate(const unsigned int color, float dx, float dy) const;
+    unsigned int* interpolate(unsigned int color, float dx, float dy) const;
 };

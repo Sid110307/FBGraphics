@@ -1,42 +1,19 @@
-#include <complex>
 #include "include/drawing.h"
 
 constexpr int WIDTH = 1920, HEIGHT = 1080;
-
-int mandelbrot(const std::complex<double>& c, int maxIterations)
-{
-    std::complex<double> z = 0;
-    int n = 0;
-
-    while (std::abs(z) <= 2.0 && n < maxIterations)
-    {
-        z = z * z + c;
-        n++;
-    }
-
-    return n;
-}
 
 int main()
 {
     Framebuffer framebuffer("/dev/fb0", WIDTH, HEIGHT, 4);
 
-    const double realMin = -2.0, realMax = 1.0, imagMin = -1.5, imagMax = 1.5;
-    const int maxIterations = 1000;
-    const double realStep = (realMax - realMin) / WIDTH, imagStep = (imagMax - imagMin) / HEIGHT;
-
-    for (int y = 0; y < HEIGHT; ++y)
-    {
-        for (int x = 0; x < WIDTH; ++x)
-        {
-            std::complex<double> c(realMin + x * realStep, imagMin + y * imagStep);
-            int value = mandelbrot(c, maxIterations);
-            unsigned int color = (value == maxIterations) ? 0x00FF00FF : 0x00000000;
-
-            framebuffer.drawPixel(x, y, color);
-        }
-    }
+    Pixel(framebuffer, 100, 100).draw(0x00FF00FF);
+    Line(framebuffer, 100, 100, 200, 200).draw(0x0000FFFF);
+    Rectangle(framebuffer, 300, 300, 100, 100).draw(0x000000FF);
+    Rectangle(framebuffer, 500, 500, 100, 100, true).draw(0x00FFFFFF);
+    Circle(framebuffer, 700, 700, 50).draw(0x00FFFFFF);
+    Circle(framebuffer, 900, 900, 50, true).draw(0x00FF00FF);
+    Triangle(framebuffer, 900, 100, 1000, 200, 1100, 100).draw(0x00FF00FF);
+    Triangle(framebuffer, 900, 300, 1000, 400, 1100, 300, true).draw(0x00FFFFFF);
 
     return EXIT_SUCCESS;
 }
-

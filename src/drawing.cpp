@@ -91,9 +91,7 @@ void Circle::draw(unsigned int color)
                     fb.drawPixel(this->x + static_cast<float>(x), this->y + static_cast<float>(y), color);
     } else
     {
-        int r = static_cast<int>(radius);
-        int x = 0, y = r;
-        int d = 3 - 2 * r;
+        int r = static_cast<int>(radius), x = 0, y = r, d = 3 - 2 * r;
 
         while (y >= x)
         {
@@ -123,5 +121,52 @@ void Circle::update(float newRadius)
     draw(0x00000000);
 
     radius = newRadius;
+    draw(color);
+}
+
+void Triangle::draw(unsigned int color)
+{
+    auto isInside = [&](float x, float y) -> bool
+    {
+        float A = 1.0f / 2.0f * (-y2 * x3 + y1 * (-x2 + x3) + x1 * (y2 - y3) + x2 * y3);
+        float sign = A < 0.0f ? -1.0f : 1.0f;
+        float s = (y1 * x3 - x1 * y3 + (y3 - y1) * x + (x1 - x3) * y) * sign;
+        float t = (x1 * y2 - y1 * x2 + (y1 - y2) * x + (x2 - x1) * y) * sign;
+
+        return s > 0.0f && t > 0.0f && (s + t) < 2.0f * A * sign;
+    };
+
+    if (color != 0x00000000) this->color = color;
+
+    if (filled)
+    {
+        float minX = std::min(x1, std::min(x2, x3)), maxX = std::max(x1, std::max(x2, x3));
+        float minY = std::min(y1, std::min(y2, y3)), maxY = std::max(y1, std::max(y2, y3));
+
+        for (int y = static_cast<int>(minY); y <= static_cast<int>(maxY); ++y)
+            for (int x = static_cast<int>(minX); x <= static_cast<int>(maxX); ++x)
+                if (isInside(static_cast<float>(x), static_cast<float>(y)))
+                    fb.drawPixel(static_cast<float>(x), static_cast<float>(y), color);
+    } else
+    {
+        Line(fb, x1, y1, x2, y2).draw(color);
+        Line(fb, x2, y2, x3, y3).draw(color);
+        Line(fb, x3, y3, x1, y1).draw(color);
+    }
+}
+
+void Triangle::update(float newX1, float newY1, float newX2, float newY2, float newX3, float newY3)
+{
+    draw(0x00000000);
+
+    x1 = newX1;
+    y1 = newY1;
+    x2 = newX2;
+    y2 = newY2;
+    x3 = newX3;
+    y3 = newY3;
+
+    x = (newX1 + newX2 + newX3) / 3;
+    y = (newY1 + newY2 + newY3) / 3;
     draw(color);
 }
