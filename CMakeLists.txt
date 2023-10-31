@@ -10,4 +10,3 @@ add_executable(fbGraphics
         src/framebuffer.cpp
         src/drawing.cpp
 )
-
