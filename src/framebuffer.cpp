@@ -16,58 +16,18 @@ void Framebuffer::drawPixel(float x, float y, unsigned int color)
 {
     if (x < 0 || x >= static_cast<float>(width) || y < 0 || y >= static_cast<float>(height)) return;
 
-    // TODO: Fix color, always blue
+    auto* interpolatedColor = interpolate(color, x - std::floor(x), y - std::floor(y));
+
     unsigned int colorBytes[bytesPerPixel];
-    colorBytes[0] = color & 0xFF;
-    colorBytes[1] = (color >> 8) & 0xFF;
-    colorBytes[2] = (color >> 16) & 0xFF;
-    colorBytes[3] = (color >> 24) & 0xFF;
+    colorBytes[0] = interpolatedColor[0] & 0xFF;
+    colorBytes[1] = interpolatedColor[1] & 0xFF;
+    colorBytes[2] = interpolatedColor[2] & 0xFF;
+    colorBytes[3] = interpolatedColor[3] & 0xFF;
 
     fb.seekp(static_cast<int>(y) * stride + static_cast<int>(x) * bytesPerPixel);
     fb.write(reinterpret_cast<char*>(colorBytes), bytesPerPixel);
 
-    float dx = x - std::round(x);
-    float dy = y - std::round(y);
-
-    if (dx > 0.0f && dy > 0.0f)
-    {
-        unsigned int* interpolatedColor = interpolate(color, dx, dy);
-
-        fb.seekp(static_cast<int>(y) * stride + static_cast<int>(x) * bytesPerPixel);
-        fb.write(reinterpret_cast<char*>(interpolatedColor), bytesPerPixel);
-
-        delete[] interpolatedColor;
-    }
-
-    if (dx > 0.0f && dy < 1.0f)
-    {
-        unsigned int* interpolatedColor = interpolate(color, dx, 1.0f - dy);
-
-        fb.seekp(static_cast<int>(y + 1.0f) * stride + static_cast<int>(x) * bytesPerPixel);
-        fb.write(reinterpret_cast<char*>(interpolatedColor), bytesPerPixel);
-
-        delete[] interpolatedColor;
-    }
-
-    if (dx < 1.0f && dy > 0.0f)
-    {
-        unsigned int* interpolatedColor = interpolate(color, 1.0f - dx, dy);
-
-        fb.seekp(static_cast<int>(y) * stride + static_cast<int>(x + 1.0f) * bytesPerPixel);
-        fb.write(reinterpret_cast<char*>(interpolatedColor), bytesPerPixel);
-
-        delete[] interpolatedColor;
-    }
-
-    if (dx < 1.0f && dy < 1.0f)
-    {
-        unsigned int* interpolatedColor = interpolate(color, 1.0f - dx, 1.0f - dy);
-
-        fb.seekp(static_cast<int>(y + 1.0f) * stride + static_cast<int>(x + 1.0f) * bytesPerPixel);
-        fb.write(reinterpret_cast<char*>(interpolatedColor), bytesPerPixel);
-
-        delete[] interpolatedColor;
-    }
+    delete[] interpolatedColor;
 }
 
 void Framebuffer::clear(unsigned int color)
@@ -78,7 +38,11 @@ void Framebuffer::clear(unsigned int color)
     colorBytes[2] = (color >> 16) & 0xFF;
     colorBytes[3] = (color >> 24) & 0xFF;
 
-    for (int i = 0; i < fbSize; i += bytesPerPixel) fb.write(reinterpret_cast<char*>(colorBytes), bytesPerPixel);
+    for (int y = 0; y < height; ++y)
+    {
+        fb.seekp(y * stride);
+        for (int x = 0; x < width; ++x) fb.write(reinterpret_cast<char*>(colorBytes), bytesPerPixel);
+    }
 }
 
 unsigned int* Framebuffer::interpolate(const unsigned int color, float dx, float dy) const

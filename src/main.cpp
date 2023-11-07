@@ -7,6 +7,14 @@ int main()
 {
     Framebuffer framebuffer("/dev/fb0", WIDTH, HEIGHT, 4);
 
+    Line(framebuffer, 100, 100, 200, 100).draw(0x00FF00FF);
+    Line(framebuffer, 100, 100, 100, 200).draw(0xFF0000FF);
+    Line(framebuffer, 100, 100, 200, 300).draw(0x0000FFFF);
+    Line(framebuffer, 100, 100, 200, 400).draw(0x000000FF);
+    Line(framebuffer, 100, 100, 200, 500).draw(0xFF00FFFF);
+    Line(framebuffer, 100, 100, 200, 600).draw(0x00FFFFFF);
+    Line(framebuffer, 100, 100, 200, 700).draw(0xFFFFFFFF);
+
     Pixel(framebuffer, 100, 100).draw(0x00FF00FF);
     Line(framebuffer, 100, 100, 200, 200).draw(0x0000FFFF);
     Rectangle(framebuffer, 300, 300, 100, 100).draw(0x000000FF);
