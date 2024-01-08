@@ -2,19 +2,15 @@
 
 #include "framebuffer.h"
 
-struct Point
-{
-    float x, y;
-};
-
 class Drawable
 {
 public:
     Drawable(Framebuffer &fb, float x, float y) : fb(fb), x(x), y(y), color(0x00000000) {}
+    virtual ~Drawable() = default;
 
     virtual void draw(unsigned int color) = 0;
     void setPos(float _x, float _y);
-    [[nodiscard]] Point getPos() const;
+    [[nodiscard]] std::pair<float, float> getPos() const;
 
 protected:
     Framebuffer &fb;

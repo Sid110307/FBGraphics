@@ -1,7 +1,12 @@
 #pragma once
 
-#include <fstream>
+#include <iostream>
+#include <vector>
 #include <cmath>
+
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <unistd.h>
 
 class Framebuffer
 {
@@ -13,8 +18,8 @@ public:
     void clear(unsigned int color);
 
 private:
-    std::fstream fb;
-    int width, height, bytesPerPixel, stride, fbSize;
+    void* framebuffer;
+    int fbDescriptor, width, height, bytesPerPixel, stride, fbSize;
 
-    unsigned int* interpolate(unsigned int color, float dx, float dy) const;
+    [[nodiscard]] std::vector<unsigned int> interpolate(unsigned int color, float dx, float dy) const;
 };

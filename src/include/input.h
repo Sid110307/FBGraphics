@@ -8,13 +8,28 @@ char getChar()
     char c;
     struct termios oldTerm = {}, newTerm = {};
 
-    tcgetattr(0, &oldTerm);
+    if (tcgetattr(STDIN_FILENO, &oldTerm) == -1)
+    {
+        std::cerr << "Error getting terminal attributes!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
     newTerm = oldTerm;
     newTerm.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(0, TCSANOW, &newTerm);
+
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &newTerm) == -1)
+    {
+        std::cerr << "Error setting terminal attributes!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
     c = static_cast<char>(std::cin.get());
-    tcsetattr(0, TCSANOW, &oldTerm);
+
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &oldTerm) == -1)
+    {
+        std::cerr << "Error restoring terminal attributes!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
     return c;
 }

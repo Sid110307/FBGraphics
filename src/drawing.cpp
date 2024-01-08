@@ -10,7 +10,7 @@ void Drawable::setPos(float _x, float _y)
     draw(color);
 }
 
-Point Drawable::getPos() const { return {x, y}; }
+std::pair<float, float> Drawable::getPos() const { return {x, y}; }
 void Pixel::draw(unsigned int color) { fb.drawPixel(x, y, color); }
 
 void Pixel::update(float newX, float newY)
