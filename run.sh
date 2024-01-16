@@ -5,4 +5,4 @@ if [ -z "$(which cmake)" ]; then
     exit 1
 fi
 
-cmake -S . -B bin && cmake --build bin --target all -j4 && ./bin/fbGraphics
+cmake -S . -B bin && cmake --build bin -j4 && sudo ./bin/fbGraphics

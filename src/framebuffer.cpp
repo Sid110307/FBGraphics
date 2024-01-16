@@ -5,7 +5,7 @@ Framebuffer::Framebuffer(const std::string &fbPath, int _width, int _height, int
 {
     if (fbDescriptor == -1)
     {
-        std::cerr << "Error opening framebuffer device: " << fbPath << std::endl;
+        std::cerr << "Error opening framebuffer device \"" << fbPath << "\": " << std::strerror(errno) << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -18,7 +18,7 @@ Framebuffer::Framebuffer(const std::string &fbPath, int _width, int _height, int
     framebuffer = mmap(nullptr, fbSize, PROT_READ | PROT_WRITE, MAP_SHARED, fbDescriptor, 0);
     if (framebuffer == MAP_FAILED)
     {
-        std::cerr << "Error mapping framebuffer device!" << std::endl;
+        std::cerr << "Error mapping framebuffer device: " << std::strerror(errno) << std::endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -29,15 +29,17 @@ Framebuffer::~Framebuffer()
     close(fbDescriptor);
 }
 
-void Framebuffer::drawPixel(float x, float y, unsigned int color)
+void Framebuffer::drawPixel(float x, float y, unsigned int color, bool interpolate)
 {
     if (x < 0 || x >= static_cast<float>(width) || y < 0 || y >= static_cast<float>(height)) return;
 
-    std::vector<unsigned int> interpolatedColor = interpolate(color, x - std::floor(x), y - std::floor(y));
-
     unsigned int* pixelLocation =
             reinterpret_cast<unsigned int*>(framebuffer) + static_cast<int>(y) * width + static_cast<int>(x);
-    *pixelLocation = *interpolatedColor.data();
+
+    if (interpolate)
+    {
+        *pixelLocation = *interpolation(color, x - std::floor(x), y - std::floor(y)).data();
+    } else *pixelLocation = color;
 }
 
 void Framebuffer::clear(unsigned int color)
@@ -51,7 +53,7 @@ void Framebuffer::clear(unsigned int color)
     }
 }
 
-std::vector<unsigned int> Framebuffer::interpolate(const unsigned int color, float dx, float dy) const
+std::vector<unsigned int> Framebuffer::interpolation(const unsigned int color, float dx, float dy) const
 {
     std::vector<unsigned int> interpolatedColor(bytesPerPixel);
 

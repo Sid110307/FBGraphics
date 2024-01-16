@@ -1,5 +1,7 @@
 #include "include/drawing.h"
 
+void Drawable::draw(unsigned int _color, bool interpolate) { fb.drawPixel(x, y, _color, interpolate); }
+
 void Drawable::setPos(float _x, float _y)
 {
     draw(0x00000000);
@@ -11,7 +13,7 @@ void Drawable::setPos(float _x, float _y)
 }
 
 std::pair<float, float> Drawable::getPos() const { return {x, y}; }
-void Pixel::draw(unsigned int color) { fb.drawPixel(x, y, color); }
+void Pixel::draw(unsigned int color, bool interpolate) { fb.drawPixel(x, y, color, interpolate); }
 
 void Pixel::update(float newX, float newY)
 {
@@ -23,7 +25,7 @@ void Pixel::update(float newX, float newY)
     draw(color);
 }
 
-void Line::draw(unsigned int color)
+void Line::draw(unsigned int color, bool interpolate)
 {
     if (color != 0x00000000) this->color = color;
 
@@ -31,7 +33,7 @@ void Line::draw(unsigned int color)
     float dx = (x2 - x1) / static_cast<float>(steps), dy = (y2 - y1) / static_cast<float>(steps);
 
     for (int i = 0; i <= steps; ++i)
-        fb.drawPixel(x1 + static_cast<float>(i) * dx, y1 + static_cast<float>(i) * dy, color);
+        fb.drawPixel(x1 + static_cast<float>(i) * dx, y1 + static_cast<float>(i) * dy, color, interpolate);
 }
 
 void Line::update(float newX1, float newY1, float newX2, float newY2)
@@ -48,20 +50,20 @@ void Line::update(float newX1, float newY1, float newX2, float newY2)
     draw(color);
 }
 
-void Rectangle::draw(unsigned int color)
+void Rectangle::draw(unsigned int color, bool interpolate)
 {
     if (color != 0x00000000) this->color = color;
 
     if (filled)
         for (int i = 0; i < static_cast<int>(height); ++i)
             Line(fb, x - width / 2, y - height / 2 + static_cast<float>(i), x + width / 2,
-                 y - height / 2 + static_cast<float>(i)).draw(color);
+                 y - height / 2 + static_cast<float>(i)).draw(color, interpolate);
     else
     {
-        Line(fb, x - width / 2, y - height / 2, x + width / 2, y - height / 2).draw(color);
-        Line(fb, x - width / 2, y + height / 2, x + width / 2, y + height / 2).draw(color);
-        Line(fb, x - width / 2, y - height / 2, x - width / 2, y + height / 2).draw(color);
-        Line(fb, x + width / 2, y - height / 2, x + width / 2, y + height / 2).draw(color);
+        Line(fb, x - width / 2, y - height / 2, x + width / 2, y - height / 2).draw(color, interpolate);
+        Line(fb, x - width / 2, y + height / 2, x + width / 2, y + height / 2).draw(color, interpolate);
+        Line(fb, x - width / 2, y - height / 2, x - width / 2, y + height / 2).draw(color, interpolate);
+        Line(fb, x + width / 2, y - height / 2, x + width / 2, y + height / 2).draw(color, interpolate);
     }
 }
 
@@ -77,7 +79,7 @@ void Rectangle::update(float newX, float newY, float newWidth, float newHeight)
     draw(color);
 }
 
-void Circle::draw(unsigned int color)
+void Circle::draw(unsigned int color, bool interpolate)
 {
     if (color != 0x00000000) this->color = color;
 
@@ -88,21 +90,21 @@ void Circle::draw(unsigned int color)
         for (int y = -r; y <= r; ++y)
             for (int x = -r; x <= r; ++x)
                 if (x * x + y * y <= r * r)
-                    fb.drawPixel(this->x + static_cast<float>(x), this->y + static_cast<float>(y), color);
+                    fb.drawPixel(this->x + static_cast<float>(x), this->y + static_cast<float>(y), color, interpolate);
     } else
     {
         int r = static_cast<int>(radius), x = 0, y = r, d = 3 - 2 * r;
 
         while (y >= x)
         {
-            fb.drawPixel(this->x + static_cast<float>(x), this->y + static_cast<float>(y), color);
-            fb.drawPixel(this->x + static_cast<float>(y), this->y + static_cast<float>(x), color);
-            fb.drawPixel(this->x - static_cast<float>(x), this->y + static_cast<float>(y), color);
-            fb.drawPixel(this->x - static_cast<float>(y), this->y + static_cast<float>(x), color);
-            fb.drawPixel(this->x + static_cast<float>(x), this->y - static_cast<float>(y), color);
-            fb.drawPixel(this->x + static_cast<float>(y), this->y - static_cast<float>(x), color);
-            fb.drawPixel(this->x - static_cast<float>(x), this->y - static_cast<float>(y), color);
-            fb.drawPixel(this->x - static_cast<float>(y), this->y - static_cast<float>(x), color);
+            fb.drawPixel(this->x + static_cast<float>(x), this->y + static_cast<float>(y), color, interpolate);
+            fb.drawPixel(this->x + static_cast<float>(y), this->y + static_cast<float>(x), color, interpolate);
+            fb.drawPixel(this->x - static_cast<float>(x), this->y + static_cast<float>(y), color, interpolate);
+            fb.drawPixel(this->x - static_cast<float>(y), this->y + static_cast<float>(x), color, interpolate);
+            fb.drawPixel(this->x + static_cast<float>(x), this->y - static_cast<float>(y), color, interpolate);
+            fb.drawPixel(this->x + static_cast<float>(y), this->y - static_cast<float>(x), color, interpolate);
+            fb.drawPixel(this->x - static_cast<float>(x), this->y - static_cast<float>(y), color, interpolate);
+            fb.drawPixel(this->x - static_cast<float>(y), this->y - static_cast<float>(x), color, interpolate);
 
             if (d < 0) d += 4 * x + 6;
             else
@@ -124,7 +126,7 @@ void Circle::update(float newRadius)
     draw(color);
 }
 
-void Triangle::draw(unsigned int color)
+void Triangle::draw(unsigned int color, bool interpolate)
 {
     auto isInside = [&](float x, float y) -> bool
     {
@@ -146,12 +148,12 @@ void Triangle::draw(unsigned int color)
         for (int y = static_cast<int>(minY); y <= static_cast<int>(maxY); ++y)
             for (int x = static_cast<int>(minX); x <= static_cast<int>(maxX); ++x)
                 if (isInside(static_cast<float>(x), static_cast<float>(y)))
-                    fb.drawPixel(static_cast<float>(x), static_cast<float>(y), color);
+                    fb.drawPixel(static_cast<float>(x), static_cast<float>(y), color, interpolate);
     } else
     {
-        Line(fb, x1, y1, x2, y2).draw(color);
-        Line(fb, x2, y2, x3, y3).draw(color);
-        Line(fb, x3, y3, x1, y1).draw(color);
+        Line(fb, x1, y1, x2, y2).draw(color, interpolate);
+        Line(fb, x2, y2, x3, y3).draw(color, interpolate);
+        Line(fb, x3, y3, x1, y1).draw(color, interpolate);
     }
 }
 
