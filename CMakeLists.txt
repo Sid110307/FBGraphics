@@ -8,13 +8,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(SOURCES src/framebuffer.cpp src/drawing.cpp)
 add_executable(fbGraphics src/main.cpp ${SOURCES})
 
-file(GLOB exampleDirs "tests/*")
-foreach (child ${exampleDirs})
-    if (IS_DIRECTORY ${child})
-        file(GLOB examples "${child}/*.cpp")
+# SDL2_gfx
+file(GLOB gfxSources "tests/SDL2_gfx/*.cpp")
+add_executable(SDL2_gfx ${gfxSources} ${SOURCES})
+target_include_directories(SDL2_gfx PUBLIC tests/SDL2_gfx src/include)
 
-        get_filename_component(childName ${child} NAME)
-        add_executable(${childName} ${examples} ${SOURCES})
-        target_include_directories(${childName} PUBLIC ${child} src/include)
-    endif ()
-endforeach (child)
+# DOOM
+file(GLOB doomSources "tests/DOOM/linuxdoom-1.10/*.c")
+add_executable(DOOM ${doomSources} ${SOURCES})
+target_include_directories(DOOM PUBLIC tests/DOOM/linuxdoom-1.10 src/include)
+target_link_libraries(DOOM m)
