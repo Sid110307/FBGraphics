@@ -24,8 +24,8 @@
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
-#include <SDL.h>
-#include <SDL_mixer.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 #ifdef HAVE_LIBSAMPLERATE
 #include <samplerate.h>
@@ -534,7 +534,7 @@ static boolean ExpandSoundData_SDL(sfxinfo_t* sfxinfo,
 
     // Calculate the length of the expanded version of the sample.
 
-    expanded_length = (uint32_t)((((uint64_t) length) * mixer_freq) / samplerate);
+    expanded_length = (uint32_t) ((((uint64_t) length) * mixer_freq) / samplerate);
 
     // Double up twice: 8 -> 16 bit and mono -> stereo
 
@@ -604,8 +604,8 @@ static boolean ExpandSoundData_SDL(sfxinfo_t* sfxinfo,
 
         for (i = 2; i < expanded_length * 2; ++i)
         {
-            expanded[i] = (Sint16)(alpha * expanded[i]
-                                   + (1 - alpha) * expanded[i - 2]);
+            expanded[i] = (Sint16) (alpha * expanded[i]
+                                    + (1 - alpha) * expanded[i - 2]);
         }
     }
 #endif /* #ifdef LOW_PASS_FILTER */

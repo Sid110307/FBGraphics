@@ -167,7 +167,7 @@ static int* weapon_keys[] = {
 
 static int next_weapon = 0;
 
-// Used for prev/next weapon keyStates.
+// Used for prev/next weapon keys.
 
 static const struct
 {
@@ -356,7 +356,7 @@ void G_BuildTiccmd(ticcmd_t* cmd, int maketic)
     else
         tspeed = speed;
 
-    // let movement keyStates cancel each other out
+    // let movement keys cancel each other out
     if (strafe)
     {
         if (gamekeydown[key_right])
@@ -445,7 +445,7 @@ void G_BuildTiccmd(ticcmd_t* cmd, int maketic)
         cmd->buttons |= i << BT_WEAPONSHIFT;
     } else
     {
-        // Check weapon keyStates.
+        // Check weapon keys.
 
         for (i = 0; i < arrlen(weapon_keys); ++i)
         {
@@ -777,7 +777,7 @@ boolean G_Responder(event_t* ev)
         testcontrols_mousespeed = abs(ev->data2);
     }
 
-    // If the next/previous weapon keyStates are pressed, set the next_weapon
+    // If the next/previous weapon keys are pressed, set the next_weapon
     // variable to change weapons when the next ticcmd is generated.
 
     if (ev->type == ev_keydown && ev->data1 == key_prevweapon)

@@ -111,12 +111,12 @@ int key_pause = KEY_PAUSE;
 int key_demo_quit = 'q';
 int key_spy = KEY_F12;
 
-// Multiplayer chat keyStates:
+// Multiplayer chat keys:
 
 int key_multi_msg = 't';
 int key_multi_msgplayer[8];
 
-// Weapon selection keyStates:
+// Weapon selection keys:
 
 int key_weapon1 = '1';
 int key_weapon2 = '2';
@@ -129,7 +129,7 @@ int key_weapon8 = '8';
 int key_prevweapon = 0;
 int key_nextweapon = 0;
 
-// Map control keyStates:
+// Map control keys:
 
 int key_map_north = KEY_UPARROW;
 int key_map_south = KEY_DOWNARROW;
@@ -144,7 +144,7 @@ int key_map_grid = 'g';
 int key_map_mark = 'm';
 int key_map_clearmark = 'c';
 
-// menu keyStates:
+// menu keys:
 
 int key_menu_activate = KEY_ESCAPE;
 int key_menu_up = KEY_UPARROW;
@@ -273,7 +273,7 @@ void M_BindStrifeControls(void)
     // These are shared with all games, but have different defaults:
     key_message_refresh = '/';
 
-    // These keyStates are shared with Heretic/Hexen but have different defaults:
+    // These keys are shared with Heretic/Hexen but have different defaults:
     key_jump = 'a';
     key_lookup = KEY_PGUP;
     key_lookdown = KEY_PGDN;

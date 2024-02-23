@@ -72,8 +72,8 @@ static void AddIWADDir(char* dir)
 
 // This is Windows-specific code that automatically finds the location
 // of installed IWAD files.  The registry is inspected to find special
-// keyStates installed by the Windows installers for various CD versions
-// of Doom.  From these keyStates we can deduce where to find an IWAD.
+// keys installed by the Windows installers for various CD versions
+// of Doom.  From these keys we can deduce where to find an IWAD.
 
 #if defined(_WIN32) && !defined(_WIN32_WCE)
 
@@ -97,7 +97,7 @@ typedef struct
 // With some munging we can find where Doom was installed.
 
 // [AlexMax] From the persepctive of a 64-bit executable, 32-bit registry
-// keyStates are located in a different spot.
+// keys are located in a different spot.
 #if _WIN64
 #define SOFTWARE_KEY "Software\\Wow6432Node"
 #else

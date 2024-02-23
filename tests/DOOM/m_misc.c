@@ -435,8 +435,7 @@ char* M_StringJoin(const char* s, ...)
     va_start(args, s);
     for (;;)
     {
-        v = va_arg(args,
-                   const char *);
+        v = va_arg(args, const char *);
         if (v == NULL)
         {
             break;
@@ -459,8 +458,7 @@ char* M_StringJoin(const char* s, ...)
     va_start(args, s);
     for (;;)
     {
-        v = va_arg(args,
-                   const char *);
+        v = va_arg(args, const char *);
         if (v == NULL)
         {
             break;

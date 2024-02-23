@@ -41,7 +41,7 @@ extern int key_invleft;
 extern int key_invright;
 extern int key_useartifact;
 
-// villsa [STRIFE] strife keyStates
+// villsa [STRIFE] strife keys
 extern int key_usehealth;
 extern int key_invquery;
 extern int key_mission;
@@ -94,7 +94,7 @@ extern int key_map_grid;
 extern int key_map_mark;
 extern int key_map_clearmark;
 
-// menu keyStates:
+// menu keys:
 
 extern int key_menu_activate;
 extern int key_menu_up;

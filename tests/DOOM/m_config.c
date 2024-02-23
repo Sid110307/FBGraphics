@@ -287,7 +287,7 @@ static default_t doom_defaults_list[] =
         //!
         // @game strife
         //
-        // Keyboard key to display keyStates popup.
+        // Keyboard key to display keys popup.
         //
 
         CONFIG_VARIABLE_KEY(key_invKey),

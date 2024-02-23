@@ -53,7 +53,7 @@ void Helpers::aalineRGBA(const Framebuffer &renderer, short x1, short y1, short 
         draw_endpoint ? hlineRGBA(renderer, x1, x2, y1, r, g, b, a)
                       : dx > 0 ? hlineRGBA(renderer, static_cast<short>(xx0),
                                            static_cast<short>(xx0 + (xDir * dx)), y1, r, g, b, a) : pixelRGBA(
-                renderer, x1, y1, r, g, b, a);
+            renderer, x1, y1, r, g, b, a);
     else if (dx == dy && draw_endpoint) lineRGBA(renderer, x1, y1, x2, y2, r, g, b, a);
 
     errAcc = 0;
@@ -459,7 +459,7 @@ void rectangleRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2,
     }
 
     Rectangle(renderer, x1, y1, static_cast<float>(x2 - x1), static_cast<float>(y2 - y1))
-            .draw((r << 24) | (g << 16) | (b << 8) | a);
+        .draw((r << 24) | (g << 16) | (b << 8) | a);
 }
 
 void roundedRectangleColor(const Framebuffer &renderer, short x1, short y1, short x2, short y2, short rad,
@@ -552,7 +552,7 @@ void boxRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2, unsig
     }
 
     Rectangle(renderer, x1, y1, static_cast<float>(x2 - x1 + 1), static_cast<float>(y2 - y1 + 1))
-            .draw((r << 24) | (g << 16) | (b << 8) | a);
+        .draw((r << 24) | (g << 16) | (b << 8) | a);
 }
 
 void roundedBoxColor(const Framebuffer &renderer, short x1, short y1, short x2, short y2, short rad,
@@ -565,8 +565,8 @@ void roundedBoxRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2
                     unsigned char g, unsigned char b, unsigned char a)
 {
     short w, h, diameter, tmp, cx = 0, cy = rad, ocx = static_cast<short>(0xffff), ocy = static_cast<short>(0xffff),
-            df = static_cast<short>(1 - rad), d_e = 3, d_se = static_cast<short>(-2 * rad + 5), xPcx, xMcx, xPcy, xMcy,
-            yPcy, yMcy, yPcx, yMcx, x, y, dx, dy;
+        df = static_cast<short>(1 - rad), d_e = 3, d_se = static_cast<short>(-2 * rad + 5), xPcx, xMcx, xPcy, xMcy,
+        yPcy, yMcy, yPcx, yMcx, x, y, dx, dy;
 
     if (rad < 0) return Helpers::warn("Unable to draw rounded box with negative radius");
     if (rad <= 1) boxRGBA(renderer, x1, y1, x2, y2, r, g, b, a);
@@ -620,12 +620,12 @@ void roundedBoxRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2
                 yMcy = static_cast<short>(y - cy);
 
                 Line(renderer, xMcx, yMcy, static_cast<float>(xPcx + dx), yMcy)
-                        .draw((r << 24) | (g << 16) | (b << 8) | a);
+                    .draw((r << 24) | (g << 16) | (b << 8) | a);
                 Line(renderer, xMcx, static_cast<float>(yPcy + dy), static_cast<float>(xPcx + dx),
                      static_cast<float>(yPcy + dy)).draw((r << 24) | (g << 16) | (b << 8) | a);
             } else
                 Line(renderer, xMcx, y, static_cast<float>(xPcx + dx), y)
-                        .draw((r << 24) | (g << 16) | (b << 8) | a);
+                    .draw((r << 24) | (g << 16) | (b << 8) | a);
 
             ocy = cy;
         }
@@ -640,12 +640,12 @@ void roundedBoxRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2
                     yMcx = static_cast<short>(y - cx);
 
                     Line(renderer, xMcy, yMcx, static_cast<float>(xPcy + dx), yMcx)
-                            .draw((r << 24) | (g << 16) | (b << 8) | a);
+                        .draw((r << 24) | (g << 16) | (b << 8) | a);
                     Line(renderer, xMcy, static_cast<float>(yPcx + dy), static_cast<float>(xPcy + dx),
                          static_cast<float>(yPcx + dy)).draw((r << 24) | (g << 16) | (b << 8) | a);
                 } else
                     Line(renderer, xMcy, y, static_cast<float>(xPcy + dx), y)
-                            .draw((r << 24) | (g << 16) | (b << 8) | a);
+                        .draw((r << 24) | (g << 16) | (b << 8) | a);
             }
 
             ocx = cx;
@@ -715,7 +715,7 @@ void arcRGBA(const Framebuffer &renderer, short x, short y, short rad, short sta
 {
     int startOct, endOct, oct, stopValStart = 0, stopValEnd = 0;
     short cx = 0, cy = rad, df = static_cast<short>(1 - rad), d_e = 3, d_se = static_cast<short>(-2 * rad + 5), xPcx,
-            xMcx, xPcy, xMcy, yPcy, yMcy, yPcx, yMcx;
+        xMcx, xPcy, xMcy, yPcy, yMcy, yPcx, yMcx;
     unsigned char drawOctant;
     double dStart, dEnd, temp = 0.0;
 
@@ -1205,7 +1205,7 @@ void filledPolygonRGBAMT(const Framebuffer &renderer, const short* vx, const sho
                          unsigned char g, unsigned char b, unsigned char a, int** polyInts, int* polyAllocated)
 {
     int i, y, xa, xb, miny, maxy, x1, y1, x2, y2, ind1, ind2, ints, * polygonInts, * polygonIntsNew,
-            polygonAllocated = 0;
+        polygonAllocated = 0;
     if (vx == nullptr || vy == nullptr || n < 3) return Helpers::warn("Unable to draw polygon with less than 3 points");
 
     if (polyInts != nullptr && polyAllocated != nullptr)

@@ -136,9 +136,9 @@ void cmap_to_rgb565(uint16_t* out, uint8_t* in, int in_pixels)
     for (i = 0; i < in_pixels; i++)
     {
         c = colors[*in];
-        r = ((uint16_t)(c.r >> 3)) << 11;
-        g = ((uint16_t)(c.g >> 2)) << 5;
-        b = ((uint16_t)(c.b >> 3)) << 0;
+        r = ((uint16_t) (c.r >> 3)) << 11;
+        g = ((uint16_t) (c.g >> 2)) << 5;
+        b = ((uint16_t) (c.b >> 3)) << 0;
         *out = (r | g | b);
 
         in++;
@@ -159,9 +159,9 @@ void cmap_to_fb(uint8_t* out, uint8_t* in, int in_pixels)
     for (i = 0; i < in_pixels; i++)
     {
         c = colors[*in];  /* R:8 G:8 B:8 format! */
-        r = (uint16_t)(c.r >> (8 - s_Fb.red.length));
-        g = (uint16_t)(c.g >> (8 - s_Fb.green.length));
-        b = (uint16_t)(c.b >> (8 - s_Fb.blue.length));
+        r = (uint16_t) (c.r >> (8 - s_Fb.red.length));
+        g = (uint16_t) (c.g >> (8 - s_Fb.green.length));
+        b = (uint16_t) (c.b >> (8 - s_Fb.blue.length));
         pix = r << s_Fb.red.offset;
         pix |= g << s_Fb.green.offset;
         pix |= b << s_Fb.blue.offset;

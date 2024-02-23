@@ -60,7 +60,7 @@
 
 #define KEY_LALT    KEY_RALT
 
-// new keyStates:
+// new keys:
 
 #define KEY_CAPSLOCK    (0x80+0x3a)
 #define KEY_NUMLOCK     (0x80+0x45)

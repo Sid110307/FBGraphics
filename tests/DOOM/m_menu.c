@@ -1319,7 +1319,7 @@ M_WriteText
     }
 }
 
-// These keyStates evaluate to a "null" key in Vanilla Doom that allows weird
+// These keys evaluate to a "null" key in Vanilla Doom that allows weird
 // jumping in the menus. Preserve this behavior for accuracy.
 
 static boolean IsNullKey(int key)
@@ -1347,7 +1347,7 @@ boolean M_Responder(event_t* ev)
     static int mousex = 0;
     static int lastx = 0;
 
-    // In testcontrols mode, none of the function keyStates should do anything
+    // In testcontrols mode, none of the function keys should do anything
     // - the only key is escape to quit.
 
     if (testcontrols)
@@ -1759,7 +1759,7 @@ boolean M_Responder(event_t* ev)
 
         // Keyboard shortcut?
         // Vanilla Doom has a weird behavior where it jumps to the scroll bars
-        // when the certain keyStates are pressed, so emulate this.
+        // when the certain keys are pressed, so emulate this.
 
     else if (ch != 0 || IsNullKey(key))
     {
