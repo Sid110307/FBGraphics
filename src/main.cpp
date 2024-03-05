@@ -1,7 +1,7 @@
 #include "include/drawing.h"
 #include "include/utils.h"
 
-constexpr int WIDTH = 640, HEIGHT = 480;
+constexpr int WIDTH = 1920, HEIGHT = 1080;
 
 int main()
 {

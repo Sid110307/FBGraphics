@@ -1,9 +1,7 @@
-#include <unistd.h>
-
 #include "graphics.h"
 #include "utils.h"
 
-constexpr int WIDTH = 640, HEIGHT = 480;
+constexpr int WIDTH = 1920, HEIGHT = 1080;
 void reset(Framebuffer &fb)
 {
     sleep(1);
