@@ -16,10 +16,8 @@
 //
 //
 
-
 #ifndef __D_PLAYER__
 #define __D_PLAYER__
-
 
 // The player data structure depends on a number
 // of other structs: items (internal inventory),
@@ -50,7 +48,6 @@ typedef enum
     PST_DEAD,
     // Ready to restart/respawn???
     PST_REBORN
-
 } playerstate_t;
 
 //
@@ -64,7 +61,6 @@ typedef enum
     CF_GODMODE = 2,
     // Not really a cheat, just a debug aid.
     CF_NOMOMENTUM = 4
-
 } cheat_t;
 
 //
@@ -152,7 +148,6 @@ typedef struct player_s
 
     // True if secret level has been done.
     boolean didsecret;
-
 } player_t;
 
 //
@@ -161,7 +156,7 @@ typedef struct player_s
 //
 typedef struct
 {
-    boolean in;    // whether the player is in game
+    boolean in; // whether the player is in game
 
     // Player stats, kills, collected items etc.
     int skills;
@@ -169,13 +164,12 @@ typedef struct
     int ssecret;
     int stime;
     int frags[4];
-    int score;    // current score on entry, modified on return
-
+    int score; // current score on entry, modified on return
 } wbplayerstruct_t;
 
 typedef struct
 {
-    int epsd;    // episode # (0-2)
+    int epsd; // episode # (0-2)
 
     // if true, splash the secret level
     boolean didsecret;
@@ -196,7 +190,6 @@ typedef struct
     int pnum;
 
     wbplayerstruct_t plyr[MAXPLAYERS];
-
 } wbstartstruct_t;
 
 #endif

@@ -87,7 +87,6 @@ int key_invend = KEY_END;
 int key_invuse = KEY_ENTER;
 int key_invdrop = KEY_BACKSPACE;
 
-
 //
 // Mouse controls
 //
@@ -371,14 +370,14 @@ void M_BindMenuControls(void)
     M_BindVariable("key_spy", &key_spy);
 }
 
-void M_BindChatControls(unsigned int num_players)
+void M_BindChatControls(const unsigned int num_players)
 {
-    char name[32];  // haleyjd: 20 not large enough - Thank you, come again!
-    unsigned int i; // haleyjd: signedness conflict
+    char name[32]; // haleyjd: 20 not large enough - Thank you, come again!
+    // haleyjd: signedness conflict
 
     M_BindVariable("key_multi_msg", &key_multi_msg);
 
-    for (i = 0; i < num_players; ++i)
+    for (unsigned int i = 0; i < num_players; ++i)
     {
         M_snprintf(name, sizeof(name), "key_multi_msgplayer%i", i + 1);
         M_BindVariable(name, &key_multi_msgplayer[i]);
@@ -394,4 +393,3 @@ void M_ApplyPlatformDefaults(void)
 {
     // no-op. Add your platform-specific patches here.
 }
-

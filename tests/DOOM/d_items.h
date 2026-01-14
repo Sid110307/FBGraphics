@@ -16,7 +16,6 @@
 //	Items: key cards, artifacts, weapon, ammunition.
 //
 
-
 #ifndef __D_ITEMS__
 #define __D_ITEMS__
 
@@ -31,7 +30,6 @@ typedef struct
     int readystate;
     int atkstate;
     int flashstate;
-
 } weaponinfo_t;
 
 extern weaponinfo_t weaponinfo[NUMWEAPONS];

@@ -16,7 +16,6 @@
 //
 //
 
-
 #ifndef __M_RANDOM__
 #define __M_RANDOM__
 

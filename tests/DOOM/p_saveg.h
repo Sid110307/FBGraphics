@@ -16,7 +16,6 @@
 //	Savegame I/O, archiving, persistence.
 //
 
-
 #ifndef __P_SAVEG__
 #define __P_SAVEG__
 
@@ -37,7 +36,7 @@ char* P_SaveGameFile(int slot);
 // Savegame file header read/write functions
 
 boolean P_ReadSaveGameHeader(void);
-void P_WriteSaveGameHeader(char* description);
+void P_WriteSaveGameHeader(const char* description);
 
 // Savegame end-of-file read/write functions
 

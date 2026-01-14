@@ -36,27 +36,17 @@
 void I_Endoom(byte* endoom_data)
 {
 #ifdef ORIGCODE
-    unsigned char *screendata;
-    int y;
-    int indent;
+    unsigned char* screendata; int y; int indent;
 
     // Set up text mode screen
 
-    TXT_Init();
-    I_InitWindowTitle();
-    I_InitWindowIcon();
+    TXT_Init(); I_InitWindowTitle(); I_InitWindowIcon();
 
     // Write the data to the screen memory
 
-    screendata = TXT_GetScreenData();
-
-    indent = (ENDOOM_W - TXT_SCREEN_W) / 2;
-
-    for (y=0; y<TXT_SCREEN_H; ++y)
+    screendata = TXT_GetScreenData(); indent = (ENDOOM_W - TXT_SCREEN_W) / 2; for (y = 0; y < TXT_SCREEN_H; ++y)
     {
-        memcpy(screendata + (y * TXT_SCREEN_W * 2),
-               endoom_data + (y * ENDOOM_W + indent) * 2,
-               TXT_SCREEN_W * 2);
+        memcpy(screendata + (y * TXT_SCREEN_W * 2), endoom_data + (y * ENDOOM_W + indent) * 2, TXT_SCREEN_W * 2);
     }
 
     // Wait for a keypress
@@ -65,10 +55,7 @@ void I_Endoom(byte* endoom_data)
     {
         TXT_UpdateScreen();
 
-        if (TXT_GetChar() > 0)
-        {
-            break;
-        }
+        if (TXT_GetChar() > 0) { break; }
 
         TXT_Sleep(0);
     }
@@ -78,4 +65,3 @@ void I_Endoom(byte* endoom_data)
     TXT_Shutdown();
 #endif
 }
-

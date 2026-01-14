@@ -36,7 +36,6 @@
 // Version code for cph's longtics hack ("v1.91")
 #define DOOM_191_VERSION 111
 
-
 // If rangecheck is undefined,
 // most parameter validation debugging code will not be compiled
 #define RANGECHECK
@@ -94,7 +93,6 @@ typedef enum
     it_redskull,
 
     NUMCARDS
-
 } card_t;
 
 // The defined weapons,
@@ -116,19 +114,17 @@ typedef enum
 
     // No pending weapon change.
     wp_nochange
-
 } weapontype_t;
 
 // Ammunition types defined.
 typedef enum
 {
-    am_clip,    // Pistol / chaingun ammo.
-    am_shell,    // Shotgun / double barreled shotgun.
-    am_cell,    // Plasma rifle, BFG.
-    am_misl,    // Missile launcher.
+    am_clip, // Pistol / chaingun ammo.
+    am_shell, // Shotgun / double barreled shotgun.
+    am_cell, // Plasma rifle, BFG.
+    am_misl, // Missile launcher.
     NUMAMMO,
-    am_noammo    // Unlimited for chainsaw / fist.
-
+    am_noammo // Unlimited for chainsaw / fist.
 } ammotype_t;
 
 // Power up artifacts.
@@ -141,7 +137,6 @@ typedef enum
     pw_allmap,
     pw_infrared,
     NUMPOWERS
-
 } powertype_t;
 
 //
@@ -151,11 +146,10 @@ typedef enum
 //
 typedef enum
 {
-    INVULNTICS = (30 * TICRATE),
-    INVISTICS = (60 * TICRATE),
-    INFRATICS = (120 * TICRATE),
-    IRONTICS = (60 * TICRATE)
-
+    INVULNTICS = 30 * TICRATE,
+    INVISTICS  = 60 * TICRATE,
+    INFRATICS  = 120 * TICRATE,
+    IRONTICS   = 60 * TICRATE
 } powerduration_t;
 
 #endif          // __DOOMDEF__

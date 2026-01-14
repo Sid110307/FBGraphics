@@ -17,7 +17,6 @@
 //	 isolated here to make it easier separating modules.
 //
 
-
 #ifndef __D_TEXTUR__
 #define __D_TEXTUR__
 

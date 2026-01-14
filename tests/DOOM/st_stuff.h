@@ -31,13 +31,12 @@
 #define ST_WIDTH    SCREENWIDTH
 #define ST_Y        (SCREENHEIGHT - ST_HEIGHT)
 
-
 //
 // STATUS BAR
 //
 
 // Called by main loop.
-boolean ST_Responder(event_t* ev);
+boolean ST_Responder(const event_t* ev);
 
 // Called by main loop.
 void ST_Ticker(void);
@@ -56,7 +55,6 @@ typedef enum
 {
     AutomapState,
     FirstPersonState
-
 } st_stateenum_t;
 
 // States for the chat code.
@@ -65,7 +63,6 @@ typedef enum
     StartChatState,
     WaitDestState,
     GetChatState
-
 } st_chatstateenum_t;
 
 extern byte* st_backing_screen;

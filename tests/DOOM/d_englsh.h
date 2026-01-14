@@ -426,7 +426,6 @@
 "\n"\
 "next stop, hell on earth!"
 
-
 // after level 6, put this:
 
 #define C1TEXT \
@@ -464,7 +463,6 @@
 "STARPORT.\" SLOWLY AND PAINFULLY YOU GET\n"\
 "UP AND RETURN TO THE FRAY."
 
-
 // After level 20, put this:
 
 #define C3TEXT \
@@ -477,7 +475,6 @@
 "THERE MUST BE A WAY TO CLOSE IT ON THE\n"\
 "OTHER SIDE. WHAT DO YOU CARE IF YOU'VE\n"\
 "GOT TO GO THROUGH HELL TO GET TO IT?"
-
 
 // After level 29, put this:
 
@@ -498,8 +495,6 @@
 "HOME. REBUILDING EARTH OUGHT TO BE A\n"\
 "LOT MORE FUN THAN RUINING IT WAS.\n"
 
-
-
 // Before level 31, put this:
 
 #define C5TEXT \
@@ -509,14 +504,12 @@
 "WHO THE INMATES OF THIS CORNER OF HELL\n"\
 "WILL BE."
 
-
 // Before level 32, put this:
 
 #define C6TEXT \
 "CONGRATULATIONS, YOU'VE FOUND THE\n"\
 "SUPER SECRET LEVEL!  YOU'D BETTER\n"\
 "BLAZE THROUGH THIS ONE!\n"
-
 
 // after map 06
 
@@ -534,7 +527,6 @@
 "moving, keep fighting, keep killing.\n"\
 "Oh yes, keep living, too."
 
-
 // after map 11
 
 #define P2TEXT \
@@ -544,7 +536,6 @@
 "efficiently and permanently deactivated.\n"\
 "\n"\
 "You're good at that kind of thing."
-
 
 // after map 20
 
@@ -657,8 +648,6 @@
 "\n"\
 "As you step off the transport, you hear\n"\
 "the stomp of a cyberdemon's iron shoe."
-
-
 
 //
 // Character cast strings F_FINALE.C

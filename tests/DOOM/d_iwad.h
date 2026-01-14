@@ -15,7 +15,6 @@
 //     Find IWAD and initialize according to IWAD type.
 //
 
-
 #ifndef __D_IWAD__
 #define __D_IWAD__
 
@@ -49,4 +48,3 @@ char* D_SuggestGameName(GameMission_t mission, GameMode_t mode);
 void D_CheckCorrectIWAD(GameMission_t mission);
 
 #endif
-

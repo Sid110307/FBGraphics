@@ -16,7 +16,6 @@
 //      System-specific timer interface
 //
 
-
 #ifndef __I_TIMER__
 #define __I_TIMER__
 
@@ -39,4 +38,3 @@ void I_InitTimer(void);
 void I_WaitVBL(int count);
 
 #endif
-

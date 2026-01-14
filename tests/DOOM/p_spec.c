@@ -20,7 +20,6 @@
 //	Line Tag handling. Line and Sector triggers.
 //
 
-
 #include <stdlib.h>
 
 #include "doomdef.h"
@@ -58,7 +57,6 @@ typedef struct
     int basepic;
     int numpics;
     int speed;
-
 } anim_t;
 
 //
@@ -66,7 +64,7 @@ typedef struct
 //
 typedef struct
 {
-    int istexture;    // if false, it is a flat
+    int istexture; // if false, it is a flat
     char endname[9];
     char startname[9];
     int speed;
@@ -90,42 +88,21 @@ extern anim_t* lastanim;
 //  and end entry, in the order found in
 //  the WAD file.
 //
-animdef_t animdefs[] =
-    {
-        {false, "NUKAGE3",  "NUKAGE1",  8},
-        {false, "FWATER4",  "FWATER1",  8},
-        {false, "SWATER4",  "SWATER1",  8},
-        {false, "LAVA4",    "LAVA1",    8},
-        {false, "BLOOD3",   "BLOOD1",   8},
+animdef_t animdefs[] = {
+    {false, "NUKAGE3", "NUKAGE1", 8}, {false, "FWATER4", "FWATER1", 8}, {false, "SWATER4", "SWATER1", 8},
+    {false, "LAVA4", "LAVA1", 8}, {false, "BLOOD3", "BLOOD1", 8},
 
-        // DOOM II flat animations.
-        {false, "RROCK08",  "RROCK05",  8},
-        {false, "SLIME04",  "SLIME01",  8},
-        {false, "SLIME08",  "SLIME05",  8},
-        {false, "SLIME12",  "SLIME09",  8},
-
-        {true,  "BLODGR4",  "BLODGR1",  8},
-        {true,  "SLADRIP3", "SLADRIP1", 8},
-
-        {true,  "BLODRIP4", "BLODRIP1", 8},
-        {true,  "FIREWALL", "FIREWALA", 8},
-        {true,  "GSTFONT3", "GSTFONT1", 8},
-        {true,  "FIRELAVA", "FIRELAV3", 8},
-        {true,  "FIREMAG3", "FIREMAG1", 8},
-        {true,  "FIREBLU2", "FIREBLU1", 8},
-        {true,  "ROCKRED3", "ROCKRED1", 8},
-
-        {true,  "BFALL4",   "BFALL1",   8},
-        {true,  "SFALL4",   "SFALL1",   8},
-        {true,  "WFALL4",   "WFALL1",   8},
-        {true,  "DBRAIN4",  "DBRAIN1",  8},
-
-        {-1,    "",         "",         0},
-    };
+    // DOOM II flat animations.
+    {false, "RROCK08", "RROCK05", 8}, {false, "SLIME04", "SLIME01", 8}, {false, "SLIME08", "SLIME05", 8},
+    {false, "SLIME12", "SLIME09", 8}, {true, "BLODGR4", "BLODGR1", 8}, {true, "SLADRIP3", "SLADRIP1", 8},
+    {true, "BLODRIP4", "BLODRIP1", 8}, {true, "FIREWALL", "FIREWALA", 8}, {true, "GSTFONT3", "GSTFONT1", 8},
+    {true, "FIRELAVA", "FIRELAV3", 8}, {true, "FIREMAG3", "FIREMAG1", 8}, {true, "FIREBLU2", "FIREBLU1", 8},
+    {true, "ROCKRED3", "ROCKRED1", 8}, {true, "BFALL4", "BFALL1", 8}, {true, "SFALL4", "SFALL1", 8},
+    {true, "WFALL4", "WFALL1", 8}, {true, "DBRAIN4", "DBRAIN1", 8}, {-1, "", "", 0},
+};
 
 anim_t anims[MAXANIMS];
 anim_t* lastanim;
-
 
 //
 //      Animating line specials
@@ -137,30 +114,24 @@ extern line_t* linespeciallist[MAXLINEANIMS];
 
 void P_InitPicAnims(void)
 {
-    int i;
-
-
     //	Init animation
     lastanim = anims;
-    for (i = 0; animdefs[i].istexture != -1; i++)
+    for (int i = 0; animdefs[i].istexture != -1; i++)
     {
-        char* startname, * endname;
-
-        startname = DEH_String(animdefs[i].startname);
-        endname = DEH_String(animdefs[i].endname);
+        char* startname = DEH_String(animdefs[i].startname);
+        char* endname = DEH_String(animdefs[i].endname);
 
         if (animdefs[i].istexture)
         {
             // different episode ?
-            if (R_CheckTextureNumForName(startname) == -1)
-                continue;
+            if (R_CheckTextureNumForName(startname) == -1) continue;
 
             lastanim->picnum = R_TextureNumForName(endname);
             lastanim->basepic = R_TextureNumForName(startname);
-        } else
+        }
+        else
         {
-            if (W_CheckNumForName(startname) == -1)
-                continue;
+            if (W_CheckNumForName(startname) == -1) continue;
 
             lastanim->picnum = R_FlatNumForName(endname);
             lastanim->basepic = R_FlatNumForName(startname);
@@ -169,23 +140,16 @@ void P_InitPicAnims(void)
         lastanim->istexture = animdefs[i].istexture;
         lastanim->numpics = lastanim->picnum - lastanim->basepic + 1;
 
-        if (lastanim->numpics < 2)
-            I_Error("P_InitPicAnims: bad cycle from %s to %s",
-                    startname, endname);
+        if (lastanim->numpics < 2) I_Error("P_InitPicAnims: bad cycle from %s to %s", startname, endname);
 
         lastanim->speed = animdefs[i].speed;
         lastanim++;
     }
-
 }
-
-
 
 //
 // UTILITIES
 //
-
-
 
 //
 // getSide()
@@ -193,13 +157,9 @@ void P_InitPicAnims(void)
 //  given the number of the current sector,
 //  the line number, and the side (0/1) that you want.
 //
-side_t*
-getSide
-    (int currentSector,
-     int line,
-     int side)
+side_t* getSide(const int currentSector, const int line, const int side)
 {
-    return &sides[(sectors[currentSector].lines[line])->sidenum[side]];
+    return &sides[sectors[currentSector].lines[line]->sidenum[side]];
 }
 
 //
@@ -208,13 +168,9 @@ getSide
 //  given the number of the current sector,
 //  the line number and the side (0/1) that you want.
 //
-sector_t*
-getSector
-    (int currentSector,
-     int line,
-     int side)
+sector_t* getSector(const int currentSector, const int line, const int side)
 {
-    return sides[(sectors[currentSector].lines[line])->sidenum[side]].sector;
+    return sides[sectors[currentSector].lines[line]->sidenum[side]].sector;
 }
 
 //
@@ -222,29 +178,18 @@ getSector
 // Given the sector number and the line number,
 //  it will tell you whether the line is two-sided or not.
 //
-int
-twoSided
-    (int sector,
-     int line)
-{
-    return (sectors[sector].lines[line])->flags & ML_TWOSIDED;
-}
+int twoSided(const int sector, const int line) { return sectors[sector].lines[line]->flags & ML_TWOSIDED; }
 
 //
 // getNextSector()
 // Return sector_t * of sector next to current.
 // NULL if not two-sided line
 //
-sector_t*
-getNextSector
-    (line_t* line,
-     sector_t* sec)
+sector_t* getNextSector(const line_t* line, const sector_t* sec)
 {
-    if (!(line->flags & ML_TWOSIDED))
-        return NULL;
+    if (!(line->flags & ML_TWOSIDED)) return NULL;
 
-    if (line->frontsector == sec)
-        return line->backsector;
+    if (line->frontsector == sec) return line->backsector;
 
     return line->frontsector;
 }
@@ -255,21 +200,15 @@ getNextSector
 //
 fixed_t P_FindLowestFloorSurrounding(sector_t* sec)
 {
-    int i;
-    line_t* check;
-    sector_t* other;
     fixed_t floor = sec->floorheight;
 
-    for (i = 0; i < sec->linecount; i++)
-    {
-        check = sec->lines[i];
-        other = getNextSector(check, sec);
+    for (int i = 0; i < sec->linecount; i++)
+    { const line_t* check = sec->lines[i];
+        sector_t* other = getNextSector(check, sec);
 
-        if (!other)
-            continue;
+        if (!other) continue;
 
-        if (other->floorheight < floor)
-            floor = other->floorheight;
+        if (other->floorheight < floor) floor = other->floorheight;
     }
     return floor;
 }
@@ -280,26 +219,18 @@ fixed_t P_FindLowestFloorSurrounding(sector_t* sec)
 //
 fixed_t P_FindHighestFloorSurrounding(sector_t* sec)
 {
-    int i;
-    line_t* check;
-    sector_t* other;
     fixed_t floor = -500 * FRACUNIT;
 
-    for (i = 0; i < sec->linecount; i++)
-    {
-        check = sec->lines[i];
-        other = getNextSector(check, sec);
+    for (int i = 0; i < sec->linecount; i++)
+    { const line_t* check = sec->lines[i];
+        sector_t* other = getNextSector(check, sec);
 
-        if (!other)
-            continue;
+        if (!other) continue;
 
-        if (other->floorheight > floor)
-            floor = other->floorheight;
+        if (other->floorheight > floor) floor = other->floorheight;
     }
     return floor;
 }
-
-
 
 //
 // P_FindNextHighestFloor
@@ -311,38 +242,27 @@ fixed_t P_FindHighestFloorSurrounding(sector_t* sec)
 // 20 adjoining sectors max!
 #define MAX_ADJOINING_SECTORS     20
 
-fixed_t
-P_FindNextHighestFloor
-    (sector_t* sec,
-     int currentheight)
+fixed_t P_FindNextHighestFloor(sector_t* sec, const int currentheight)
 {
     int i;
     int h;
-    int min;
-    line_t* check;
-    sector_t* other;
     fixed_t height = currentheight;
     fixed_t heightlist[MAX_ADJOINING_SECTORS + 2];
 
     for (i = 0, h = 0; i < sec->linecount; i++)
-    {
-        check = sec->lines[i];
-        other = getNextSector(check, sec);
+    { const line_t* check = sec->lines[i];
+        sector_t* other = getNextSector(check, sec);
 
-        if (!other)
-            continue;
+        if (!other) continue;
 
         if (other->floorheight > height)
         {
             // Emulation of memory (stack) overflow
-            if (h == MAX_ADJOINING_SECTORS + 1)
-            {
-                height = other->floorheight;
-            } else if (h == MAX_ADJOINING_SECTORS + 2)
+            if (h == MAX_ADJOINING_SECTORS + 1) { height = other->floorheight; }
+            else if (h == MAX_ADJOINING_SECTORS + 2)
             {
                 // Fatal overflow: game crashes at 22 textures
-                I_Error("Sector with more than 22 adjoining sectors. "
-                        "Vanilla will crash here");
+                I_Error("Sector with more than 22 adjoining sectors. " "Vanilla will crash here");
             }
 
             heightlist[h++] = other->floorheight;
@@ -350,21 +270,12 @@ P_FindNextHighestFloor
     }
 
     // Find lowest height in list
-    if (!h)
-    {
-        return currentheight;
-    }
+    if (!h) { return currentheight; }
 
-    min = heightlist[0];
+    int min = heightlist[0];
 
     // Range checking?
-    for (i = 1; i < h; i++)
-    {
-        if (heightlist[i] < min)
-        {
-            min = heightlist[i];
-        }
-    }
+    for (i = 1; i < h; i++) { if (heightlist[i] < min) { min = heightlist[i]; } }
 
     return min;
 }
@@ -372,24 +283,17 @@ P_FindNextHighestFloor
 //
 // FIND LOWEST CEILING IN THE SURROUNDING SECTORS
 //
-fixed_t
-P_FindLowestCeilingSurrounding(sector_t* sec)
+fixed_t P_FindLowestCeilingSurrounding(sector_t* sec)
 {
-    int i;
-    line_t* check;
-    sector_t* other;
     fixed_t height = INT_MAX;
 
-    for (i = 0; i < sec->linecount; i++)
-    {
-        check = sec->lines[i];
-        other = getNextSector(check, sec);
+    for (int i = 0; i < sec->linecount; i++)
+    { const line_t* check = sec->lines[i];
+        sector_t* other = getNextSector(check, sec);
 
-        if (!other)
-            continue;
+        if (!other) continue;
 
-        if (other->ceilingheight < height)
-            height = other->ceilingheight;
+        if (other->ceilingheight < height) height = other->ceilingheight;
     }
     return height;
 }
@@ -399,21 +303,15 @@ P_FindLowestCeilingSurrounding(sector_t* sec)
 //
 fixed_t P_FindHighestCeilingSurrounding(sector_t* sec)
 {
-    int i;
-    line_t* check;
-    sector_t* other;
     fixed_t height = 0;
 
-    for (i = 0; i < sec->linecount; i++)
-    {
-        check = sec->lines[i];
-        other = getNextSector(check, sec);
+    for (int i = 0; i < sec->linecount; i++)
+    { const line_t* check = sec->lines[i];
+        sector_t* other = getNextSector(check, sec);
 
-        if (!other)
-            continue;
+        if (!other) continue;
 
-        if (other->ceilingheight > height)
-            height = other->ceilingheight;
+        if (other->ceilingheight > height) height = other->ceilingheight;
     }
     return height;
 }
@@ -421,16 +319,9 @@ fixed_t P_FindHighestCeilingSurrounding(sector_t* sec)
 //
 // RETURN NEXT SECTOR # THAT LINE TAG REFERS TO
 //
-int
-P_FindSectorFromLineTag
-    (line_t* line,
-     int start)
+int P_FindSectorFromLineTag(const line_t* line, const int start)
 {
-    int i;
-
-    for (i = start + 1; i < numsectors; i++)
-        if (sectors[i].tag == line->tag)
-            return i;
+    for (int i = start + 1; i < numsectors; i++) if (sectors[i].tag == line->tag) return i;
 
     return -1;
 }
@@ -438,32 +329,19 @@ P_FindSectorFromLineTag
 //
 // Find minimum light from an adjacent sector
 //
-int
-P_FindMinSurroundingLight
-    (sector_t* sector,
-     int max)
+int P_FindMinSurroundingLight(sector_t* sector, const int max)
 {
-    int i;
-    int min;
-    line_t* line;
-    sector_t* check;
+    int min = max;
+    for (int i = 0; i < sector->linecount; i++)
+    { const line_t* line = sector->lines[i];
+        sector_t* check = getNextSector(line, sector);
 
-    min = max;
-    for (i = 0; i < sector->linecount; i++)
-    {
-        line = sector->lines[i];
-        check = getNextSector(line, sector);
+        if (!check) continue;
 
-        if (!check)
-            continue;
-
-        if (check->lightlevel < min)
-            min = check->lightlevel;
+        if (check->lightlevel < min) min = check->lightlevel;
     }
     return min;
 }
-
-
 
 //
 // EVENTS
@@ -476,16 +354,9 @@ P_FindMinSurroundingLight
 // Called every time a thing origin is about
 //  to cross a line with a non 0 special.
 //
-void
-P_CrossSpecialLine
-    (int linenum,
-     int side,
-     mobj_t* thing)
+void P_CrossSpecialLine(const int linenum, const int side, mobj_t* thing)
 {
-    line_t* line;
-    int ok;
-
-    line = &lines[linenum];
+    line_t* line = &lines[linenum];
 
     //	Triggers that other things can activate
     if (!thing->player)
@@ -506,23 +377,21 @@ P_CrossSpecialLine
                 break;
         }
 
-        ok = 0;
+        int ok = 0;
         switch (line->special)
         {
-            case 39:    // TELEPORT TRIGGER
-            case 97:    // TELEPORT RETRIGGER
-            case 125:    // TELEPORT MONSTERONLY TRIGGER
-            case 126:    // TELEPORT MONSTERONLY RETRIGGER
-            case 4:    // RAISE DOOR
-            case 10:    // PLAT DOWN-WAIT-UP-STAY TRIGGER
-            case 88:    // PLAT DOWN-WAIT-UP-STAY RETRIGGER
+            case 39: // TELEPORT TRIGGER
+            case 97: // TELEPORT RETRIGGER
+            case 125: // TELEPORT MONSTERONLY TRIGGER
+            case 126: // TELEPORT MONSTERONLY RETRIGGER
+            case 4: // RAISE DOOR
+            case 10: // PLAT DOWN-WAIT-UP-STAY TRIGGER
+            case 88: // PLAT DOWN-WAIT-UP-STAY RETRIGGER
                 ok = 1;
                 break;
         }
-        if (!ok)
-            return;
+        if (!ok) return;
     }
-
 
     // Note: could use some const's here.
     switch (line->special)
@@ -772,7 +641,7 @@ P_CrossSpecialLine
             line->special = 0;
             break;
 
-            // RETRIGGERS.  All from here till end.
+        // RETRIGGERS.  All from here till end.
         case 72:
             // Ceiling Crush
             EV_DoCeiling(line, lowerAndCrush);
@@ -922,8 +791,7 @@ P_CrossSpecialLine
 
         case 126:
             // TELEPORT MonsterONLY.
-            if (!thing->player)
-                EV_Teleport(line, side, thing);
+            if (!thing->player) EV_Teleport(line, side, thing);
             break;
 
         case 128:
@@ -942,17 +810,12 @@ P_CrossSpecialLine
 // P_ShootSpecialLine - IMPACT SPECIALS
 // Called when a thing shoots a special line.
 //
-void
-P_ShootSpecialLine
-    (mobj_t* thing,
-     line_t* line)
+void P_ShootSpecialLine(const mobj_t* thing, line_t* line)
 {
-    int ok;
-
     //	Impacts that other things can activate.
     if (!thing->player)
     {
-        ok = 0;
+        int ok = 0;
         switch (line->special)
         {
             case 46:
@@ -960,8 +823,7 @@ P_ShootSpecialLine
                 ok = 1;
                 break;
         }
-        if (!ok)
-            return;
+        if (!ok) return;
     }
 
     switch (line->special)
@@ -993,40 +855,31 @@ P_ShootSpecialLine
 //
 void P_PlayerInSpecialSector(player_t* player)
 {
-    sector_t* sector;
-
-    sector = player->mo->subsector->sector;
+    sector_t* sector = player->mo->subsector->sector;
 
     // Falling, not all the way down yet?
-    if (player->mo->z != sector->floorheight)
-        return;
+    if (player->mo->z != sector->floorheight) return;
 
     // Has hitten ground.
     switch (sector->special)
     {
         case 5:
             // HELLSLIME DAMAGE
-            if (!player->powers[pw_ironfeet])
-                if (!(leveltime & 0x1f))
-                    P_DamageMobj(player->mo, NULL, NULL, 10);
+            if (!player->powers[pw_ironfeet]) if (!(leveltime & 0x1f)) P_DamageMobj(player->mo, NULL, NULL, 10);
             break;
 
         case 7:
             // NUKAGE DAMAGE
-            if (!player->powers[pw_ironfeet])
-                if (!(leveltime & 0x1f))
-                    P_DamageMobj(player->mo, NULL, NULL, 5);
+            if (!player->powers[pw_ironfeet]) if (!(leveltime & 0x1f)) P_DamageMobj(player->mo, NULL, NULL, 5);
             break;
 
         case 16:
-            // SUPER HELLSLIME DAMAGE
+        // SUPER HELLSLIME DAMAGE
         case 4:
             // STROBE HURT
-            if (!player->powers[pw_ironfeet]
-                || (P_Random() < 5))
+            if (!player->powers[pw_ironfeet] || P_Random() < 5)
             {
-                if (!(leveltime & 0x1f))
-                    P_DamageMobj(player->mo, NULL, NULL, 20);
+                if (!(leveltime & 0x1f)) P_DamageMobj(player->mo, NULL, NULL, 20);
             }
             break;
 
@@ -1040,17 +893,13 @@ void P_PlayerInSpecialSector(player_t* player)
             // EXIT SUPER DAMAGE! (for E1M8 finale)
             player->cheats &= ~CF_GODMODE;
 
-            if (!(leveltime & 0x1f))
-                P_DamageMobj(player->mo, NULL, NULL, 20);
+            if (!(leveltime & 0x1f)) P_DamageMobj(player->mo, NULL, NULL, 20);
 
-            if (player->health <= 10)
-                G_ExitLevel();
+            if (player->health <= 10) G_ExitLevel();
             break;
 
         default:
-            I_Error("P_PlayerInSpecialSector: "
-                    "unknown special %i",
-                    sector->special);
+            I_Error("P_PlayerInSpecialSector: " "unknown special %i", sector->special);
             break;
     };
 }
@@ -1064,38 +913,28 @@ int levelTimeCount;
 
 void P_UpdateSpecials(void)
 {
-    anim_t* anim;
-    int pic;
     int i;
-    line_t* line;
-
 
     //	LEVEL TIMER
     if (levelTimer == true)
     {
         levelTimeCount--;
-        if (!levelTimeCount)
-            G_ExitLevel();
+        if (!levelTimeCount) G_ExitLevel();
     }
 
     //	ANIMATE FLATS AND TEXTURES GLOBALLY
-    for (anim = anims; anim < lastanim; anim++)
+    for (const anim_t* anim = anims; anim < lastanim; anim++)
     {
         for (i = anim->basepic; i < anim->basepic + anim->numpics; i++)
-        {
-            pic = anim->basepic + ((leveltime / anim->speed + i) % anim->numpics);
-            if (anim->istexture)
-                texturetranslation[i] = pic;
-            else
-                flattranslation[i] = pic;
+        { const int pic = anim->basepic + (leveltime / anim->speed + i) % anim->numpics;
+            if (anim->istexture) texturetranslation[i] = pic;
+            else flattranslation[i] = pic;
         }
     }
 
-
     //	ANIMATE LINE SPECIALS
     for (i = 0; i < numlinespecials; i++)
-    {
-        line = linespeciallist[i];
+    { const line_t* line = linespeciallist[i];
         switch (line->special)
         {
             case 48:
@@ -1104,7 +943,6 @@ void P_UpdateSpecials(void)
                 break;
         }
     }
-
 
     //	DO BUTTONS
     for (i = 0; i < MAXBUTTONS; i++)
@@ -1116,18 +954,15 @@ void P_UpdateSpecials(void)
                 switch (buttonlist[i].where)
                 {
                     case top:
-                        sides[buttonlist[i].line->sidenum[0]].toptexture =
-                            buttonlist[i].btexture;
+                        sides[buttonlist[i].line->sidenum[0]].toptexture = buttonlist[i].btexture;
                         break;
 
                     case middle:
-                        sides[buttonlist[i].line->sidenum[0]].midtexture =
-                            buttonlist[i].btexture;
+                        sides[buttonlist[i].line->sidenum[0]].midtexture = buttonlist[i].btexture;
                         break;
 
                     case bottom:
-                        sides[buttonlist[i].line->sidenum[0]].bottomtexture =
-                            buttonlist[i].btexture;
+                        sides[buttonlist[i].line->sidenum[0]].bottomtexture = buttonlist[i].btexture;
                         break;
                 }
                 S_StartSound(&buttonlist[i].soundorg, sfx_swtchn);
@@ -1135,7 +970,6 @@ void P_UpdateSpecials(void)
             }
         }
 }
-
 
 //
 // Donut overrun emulation
@@ -1147,8 +981,7 @@ void P_UpdateSpecials(void)
 #define DONUT_FLOORHEIGHT_DEFAULT 0x00000000
 #define DONUT_FLOORPIC_DEFAULT 0x16
 
-static void DonutOverrun(fixed_t* s3_floorheight, short* s3_floorpic,
-                         line_t* line, sector_t* pillar_sector)
+static void DonutOverrun(fixed_t* s3_floorheight, short* s3_floorpic, line_t* line, sector_t* pillar_sector)
 {
     static int first = 1;
     static int tmp_s3_floorheight;
@@ -1158,8 +991,6 @@ static void DonutOverrun(fixed_t* s3_floorheight, short* s3_floorpic,
 
     if (first)
     {
-        int p;
-
         // This is the first time we have had an overrun.
         first = 0;
 
@@ -1177,7 +1008,7 @@ static void DonutOverrun(fixed_t* s3_floorheight, short* s3_floorpic,
         // system.  The default (if this option is not specified) is to
         // emulate the behavior when running under Windows 98.
 
-        p = M_CheckParmWithArgs("-donut", 2);
+        const int p = M_CheckParmWithArgs("-donut", 2);
 
         if (p > 0)
         {
@@ -1203,8 +1034,7 @@ static void DonutOverrun(fixed_t* s3_floorheight, short* s3_floorpic,
                 fprintf(stderr,
                         "DonutOverrun: The second parameter for \"-donut\" "
                         "switch should be greater than 0 and less than number "
-                        "of flats (%d). Using default value (%d) instead. \n",
-                        numflats, DONUT_FLOORPIC_DEFAULT);
+                        "of flats (%d). Using default value (%d) instead. \n", numflats, DONUT_FLOORPIC_DEFAULT);
                 tmp_s3_floorpic = DONUT_FLOORPIC_DEFAULT;
             }
         }
@@ -1218,8 +1048,8 @@ static void DonutOverrun(fixed_t* s3_floorheight, short* s3_floorpic,
             tmp_s3_floorheight >> 16, tmp_s3_floorpic);
      */
 
-    *s3_floorheight = (fixed_t) tmp_s3_floorheight;
-    *s3_floorpic = (short) tmp_s3_floorpic;
+    *s3_floorheight = tmp_s3_floorheight;
+    *s3_floorpic = (short)tmp_s3_floorpic;
 }
 
 //
@@ -1227,28 +1057,20 @@ static void DonutOverrun(fixed_t* s3_floorheight, short* s3_floorpic,
 //
 int EV_DoDonut(line_t* line)
 {
-    sector_t* s1;
-    sector_t* s2;
-    sector_t* s3;
-    int secnum;
-    int rtn;
-    int i;
-    floormove_t* floor;
     fixed_t s3_floorheight;
     short s3_floorpic;
 
-    secnum = -1;
-    rtn = 0;
+    int secnum = -1;
+    int rtn = 0;
     while ((secnum = P_FindSectorFromLineTag(line, secnum)) >= 0)
     {
-        s1 = &sectors[secnum];
+        sector_t* s1 = &sectors[secnum];
 
         // ALREADY MOVING?  IF SO, KEEP GOING...
-        if (s1->specialdata)
-            continue;
+        if (s1->specialdata) continue;
 
         rtn = 1;
-        s2 = getNextSector(s1->lines[0], s1);
+        sector_t* s2 = getNextSector(s1->lines[0], s1);
 
         // Vanilla Doom does not check if the linedef is one sided.  The
         // game does not crash, but reads invalid memory and causes the
@@ -1262,17 +1084,14 @@ int EV_DoDonut(line_t* line)
         if (s2 == NULL)
         {
             fprintf(stderr,
-                    "EV_DoDonut: linedef had no second sidedef! "
-                    "Unexpected behavior may occur in Vanilla Doom. \n");
+                    "EV_DoDonut: linedef had no second sidedef! " "Unexpected behavior may occur in Vanilla Doom. \n");
             break;
         }
 
-        for (i = 0; i < s2->linecount; i++)
-        {
-            s3 = s2->lines[i]->backsector;
+        for (int i = 0; i < s2->linecount; i++)
+        { const sector_t* s3 = s2->lines[i]->backsector;
 
-            if (s3 == s1)
-                continue;
+            if (s3 == s1) continue;
 
             if (s3 == NULL)
             {
@@ -1283,22 +1102,22 @@ int EV_DoDonut(line_t* line)
                 // Trying to emulate
 
                 fprintf(stderr,
-                        "EV_DoDonut: WARNING: emulating buffer overrun due to "
-                        "NULL back sector. "
+                        "EV_DoDonut: WARNING: emulating buffer overrun due to " "NULL back sector. "
                         "Unexpected behavior may occur in Vanilla Doom.\n");
 
                 DonutOverrun(&s3_floorheight, &s3_floorpic, line, s1);
-            } else
+            }
+            else
             {
                 s3_floorheight = s3->floorheight;
                 s3_floorpic = s3->floorpic;
             }
 
             //	Spawn rising slime
-            floor = Z_Malloc(sizeof(*floor), PU_LEVSPEC, 0);
+            floormove_t* floor = Z_Malloc(sizeof(*floor), PU_LEVSPEC, 0);
             P_AddThinker(&floor->thinker);
             s2->specialdata = floor;
-            floor->thinker.function.acp1 = (actionf_p1) T_MoveFloor;
+            floor->thinker.function.acp1 = (actionf_p1)T_MoveFloor;
             floor->type = donutRaise;
             floor->crush = false;
             floor->direction = 1;
@@ -1312,7 +1131,7 @@ int EV_DoDonut(line_t* line)
             floor = Z_Malloc(sizeof(*floor), PU_LEVSPEC, 0);
             P_AddThinker(&floor->thinker);
             s1->specialdata = floor;
-            floor->thinker.function.acp1 = (actionf_p1) T_MoveFloor;
+            floor->thinker.function.acp1 = (actionf_p1)T_MoveFloor;
             floor->type = lowerFloor;
             floor->crush = false;
             floor->direction = -1;
@@ -1324,8 +1143,6 @@ int EV_DoDonut(line_t* line)
     }
     return rtn;
 }
-
-
 
 //
 // SPECIAL SPAWNING
@@ -1342,7 +1159,6 @@ line_t* linespeciallist[MAXLINEANIMS];
 // Parses command line parameters.
 void P_SpawnSpecials(void)
 {
-    sector_t* sector;
     int i;
 
     // See if -TIMER was specified.
@@ -1351,17 +1167,14 @@ void P_SpawnSpecials(void)
     {
         levelTimer = true;
         levelTimeCount = timelimit * 60 * TICRATE;
-    } else
-    {
-        levelTimer = false;
     }
+    else { levelTimer = false; }
 
     //	Init special SECTORs.
-    sector = sectors;
+    sector_t* sector = sectors;
     for (i = 0; i < numsectors; i++, sector++)
     {
-        if (!sector->special)
-            continue;
+        if (!sector->special) continue;
 
         switch (sector->special)
         {
@@ -1421,7 +1234,6 @@ void P_SpawnSpecials(void)
         }
     }
 
-
     //	Init line EFFECTs
     numlinespecials = 0;
     for (i = 0; i < numlines; i++)
@@ -1431,8 +1243,7 @@ void P_SpawnSpecials(void)
             case 48:
                 if (numlinespecials >= MAXLINEANIMS)
                 {
-                    I_Error("Too many scrolling wall linedefs! "
-                            "(Vanilla limit is 64)");
+                    I_Error("Too many scrolling wall linedefs! " "(Vanilla limit is 64)");
                 }
                 // EFFECT FIRSTCOL SCROLL+
                 linespeciallist[numlinespecials] = &lines[i];
@@ -1441,16 +1252,12 @@ void P_SpawnSpecials(void)
         }
     }
 
-
     //	Init other misc stuff
-    for (i = 0; i < MAXCEILINGS; i++)
-        activeceilings[i] = NULL;
+    for (i = 0; i < MAXCEILINGS; i++) activeceilings[i] = NULL;
 
-    for (i = 0; i < MAXPLATS; i++)
-        activeplats[i] = NULL;
+    for (i = 0; i < MAXPLATS; i++) activeplats[i] = NULL;
 
-    for (i = 0; i < MAXBUTTONS; i++)
-        memset(&buttonlist[i], 0, sizeof(button_t));
+    for (i = 0; i < MAXBUTTONS; i++) memset(&buttonlist[i], 0, sizeof(button_t));
 
     // UNUSED: no horizonal sliders.
     //	P_InitSlidingDoorFrames();

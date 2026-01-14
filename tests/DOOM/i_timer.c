@@ -26,7 +26,6 @@
 //#include <sys/time.h>
 //#include <unistd.h>
 
-
 //
 // I_GetTime
 // returns time in 1/35th second tics
@@ -34,25 +33,18 @@
 
 static uint32_t basetime = 0;
 
-int I_GetTicks(void)
-{
-    return DG_GetTicksMs();
-}
+int I_GetTicks(void) { return DG_GetTicksMs(); }
 
 int I_GetTime(void)
 {
-    uint32_t ticks;
+    uint32_t ticks = I_GetTicks();
 
-    ticks = I_GetTicks();
-
-    if (basetime == 0)
-        basetime = ticks;
+    if (basetime == 0) basetime = ticks;
 
     ticks -= basetime;
 
-    return (ticks * TICRATE) / 1000;
+    return ticks * TICRATE / 1000;
 }
-
 
 //
 // Same as I_GetTime, but returns time in milliseconds
@@ -60,19 +52,16 @@ int I_GetTime(void)
 
 int I_GetTimeMS(void)
 {
-    uint32_t ticks;
+    const uint32_t ticks = I_GetTicks();
 
-    ticks = I_GetTicks();
-
-    if (basetime == 0)
-        basetime = ticks;
+    if (basetime == 0) basetime = ticks;
 
     return ticks - basetime;
 }
 
 // Sleep for a specified number of ms
 
-void I_Sleep(int ms)
+void I_Sleep(const int ms)
 {
     //SDL_Delay(ms);
     //usleep (ms * 1000);
@@ -91,4 +80,3 @@ void I_InitTimer(void)
 
     //SDL_Init(SDL_INIT_TIMER);
 }
-

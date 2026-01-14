@@ -67,7 +67,7 @@ static vpatchclipfunc_t patchclip_callback = NULL;
 //
 // V_MarkRect
 //
-void V_MarkRect(int x, int y, int width, int height)
+void V_MarkRect(const int x, const int y, const int width, const int height)
 {
     // If we are temporarily using an alternate screen, do not
     // affect the update box.
@@ -82,25 +82,15 @@ void V_MarkRect(int x, int y, int width, int height)
 //
 // V_CopyRect
 //
-void V_CopyRect(int srcx, int srcy, byte* source,
-                int width, int height,
-                int destx, int desty)
+void V_CopyRect(const int srcx, const int srcy, byte* source, const int width, int height, const int destx,
+                const int desty)
 {
     byte* src;
     byte* dest;
 
 #ifdef RANGECHECK
-    if (srcx < 0
-        || srcx + width > SCREENWIDTH
-        || srcy < 0
-        || srcy + height > SCREENHEIGHT
-        || destx < 0
-        || destx + width > SCREENWIDTH
-        || desty < 0
-        || desty + height > SCREENHEIGHT)
-    {
-        I_Error("Bad V_CopyRect");
-    }
+    if (srcx < 0 || srcx + width > SCREENWIDTH || srcy < 0 || srcy + height > SCREENHEIGHT || destx < 0 || destx + width
+        > SCREENWIDTH || desty < 0 || desty + height > SCREENHEIGHT) { I_Error("Bad V_CopyRect"); }
 #endif
 
     V_MarkRect(destx, desty, width, height);
@@ -126,10 +116,7 @@ void V_CopyRect(int srcx, int srcy, byte* source,
 // implementation, so this could possibly be extended to those as well for
 // accurate emulation.
 //
-void V_SetPatchClipCallback(vpatchclipfunc_t func)
-{
-    patchclip_callback = func;
-}
+void V_SetPatchClipCallback(const vpatchclipfunc_t func) { patchclip_callback = func; }
 
 //
 // V_DrawPatch
@@ -150,17 +137,10 @@ void V_DrawPatch(int x, int y, patch_t* patch)
     x -= SHORT(patch->leftoffset);
 
     // haleyjd 08/28/10: Strife needs silent error checking here.
-    if (patchclip_callback)
-    {
-        if (!patchclip_callback(patch, x, y))
-            return;
-    }
+    if (patchclip_callback) { if (!patchclip_callback(patch, x, y)) return; }
 
 #ifdef RANGECHECK
-    if (x < 0
-        || x + SHORT(patch->width) > SCREENWIDTH
-        || y < 0
-        || y + SHORT(patch->height) > SCREENHEIGHT)
+    if (x < 0 || x + SHORT(patch->width) > SCREENWIDTH || y < 0 || y + SHORT(patch->height) > SCREENHEIGHT)
     {
         I_Error("Bad V_DrawPatch x=%i y=%i patch.width=%i patch.height=%i topoffset=%i leftoffset=%i", x, y,
                 patch->width, patch->height, patch->topoffset, patch->leftoffset);
@@ -176,12 +156,12 @@ void V_DrawPatch(int x, int y, patch_t* patch)
 
     for (; col < w; x++, col++, desttop++)
     {
-        column = (column_t*) ((byte*) patch + LONG(patch->columnofs[col]));
+        column = (column_t*)((byte*)patch + LONG(patch->columnofs[col]));
 
         // step through the posts in a column
         while (column->topdelta != 0xff)
         {
-            source = (byte*) column + 3;
+            source = (byte*)column + 3;
             dest = desttop + column->topdelta * SCREENWIDTH;
             count = column->length;
 
@@ -190,7 +170,7 @@ void V_DrawPatch(int x, int y, patch_t* patch)
                 *dest = *source++;
                 dest += SCREENWIDTH;
             }
-            column = (column_t*) ((byte*) column + column->length + 4);
+            column = (column_t*)((byte*)column + column->length + 4);
         }
     }
 }
@@ -215,17 +195,10 @@ void V_DrawPatchFlipped(int x, int y, patch_t* patch)
     x -= SHORT(patch->leftoffset);
 
     // haleyjd 08/28/10: Strife needs silent error checking here.
-    if (patchclip_callback)
-    {
-        if (!patchclip_callback(patch, x, y))
-            return;
-    }
+    if (patchclip_callback) { if (!patchclip_callback(patch, x, y)) return; }
 
 #ifdef RANGECHECK
-    if (x < 0
-        || x + SHORT(patch->width) > SCREENWIDTH
-        || y < 0
-        || y + SHORT(patch->height) > SCREENHEIGHT)
+    if (x < 0 || x + SHORT(patch->width) > SCREENWIDTH || y < 0 || y + SHORT(patch->height) > SCREENHEIGHT)
     {
         I_Error("Bad V_DrawPatchFlipped");
     }
@@ -240,12 +213,12 @@ void V_DrawPatchFlipped(int x, int y, patch_t* patch)
 
     for (; col < w; x++, col++, desttop++)
     {
-        column = (column_t*) ((byte*) patch + LONG(patch->columnofs[w - 1 - col]));
+        column = (column_t*)((byte*)patch + LONG(patch->columnofs[w - 1 - col]));
 
         // step through the posts in a column
         while (column->topdelta != 0xff)
         {
-            source = (byte*) column + 3;
+            source = (byte*)column + 3;
             dest = desttop + column->topdelta * SCREENWIDTH;
             count = column->length;
 
@@ -254,22 +227,17 @@ void V_DrawPatchFlipped(int x, int y, patch_t* patch)
                 *dest = *source++;
                 dest += SCREENWIDTH;
             }
-            column = (column_t*) ((byte*) column + column->length + 4);
+            column = (column_t*)((byte*)column + column->length + 4);
         }
     }
 }
-
-
 
 //
 // V_DrawPatchDirect
 // Draws directly to the screen on the pc.
 //
 
-void V_DrawPatchDirect(int x, int y, patch_t* patch)
-{
-    V_DrawPatch(x, y, patch);
-}
+void V_DrawPatchDirect(const int x, const int y, patch_t* patch) { V_DrawPatch(x, y, patch); }
 
 //
 // V_DrawTLPatch
@@ -279,44 +247,35 @@ void V_DrawPatchDirect(int x, int y, patch_t* patch)
 
 void V_DrawTLPatch(int x, int y, patch_t* patch)
 {
-    int count, col;
-    column_t* column;
-    byte* desttop, * dest, * source;
-    int w;
-
     y -= SHORT(patch->topoffset);
     x -= SHORT(patch->leftoffset);
 
-    if (x < 0
-        || x + SHORT(patch->width) > SCREENWIDTH
-        || y < 0
-        || y + SHORT(patch->height) > SCREENHEIGHT)
+    if (x < 0 || x + SHORT(patch->width) > SCREENWIDTH || y < 0 || y + SHORT(patch->height) > SCREENHEIGHT)
     {
         I_Error("Bad V_DrawTLPatch");
     }
 
-    col = 0;
-    desttop = dest_screen + y * SCREENWIDTH + x;
+    int col = 0;
+    byte* desttop = dest_screen + y * SCREENWIDTH + x;
 
-    w = SHORT(patch->width);
+    const int w = SHORT(patch->width);
     for (; col < w; x++, col++, desttop++)
     {
-        column = (column_t*) ((byte*) patch + LONG(patch->columnofs[col]));
+        column_t* column = (column_t*)((byte*)patch + LONG(patch->columnofs[col]));
 
         // step through the posts in a column
 
         while (column->topdelta != 0xff)
-        {
-            source = (byte*) column + 3;
-            dest = desttop + column->topdelta * SCREENWIDTH;
-            count = column->length;
+        { const byte* source = (byte*)column + 3;
+            byte* dest = desttop + column->topdelta * SCREENWIDTH;
+            int count = column->length;
 
             while (count--)
             {
-                *dest = tinttable[((*dest) << 8) + *source++];
+                *dest = tinttable[(*dest << 8) + *source++];
                 dest += SCREENWIDTH;
             }
-            column = (column_t*) ((byte*) column + column->length + 4);
+            column = (column_t*)((byte*)column + column->length + 4);
         }
     }
 }
@@ -329,43 +288,33 @@ void V_DrawTLPatch(int x, int y, patch_t* patch)
 
 void V_DrawXlaPatch(int x, int y, patch_t* patch)
 {
-    int count, col;
-    column_t* column;
-    byte* desttop, * dest, * source;
-    int w;
-
     y -= SHORT(patch->topoffset);
     x -= SHORT(patch->leftoffset);
 
-    if (patchclip_callback)
-    {
-        if (!patchclip_callback(patch, x, y))
-            return;
-    }
+    if (patchclip_callback) { if (!patchclip_callback(patch, x, y)) return; }
 
-    col = 0;
-    desttop = dest_screen + y * SCREENWIDTH + x;
+    int col = 0;
+    byte* desttop = dest_screen + y * SCREENWIDTH + x;
 
-    w = SHORT(patch->width);
+    const int w = SHORT(patch->width);
     for (; col < w; x++, col++, desttop++)
     {
-        column = (column_t*) ((byte*) patch + LONG(patch->columnofs[col]));
+        column_t* column = (column_t*)((byte*)patch + LONG(patch->columnofs[col]));
 
         // step through the posts in a column
 
         while (column->topdelta != 0xff)
-        {
-            source = (byte*) column + 3;
-            dest = desttop + column->topdelta * SCREENWIDTH;
-            count = column->length;
+        { const byte* source = (byte*)column + 3;
+            byte* dest = desttop + column->topdelta * SCREENWIDTH;
+            int count = column->length;
 
             while (count--)
             {
-                *dest = xlatab[*dest + ((*source) << 8)];
+                *dest = xlatab[*dest + (*source << 8)];
                 source++;
                 dest += SCREENWIDTH;
             }
-            column = (column_t*) ((byte*) column + column->length + 4);
+            column = (column_t*)((byte*)column + column->length + 4);
         }
     }
 }
@@ -378,44 +327,35 @@ void V_DrawXlaPatch(int x, int y, patch_t* patch)
 
 void V_DrawAltTLPatch(int x, int y, patch_t* patch)
 {
-    int count, col;
-    column_t* column;
-    byte* desttop, * dest, * source;
-    int w;
-
     y -= SHORT(patch->topoffset);
     x -= SHORT(patch->leftoffset);
 
-    if (x < 0
-        || x + SHORT(patch->width) > SCREENWIDTH
-        || y < 0
-        || y + SHORT(patch->height) > SCREENHEIGHT)
+    if (x < 0 || x + SHORT(patch->width) > SCREENWIDTH || y < 0 || y + SHORT(patch->height) > SCREENHEIGHT)
     {
         I_Error("Bad V_DrawAltTLPatch");
     }
 
-    col = 0;
-    desttop = dest_screen + y * SCREENWIDTH + x;
+    int col = 0;
+    byte* desttop = dest_screen + y * SCREENWIDTH + x;
 
-    w = SHORT(patch->width);
+    const int w = SHORT(patch->width);
     for (; col < w; x++, col++, desttop++)
     {
-        column = (column_t*) ((byte*) patch + LONG(patch->columnofs[col]));
+        column_t* column = (column_t*)((byte*)patch + LONG(patch->columnofs[col]));
 
         // step through the posts in a column
 
         while (column->topdelta != 0xff)
-        {
-            source = (byte*) column + 3;
-            dest = desttop + column->topdelta * SCREENWIDTH;
-            count = column->length;
+        { const byte* source = (byte*)column + 3;
+            byte* dest = desttop + column->topdelta * SCREENWIDTH;
+            int count = column->length;
 
             while (count--)
             {
-                *dest = tinttable[((*dest) << 8) + *source++];
+                *dest = tinttable[(*dest << 8) + *source++];
                 dest += SCREENWIDTH;
             }
-            column = (column_t*) ((byte*) column + column->length + 4);
+            column = (column_t*)((byte*)column + column->length + 4);
         }
     }
 }
@@ -428,50 +368,39 @@ void V_DrawAltTLPatch(int x, int y, patch_t* patch)
 
 void V_DrawShadowedPatch(int x, int y, patch_t* patch)
 {
-    int count, col;
-    column_t* column;
-    byte* desttop, * dest, * source;
-    byte* desttop2, * dest2;
-    int w;
-
     y -= SHORT(patch->topoffset);
     x -= SHORT(patch->leftoffset);
 
-    if (x < 0
-        || x + SHORT(patch->width) > SCREENWIDTH
-        || y < 0
-        || y + SHORT(patch->height) > SCREENHEIGHT)
+    if (x < 0 || x + SHORT(patch->width) > SCREENWIDTH || y < 0 || y + SHORT(patch->height) > SCREENHEIGHT)
     {
         I_Error("Bad V_DrawShadowedPatch");
     }
 
-    col = 0;
-    desttop = dest_screen + y * SCREENWIDTH + x;
-    desttop2 = dest_screen + (y + 2) * SCREENWIDTH + x + 2;
+    int col = 0;
+    byte* desttop = dest_screen + y * SCREENWIDTH + x;
+    byte* desttop2 = dest_screen + (y + 2) * SCREENWIDTH + x + 2;
 
-    w = SHORT(patch->width);
+    const int w = SHORT(patch->width);
     for (; col < w; x++, col++, desttop++, desttop2++)
     {
-        column = (column_t*) ((byte*) patch + LONG(patch->columnofs[col]));
+        column_t* column = (column_t*)((byte*)patch + LONG(patch->columnofs[col]));
 
         // step through the posts in a column
 
         while (column->topdelta != 0xff)
-        {
-            source = (byte*) column + 3;
-            dest = desttop + column->topdelta * SCREENWIDTH;
-            dest2 = desttop2 + column->topdelta * SCREENWIDTH;
-            count = column->length;
+        { const byte* source = (byte*)column + 3;
+            byte* dest = desttop + column->topdelta * SCREENWIDTH;
+            byte* dest2 = desttop2 + column->topdelta * SCREENWIDTH;
+            int count = column->length;
 
             while (count--)
             {
-                *dest2 = tinttable[((*dest2) << 8)];
+                *dest2 = tinttable[(*dest2 << 8)];
                 dest2 += SCREENWIDTH;
                 *dest = *source++;
                 dest += SCREENWIDTH;
-
             }
-            column = (column_t*) ((byte*) column + column->length + 4);
+            column = (column_t*)((byte*)column + column->length + 4);
         }
     }
 }
@@ -480,10 +409,7 @@ void V_DrawShadowedPatch(int x, int y, patch_t* patch)
 // Load tint table from TINTTAB lump.
 //
 
-void V_LoadTintTable(void)
-{
-    tinttable = W_CacheLumpName("TINTTAB", PU_STATIC);
-}
+void V_LoadTintTable(void) { tinttable = W_CacheLumpName("TINTTAB", PU_STATIC); }
 
 //
 // V_LoadXlaTable
@@ -491,28 +417,19 @@ void V_LoadTintTable(void)
 // villsa [STRIFE] Load xla table from XLATAB lump.
 //
 
-void V_LoadXlaTable(void)
-{
-    xlatab = W_CacheLumpName("XLATAB", PU_STATIC);
-}
+void V_LoadXlaTable(void) { xlatab = W_CacheLumpName("XLATAB", PU_STATIC); }
 
 //
 // V_DrawBlock
 // Draw a linear block of pixels into the view buffer.
 //
 
-void V_DrawBlock(int x, int y, int width, int height, byte* src)
+void V_DrawBlock(const int x, const int y, const int width, int height, const byte* src)
 {
     byte* dest;
 
 #ifdef RANGECHECK
-    if (x < 0
-        || x + width > SCREENWIDTH
-        || y < 0
-        || y + height > SCREENHEIGHT)
-    {
-        I_Error("Bad V_DrawBlock");
-    }
+    if (x < 0 || x + width > SCREENWIDTH || y < 0 || y + height > SCREENHEIGHT) { I_Error("Bad V_DrawBlock"); }
 #endif
 
     V_MarkRect(x, y, width, height);
@@ -527,54 +444,39 @@ void V_DrawBlock(int x, int y, int width, int height, byte* src)
     }
 }
 
-void V_DrawFilledBox(int x, int y, int w, int h, int c)
+void V_DrawFilledBox(const int x, const int y, const int w, const int h, const int c)
 {
-    uint8_t* buf, * buf1;
-    int x1, y1;
+    uint8_t* buf = I_VideoBuffer + SCREENWIDTH * y + x;
 
-    buf = I_VideoBuffer + SCREENWIDTH * y + x;
-
-    for (y1 = 0; y1 < h; ++y1)
+    for (int y1 = 0; y1 < h; ++y1)
     {
-        buf1 = buf;
+        uint8_t* buf1 = buf;
 
-        for (x1 = 0; x1 < w; ++x1)
-        {
-            *buf1++ = c;
-        }
+        for (int x1 = 0; x1 < w; ++x1) { *buf1++ = c; }
 
         buf += SCREENWIDTH;
     }
 }
 
-void V_DrawHorizLine(int x, int y, int w, int c)
+void V_DrawHorizLine(const int x, const int y, const int w, const int c)
 {
-    uint8_t* buf;
-    int x1;
+    uint8_t* buf = I_VideoBuffer + SCREENWIDTH * y + x;
 
-    buf = I_VideoBuffer + SCREENWIDTH * y + x;
-
-    for (x1 = 0; x1 < w; ++x1)
-    {
-        *buf++ = c;
-    }
+    for (int x1 = 0; x1 < w; ++x1) { *buf++ = c; }
 }
 
-void V_DrawVertLine(int x, int y, int h, int c)
+void V_DrawVertLine(const int x, const int y, const int h, const int c)
 {
-    uint8_t* buf;
-    int y1;
+    uint8_t* buf = I_VideoBuffer + SCREENWIDTH * y + x;
 
-    buf = I_VideoBuffer + SCREENWIDTH * y + x;
-
-    for (y1 = 0; y1 < h; ++y1)
+    for (int y1 = 0; y1 < h; ++y1)
     {
         *buf = c;
         buf += SCREENWIDTH;
     }
 }
 
-void V_DrawBox(int x, int y, int w, int h, int c)
+void V_DrawBox(const int x, const int y, const int w, const int h, const int c)
 {
     V_DrawHorizLine(x, y, w, c);
     V_DrawHorizLine(x, y + h - 1, w, c);
@@ -587,10 +489,7 @@ void V_DrawBox(int x, int y, int w, int h, int c)
 // to the screen)
 //
 
-void V_DrawRawScreen(byte* raw)
-{
-    memcpy(dest_screen, raw, SCREENWIDTH * SCREENHEIGHT);
-}
+void V_DrawRawScreen(const byte* raw) { memcpy(dest_screen, raw, SCREENWIDTH * SCREENHEIGHT); }
 
 //
 // V_Init
@@ -604,17 +503,11 @@ void V_Init(void)
 
 // Set the buffer that the code draws to.
 
-void V_UseBuffer(byte* buffer)
-{
-    dest_screen = buffer;
-}
+void V_UseBuffer(byte* buffer) { dest_screen = buffer; }
 
 // Restore screen buffer to the i_video screen buffer.
 
-void V_RestoreBuffer(void)
-{
-    dest_screen = I_VideoBuffer;
-}
+void V_RestoreBuffer(void) { dest_screen = I_VideoBuffer; }
 
 //
 // SCREEN SHOTS
@@ -643,29 +536,25 @@ typedef struct
     unsigned short palette_type;
 
     char filler[58];
-    unsigned char data;        // unbounded
-} PACKEDATTR pcx_t;
+    unsigned char data; // unbounded
+}
 
+PACKEDATTR pcx_t;
 
 //
 // WritePCXfile
 //
 
-void WritePCXfile(char* filename, byte* data,
-                  int width, int height,
-                  byte* palette)
+void WritePCXfile(char* filename, const byte* data, const int width, const int height, const byte* palette)
 {
     int i;
-    int length;
-    pcx_t* pcx;
-    byte* pack;
 
-    pcx = Z_Malloc(width * height * 2 + 1000, PU_STATIC, NULL);
+    pcx_t * pcx = Z_Malloc(width * height * 2 + 1000, PU_STATIC, NULL);
 
-    pcx->manufacturer = 0x0a;        // PCX id
-    pcx->version = 5;            // 256 color
-    pcx->encoding = 1;            // uncompressed
-    pcx->bits_per_pixel = 8;        // 256 color
+    pcx->manufacturer = 0x0a; // PCX id
+    pcx->version = 5; // 256 color
+    pcx->encoding = 1; // uncompressed
+    pcx->bits_per_pixel = 8; // 256 color
     pcx->xmin = 0;
     pcx->ymin = 0;
     pcx->xmax = SHORT(width - 1);
@@ -673,18 +562,17 @@ void WritePCXfile(char* filename, byte* data,
     pcx->hres = SHORT(width);
     pcx->vres = SHORT(height);
     memset(pcx->palette, 0, sizeof(pcx->palette));
-    pcx->color_planes = 1;        // chunky image
+    pcx->color_planes = 1; // chunky image
     pcx->bytes_per_line = SHORT(width);
-    pcx->palette_type = SHORT(2);    // not a grey scale
+    pcx->palette_type = SHORT(2); // not a grey scale
     memset(pcx->filler, 0, sizeof(pcx->filler));
 
     // pack the image
-    pack = &pcx->data;
+    byte* pack = &pcx->data;
 
     for (i = 0; i < width * height; i++)
     {
-        if ((*data & 0xc0) != 0xc0)
-            *pack++ = *data++;
+        if ((*data & 0xc0) != 0xc0) *pack++ = *data++;
         else
         {
             *pack++ = 0xc1;
@@ -693,12 +581,11 @@ void WritePCXfile(char* filename, byte* data,
     }
 
     // write the palette
-    *pack++ = 0x0c;    // palette ID byte
-    for (i = 0; i < 768; i++)
-        *pack++ = *palette++;
+    *pack++ = 0x0c; // palette ID byte
+    for (i = 0; i < 768; i++) *pack++ = *palette++;
 
     // write output file
-    length = pack - (byte*) pcx;
+    const int length = pack - (byte*)pcx;
     M_WriteFile(filename, pcx, length);
 
     Z_Free(pcx);
@@ -709,38 +596,21 @@ void WritePCXfile(char* filename, byte* data,
 // WritePNGfile
 //
 
-static void error_fn(png_structp p, png_const_charp s)
-{
-    printf("libpng error: %s\n", s);
-}
-
-static void warning_fn(png_structp p, png_const_charp s)
-{
-    printf("libpng warning: %s\n", s);
-}
-
-void WritePNGfile(char *filename, byte *data,
-                  int width, int height,
-                  byte *palette)
+static void error_fn(png_structp p, png_const_charp s) { printf("libpng error: %s\n", s); }static void
+warning_fn(png_structp p, png_const_charp s) { printf("libpng warning: %s\n", s); }void WritePNGfile(
+    char* filename, byte* data, int width, int height, byte* palette)
 {
     png_structp ppng;
     png_infop pinfo;
     png_colorp pcolor;
-    FILE *handle;
+    FILE* handle;
     int i;
 
     handle = fopen(filename, "wb");
-    if (!handle)
-    {
-        return;
-    }
+    if (!handle) { return; }
 
-    ppng = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL,
-                                   error_fn, warning_fn);
-    if (!ppng)
-    {
-        return;
-    }
+    ppng = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, error_fn, warning_fn);
+    if (!ppng) { return; }
 
     pinfo = png_create_info_struct(ppng);
     if (!pinfo)
@@ -751,8 +621,7 @@ void WritePNGfile(char *filename, byte *data,
 
     png_init_io(ppng, handle);
 
-    png_set_IHDR(ppng, pinfo, width, height,
-                 8, PNG_COLOR_TYPE_PALETTE, PNG_INTERLACE_NONE,
+    png_set_IHDR(ppng, pinfo, width, height, 8, PNG_COLOR_TYPE_PALETTE, PNG_INTERLACE_NONE,
                  PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
     pcolor = malloc(sizeof(*pcolor) * 256);
@@ -764,9 +633,9 @@ void WritePNGfile(char *filename, byte *data,
 
     for (i = 0; i < 256; i++)
     {
-        pcolor[i].red   = *(palette + 3 * i);
+        pcolor[i].red = *(palette + 3 * i);
         pcolor[i].green = *(palette + 3 * i + 1);
-        pcolor[i].blue  = *(palette + 3 * i + 2);
+        pcolor[i].blue = *(palette + 3 * i + 2);
     }
 
     png_set_PLTE(ppng, pinfo, pcolor, 256);
@@ -774,10 +643,7 @@ void WritePNGfile(char *filename, byte *data,
 
     png_write_info(ppng, pinfo);
 
-    for (i = 0; i < SCREENHEIGHT; i++)
-    {
-        png_write_row(ppng, data + i*SCREENWIDTH);
-    }
+    for (i = 0; i < SCREENHEIGHT; i++) { png_write_row(ppng, data + i * SCREENWIDTH); }
 
     png_write_end(ppng, pinfo);
     png_destroy_write_struct(&ppng, &pinfo);
@@ -789,7 +655,7 @@ void WritePNGfile(char *filename, byte *data,
 // V_ScreenShot
 //
 
-void V_ScreenShot(char* format)
+void V_ScreenShot(const char* format)
 {
     int i;
     char lbmname[16]; // haleyjd 20110213: BUG FIX - 12 is too small!
@@ -798,11 +664,7 @@ void V_ScreenShot(char* format)
     // find a file name to save it to
 
 #ifdef HAVE_LIBPNG
-    extern int png_screenshots;
-    if (png_screenshots)
-    {
-        ext = "png";
-    }
+    extern int png_screenshots; if (png_screenshots) { ext = "png"; }
     else
 #endif
     {
@@ -815,28 +677,23 @@ void V_ScreenShot(char* format)
 
         if (!M_FileExists(lbmname))
         {
-            break;      // file doesn't exist
+            break; // file doesn't exist
         }
     }
 
-    if (i == 100)
-    {
-        I_Error("V_ScreenShot: Couldn't create a PCX");
-    }
+    if (i == 100) { I_Error("V_ScreenShot: Couldn't create a PCX"); }
 
 #ifdef HAVE_LIBPNG
     if (png_screenshots)
     {
-    WritePNGfile(lbmname, I_VideoBuffer,
-                 SCREENWIDTH, SCREENHEIGHT,
-                 W_CacheLumpName (DEH_String("PLAYPAL"), PU_CACHE));
+        WritePNGfile(lbmname, I_VideoBuffer, SCREENWIDTH, SCREENHEIGHT,
+                     W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
     }
     else
 #endif
     {
         // save the pcx file
-        WritePCXfile(lbmname, I_VideoBuffer,
-                     SCREENWIDTH, SCREENHEIGHT,
+        WritePCXfile(lbmname, I_VideoBuffer, SCREENWIDTH, SCREENHEIGHT,
                      W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE));
     }
 }
@@ -844,88 +701,67 @@ void V_ScreenShot(char* format)
 #define MOUSE_SPEED_BOX_WIDTH  120
 #define MOUSE_SPEED_BOX_HEIGHT 9
 
-void V_DrawMouseSpeedBox(int speed)
+void V_DrawMouseSpeedBox(const int speed)
 {
     extern int usemouse;
-    int bgcolor, bordercolor, red, black, white, yellow;
-    int box_x, box_y;
     int original_speed;
-    int redline_x;
-    int linelen;
 
     // Get palette indices for colors for widget. These depend on the
     // palette of the game being played.
 
-    bgcolor = I_GetPaletteIndex(0x77, 0x77, 0x77);
-    bordercolor = I_GetPaletteIndex(0x55, 0x55, 0x55);
-    red = I_GetPaletteIndex(0xff, 0x00, 0x00);
-    black = I_GetPaletteIndex(0x00, 0x00, 0x00);
-    yellow = I_GetPaletteIndex(0xff, 0xff, 0x00);
-    white = I_GetPaletteIndex(0xff, 0xff, 0xff);
+    const int bgcolor = I_GetPaletteIndex(0x77, 0x77, 0x77);
+    const int bordercolor = I_GetPaletteIndex(0x55, 0x55, 0x55);
+    const int red = I_GetPaletteIndex(0xff, 0x00, 0x00);
+    const int black = I_GetPaletteIndex(0x00, 0x00, 0x00);
+    const int yellow = I_GetPaletteIndex(0xff, 0xff, 0x00);
+    const int white = I_GetPaletteIndex(0xff, 0xff, 0xff);
 
     // If the mouse is turned off or acceleration is turned off, don't
     // draw the box at all.
 
-    if (!usemouse || fabs(mouse_acceleration - 1) < 0.01)
-    {
-        return;
-    }
+    if (!usemouse || fabs(mouse_acceleration - 1) < 0.01) { return; }
 
     // Calculate box position
 
-    box_x = SCREENWIDTH - MOUSE_SPEED_BOX_WIDTH - 10;
-    box_y = 15;
+    const int box_x = SCREENWIDTH - MOUSE_SPEED_BOX_WIDTH - 10;
+    const int box_y = 15;
 
-    V_DrawFilledBox(box_x, box_y,
-                    MOUSE_SPEED_BOX_WIDTH, MOUSE_SPEED_BOX_HEIGHT, bgcolor);
-    V_DrawBox(box_x, box_y,
-              MOUSE_SPEED_BOX_WIDTH, MOUSE_SPEED_BOX_HEIGHT, bordercolor);
+    V_DrawFilledBox(box_x, box_y, MOUSE_SPEED_BOX_WIDTH, MOUSE_SPEED_BOX_HEIGHT, bgcolor);
+    V_DrawBox(box_x, box_y, MOUSE_SPEED_BOX_WIDTH, MOUSE_SPEED_BOX_HEIGHT, bordercolor);
 
     // Calculate the position of the red line.  This is 1/3 of the way
     // along the box.
 
-    redline_x = MOUSE_SPEED_BOX_WIDTH / 3;
+    const int redline_x = MOUSE_SPEED_BOX_WIDTH / 3;
 
     // Undo acceleration and get back the original mouse speed
 
-    if (speed < mouse_threshold)
-    {
-        original_speed = speed;
-    } else
+    if (speed < mouse_threshold) { original_speed = speed; }
+    else
     {
         original_speed = speed - mouse_threshold;
-        original_speed = (int) (original_speed / mouse_acceleration);
+        original_speed = (int)(original_speed / mouse_acceleration);
         original_speed += mouse_threshold;
     }
 
     // Calculate line length
 
-    linelen = (original_speed * redline_x) / mouse_threshold;
+    int linelen = original_speed * redline_x / mouse_threshold;
 
     // Draw horizontal "thermometer"
 
-    if (linelen > MOUSE_SPEED_BOX_WIDTH - 1)
-    {
-        linelen = MOUSE_SPEED_BOX_WIDTH - 1;
-    }
+    if (linelen > MOUSE_SPEED_BOX_WIDTH - 1) { linelen = MOUSE_SPEED_BOX_WIDTH - 1; }
 
     V_DrawHorizLine(box_x + 1, box_y + 4, MOUSE_SPEED_BOX_WIDTH - 2, black);
 
-    if (linelen < redline_x)
+    if (linelen < redline_x) { V_DrawHorizLine(box_x + 1, box_y + MOUSE_SPEED_BOX_HEIGHT / 2, linelen, white); }
+    else
     {
-        V_DrawHorizLine(box_x + 1, box_y + MOUSE_SPEED_BOX_HEIGHT / 2,
-                        linelen, white);
-    } else
-    {
-        V_DrawHorizLine(box_x + 1, box_y + MOUSE_SPEED_BOX_HEIGHT / 2,
-                        redline_x, white);
-        V_DrawHorizLine(box_x + redline_x, box_y + MOUSE_SPEED_BOX_HEIGHT / 2,
-                        linelen - redline_x, yellow);
+        V_DrawHorizLine(box_x + 1, box_y + MOUSE_SPEED_BOX_HEIGHT / 2, redline_x, white);
+        V_DrawHorizLine(box_x + redline_x, box_y + MOUSE_SPEED_BOX_HEIGHT / 2, linelen - redline_x, yellow);
     }
 
     // Draw red line
 
-    V_DrawVertLine(box_x + redline_x, box_y + 1,
-                   MOUSE_SPEED_BOX_HEIGHT - 2, red);
+    V_DrawVertLine(box_x + redline_x, box_y + 1, MOUSE_SPEED_BOX_HEIGHT - 2, red);
 }
-

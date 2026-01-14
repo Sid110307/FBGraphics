@@ -41,13 +41,11 @@ struct _MEMFILE
 
 // Open a memory area for reading
 
-MEMFILE* mem_fopen_read(void* buf, size_t buflen)
+MEMFILE* mem_fopen_read(void* buf, const size_t buflen)
 {
-    MEMFILE* file;
+    MEMFILE* file = Z_Malloc(sizeof(MEMFILE), PU_STATIC, 0);
 
-    file = Z_Malloc(sizeof(MEMFILE), PU_STATIC, 0);
-
-    file->buf = (unsigned char*) buf;
+    file->buf = (unsigned char*)buf;
     file->buflen = buflen;
     file->position = 0;
     file->mode = MODE_READ;
@@ -57,10 +55,8 @@ MEMFILE* mem_fopen_read(void* buf, size_t buflen)
 
 // Read bytes
 
-size_t mem_fread(void* buf, size_t size, size_t nmemb, MEMFILE* stream)
+size_t mem_fread(void* buf, const size_t size, const size_t nmemb, MEMFILE* stream)
 {
-    size_t items;
-
     if (stream->mode != MODE_READ)
     {
         printf("not a read stream\n");
@@ -69,12 +65,9 @@ size_t mem_fread(void* buf, size_t size, size_t nmemb, MEMFILE* stream)
 
     // Trying to read more bytes than we have left?
 
-    items = nmemb;
+    size_t items = nmemb;
 
-    if (items * size > stream->buflen - stream->position)
-    {
-        items = (stream->buflen - stream->position) / size;
-    }
+    if (items * size > stream->buflen - stream->position) { items = (stream->buflen - stream->position) / size; }
 
     // Copy bytes to buffer
 
@@ -91,9 +84,7 @@ size_t mem_fread(void* buf, size_t size, size_t nmemb, MEMFILE* stream)
 
 MEMFILE* mem_fopen_write(void)
 {
-    MEMFILE* file;
-
-    file = Z_Malloc(sizeof(MEMFILE), PU_STATIC, 0);
+    MEMFILE* file = Z_Malloc(sizeof(MEMFILE), PU_STATIC, 0);
 
     file->alloced = 1024;
     file->buf = Z_Malloc(file->alloced, PU_STATIC, 0);
@@ -106,25 +97,18 @@ MEMFILE* mem_fopen_write(void)
 
 // Write bytes to stream
 
-size_t mem_fwrite(const void* ptr, size_t size, size_t nmemb, MEMFILE* stream)
+size_t mem_fwrite(const void* ptr, const size_t size, const size_t nmemb, MEMFILE* stream)
 {
-    size_t bytes;
-
-    if (stream->mode != MODE_WRITE)
-    {
-        return -1;
-    }
+    if (stream->mode != MODE_WRITE) { return -1; }
 
     // More bytes than can fit in the buffer?
     // If so, reallocate bigger.
 
-    bytes = size * nmemb;
+    const size_t bytes = size * nmemb;
 
     while (bytes > stream->alloced - stream->position)
     {
-        unsigned char* newbuf;
-
-        newbuf = Z_Malloc(stream->alloced * 2, PU_STATIC, 0);
+        unsigned char* newbuf = Z_Malloc(stream->alloced * 2, PU_STATIC, 0);
         memcpy(newbuf, stream->buf, stream->alloced);
         Z_Free(stream->buf);
         stream->buf = newbuf;
@@ -136,13 +120,12 @@ size_t mem_fwrite(const void* ptr, size_t size, size_t nmemb, MEMFILE* stream)
     memcpy(stream->buf + stream->position, ptr, bytes);
     stream->position += bytes;
 
-    if (stream->position > stream->buflen)
-        stream->buflen = stream->position;
+    if (stream->position > stream->buflen) stream->buflen = stream->position;
 
     return nmemb;
 }
 
-void mem_get_buf(MEMFILE* stream, void** buf, size_t* buflen)
+void mem_get_buf(const MEMFILE* stream, void** buf, size_t* buflen)
 {
     *buf = stream->buf;
     *buflen = stream->buflen;
@@ -150,35 +133,29 @@ void mem_get_buf(MEMFILE* stream, void** buf, size_t* buflen)
 
 void mem_fclose(MEMFILE* stream)
 {
-    if (stream->mode == MODE_WRITE)
-    {
-        Z_Free(stream->buf);
-    }
+    if (stream->mode == MODE_WRITE) { Z_Free(stream->buf); }
 
     Z_Free(stream);
 }
 
-long mem_ftell(MEMFILE* stream)
-{
-    return stream->position;
-}
+long mem_ftell(const MEMFILE* stream) { return stream->position; }
 
-int mem_fseek(MEMFILE* stream, signed long position, mem_rel_t whence)
+int mem_fseek(MEMFILE* stream, const signed long position, const mem_rel_t whence)
 {
     unsigned int newpos;
 
     switch (whence)
     {
         case MEM_SEEK_SET:
-            newpos = (int) position;
+            newpos = (int)position;
             break;
 
         case MEM_SEEK_CUR:
-            newpos = (int) (stream->position + position);
+            newpos = (int)(stream->position + position);
             break;
 
         case MEM_SEEK_END:
-            newpos = (int) (stream->buflen + position);
+            newpos = (int)(stream->buflen + position);
             break;
         default:
             return -1;
@@ -188,11 +165,10 @@ int mem_fseek(MEMFILE* stream, signed long position, mem_rel_t whence)
     {
         stream->position = newpos;
         return 0;
-    } else
+    }
+    else
     {
         printf("Error seeking to %i\n", newpos);
         return -1;
     }
 }
-
-

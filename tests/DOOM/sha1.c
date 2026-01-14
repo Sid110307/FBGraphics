@@ -19,7 +19,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /*  Test vectors:
  *
  *  "abc"
@@ -69,7 +68,7 @@ static void Transform(sha1_context_t* hd, byte* data)
     {
         int i;
         byte* p2;
-        for (i = 0, p2 = (byte*) x; i < 16; i++, p2 += 4)
+        for (i = 0, p2 = (byte*)x; i < 16; i++, p2 += 4)
         {
             p2[3] = *data++;
             p2[2] = *data++;
@@ -201,15 +200,12 @@ void SHA1_Update(sha1_context_t* hd, byte* inbuf, size_t inlen)
         hd->count = 0;
         hd->nblocks++;
     }
-    if (!inbuf)
-        return;
+    if (!inbuf) return;
     if (hd->count)
     {
-        for (; inlen && hd->count < 64; inlen--)
-            hd->buf[hd->count++] = *inbuf++;
+        for (; inlen && hd->count < 64; inlen--) hd->buf[hd->count++] = *inbuf++;
         SHA1_Update(hd, NULL, 0);
-        if (!inlen)
-            return;
+        if (!inlen) return;
     }
 
     while (inlen >= 64)
@@ -220,8 +216,7 @@ void SHA1_Update(sha1_context_t* hd, byte* inbuf, size_t inlen)
         inlen -= 64;
         inbuf += 64;
     }
-    for (; inlen && hd->count < 64; inlen--)
-        hd->buf[hd->count++] = *inbuf++;
+    for (; inlen && hd->count < 64; inlen--) hd->buf[hd->count++] = *inbuf++;
 }
 
 /* The routine final terminates the computation and
@@ -233,19 +228,16 @@ void SHA1_Update(sha1_context_t* hd, byte* inbuf, size_t inlen)
 
 void SHA1_Final(sha1_digest_t digest, sha1_context_t* hd)
 {
-    uint32_t t, msb, lsb;
-    byte* p;
+    SHA1_Update(hd, NULL, 0); /* flush */
+    ;
 
-    SHA1_Update(hd, NULL, 0); /* flush */;
-
-    t = hd->nblocks;
+    uint32_t t = hd->nblocks;
     /* multiply by 64 to make a byte count */
-    lsb = t << 6;
-    msb = t >> 26;
+    uint32_t lsb = t << 6;
+    uint32_t msb = t >> 26;
     /* add the count */
     t = lsb;
-    if ((lsb += hd->count) < t)
-        msb++;
+    if ((lsb += hd->count) < t) msb++;
     /* multiply by 8 to make a bit count */
     t = lsb;
     lsb <<= 3;
@@ -256,15 +248,15 @@ void SHA1_Final(sha1_digest_t digest, sha1_context_t* hd)
     {
         /* enough room */
         hd->buf[hd->count++] = 0x80; /* pad */
-        while (hd->count < 56)
-            hd->buf[hd->count++] = 0;  /* pad */
-    } else
+        while (hd->count < 56) hd->buf[hd->count++] = 0; /* pad */
+    }
+    else
     {
         /* need one extra block */
         hd->buf[hd->count++] = 0x80; /* pad character */
-        while (hd->count < 64)
-            hd->buf[hd->count++] = 0;
-        SHA1_Update(hd, NULL, 0);  /* flush */;
+        while (hd->count < 64) hd->buf[hd->count++] = 0;
+        SHA1_Update(hd, NULL, 0); /* flush */
+        ;
         memset(hd->buf, 0, 56); /* fill next block with zeroes */
     }
     /* append the 64 bit count */
@@ -278,7 +270,7 @@ void SHA1_Final(sha1_digest_t digest, sha1_context_t* hd)
     hd->buf[63] = lsb;
     Transform(hd, hd->buf);
 
-    p = hd->buf;
+    byte* p = hd->buf;
 #ifdef SYS_BIG_ENDIAN
 #define X(a) do { *(uint32_t*)p = hd->h##a ; p += 4; } while(0)
 #else /* little endian */
@@ -295,20 +287,16 @@ void SHA1_Final(sha1_digest_t digest, sha1_context_t* hd)
     memcpy(digest, hd->buf, sizeof(sha1_digest_t));
 }
 
-void SHA1_UpdateInt32(sha1_context_t* context, unsigned int val)
+void SHA1_UpdateInt32(sha1_context_t* context, const unsigned int val)
 {
     byte buf[4];
 
-    buf[0] = (val >> 24) & 0xff;
-    buf[1] = (val >> 16) & 0xff;
-    buf[2] = (val >> 8) & 0xff;
+    buf[0] = val >> 24 & 0xff;
+    buf[1] = val >> 16 & 0xff;
+    buf[2] = val >> 8 & 0xff;
     buf[3] = val & 0xff;
 
     SHA1_Update(context, buf, 4);
 }
 
-void SHA1_UpdateString(sha1_context_t* context, char* str)
-{
-    SHA1_Update(context, (byte*) str, strlen(str) + 1);
-}
-
+void SHA1_UpdateString(sha1_context_t* context, char* str) { SHA1_Update(context, (byte*)str, strlen(str) + 1); }

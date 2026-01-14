@@ -16,7 +16,6 @@
 //	WAD I/O functions.
 //
 
-
 #ifndef __W_WAD__
 #define __W_WAD__
 
@@ -26,7 +25,6 @@
 #include "d_mode.h"
 
 #include "w_file.h"
-
 
 //
 // TYPES
@@ -56,7 +54,7 @@ extern unsigned int numlumps;
 
 wad_file_t* W_AddFile(char* filename);
 
-int W_CheckNumForName(char* name);
+int W_CheckNumForName(const char* name);
 int W_GetNumForName(char* name);
 
 int W_LumpLength(unsigned int lump);

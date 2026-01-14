@@ -1,110 +1,112 @@
 #include "include/drawing.h"
 
-void Drawable::draw(unsigned int _color, bool interpolate) { fb.drawPixel(x, y, _color, interpolate); }
-
-void Drawable::setPos(float _x, float _y)
+void Drawable::draw(const unsigned int color)
 {
-    draw(0x00000000);
-
-    this->x = _x;
-    this->y = _y;
-
-    draw(color);
+    if (color != Colors::BLACK) this->_color = color;
+    _fb.drawPixel(_x, _y, color);
 }
 
-std::pair<float, float> Drawable::getPos() const { return {x, y}; }
-void Pixel::draw(unsigned int color, bool interpolate) { fb.drawPixel(x, y, color, interpolate); }
-
-void Pixel::update(float newX, float newY)
+void Drawable::setPos(const float x, const float y)
 {
-    draw(0x00000000);
-
-    x = newX;
-    y = newY;
-
-    draw(color);
+    this->_x = x;
+    this->_y = y;
 }
 
-void Line::draw(unsigned int color, bool interpolate)
+std::pair<float, float> Drawable::getPos() const { return {_x, _y}; }
+
+void Pixel::draw(const unsigned int color)
 {
-    if (color != 0x00000000) this->color = color;
+    if (color != Colors::BLACK) this->_color = color;
+    _fb.drawPixel(_x, _y, color);
+}
 
-    int steps = static_cast<int>(std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2)));
-    float dx = (x2 - x1) / static_cast<float>(steps), dy = (y2 - y1) / static_cast<float>(steps);
+void Pixel::update(const float newX, const float newY)
+{
+    _x = newX;
+    _y = newY;
+}
 
+void Line::draw(const unsigned int color)
+{
+    if (color != Colors::BLACK) this->_color = color;
+
+    const int steps = static_cast<int>(hypot(x2 - x1, y2 - y1));
+    if (steps == 0)
+    {
+        _fb.drawPixel(x1, y1, color);
+        return;
+    }
+
+    const float dx = (x2 - x1) / static_cast<float>(steps), dy = (y2 - y1) / static_cast<float>(steps);
     for (int i = 0; i <= steps; ++i)
-        fb.drawPixel(x1 + static_cast<float>(i) * dx, y1 + static_cast<float>(i) * dy, color, interpolate);
+        _fb.drawPixel(x1 + static_cast<float>(i) * dx, y1 + static_cast<float>(i) * dy,
+                      color);
 }
 
-void Line::update(float newX1, float newY1, float newX2, float newY2)
+void Line::update(const float newX1, const float newY1, const float newX2, const float newY2)
 {
-    draw(0x00000000);
-
     x1 = newX1;
     y1 = newY1;
     x2 = newX2;
     y2 = newY2;
 
-    x = (newX1 + newX2) / 2;
-    y = (newY1 + newY2) / 2;
-    draw(color);
+    _x = (newX1 + newX2) / 2;
+    _y = (newY1 + newY2) / 2;
 }
 
-void Rectangle::draw(unsigned int color, bool interpolate)
+void Rect::draw(const unsigned int color)
 {
-    if (color != 0x00000000) this->color = color;
+    if (color != Colors::BLACK) this->_color = color;
 
     if (filled)
         for (int i = 0; i < static_cast<int>(height); ++i)
-            Line(fb, x - width / 2, y - height / 2 + static_cast<float>(i), x + width / 2,
-                 y - height / 2 + static_cast<float>(i)).draw(color, interpolate);
+            Line(_fb, _x - width / 2, _y - height / 2 + static_cast<float>(i), _x + width / 2,
+                 _y - height / 2 + static_cast<float>(i)).draw(color);
     else
     {
-        Line(fb, x - width / 2, y - height / 2, x + width / 2, y - height / 2).draw(color, interpolate);
-        Line(fb, x - width / 2, y + height / 2, x + width / 2, y + height / 2).draw(color, interpolate);
-        Line(fb, x - width / 2, y - height / 2, x - width / 2, y + height / 2).draw(color, interpolate);
-        Line(fb, x + width / 2, y - height / 2, x + width / 2, y + height / 2).draw(color, interpolate);
+        Line(_fb, _x - width / 2, _y - height / 2, _x + width / 2, _y - height / 2).draw(color);
+        Line(_fb, _x - width / 2, _y + height / 2, _x + width / 2, _y + height / 2).draw(color);
+        Line(_fb, _x - width / 2, _y - height / 2, _x - width / 2, _y + height / 2).draw(color);
+        Line(_fb, _x + width / 2, _y - height / 2, _x + width / 2, _y + height / 2).draw(color);
     }
 }
 
-void Rectangle::update(float newX, float newY, float newWidth, float newHeight)
+void Rect::update(const float newX, const float newY, const float newWidth, const float newHeight)
 {
-    draw(0x00000000);
-
-    x = newX + newWidth / 2;
-    y = newY + newHeight / 2;
+    _x = newX + newWidth / 2;
+    _y = newY + newHeight / 2;
     width = newWidth;
     height = newHeight;
-
-    draw(color);
 }
 
-void Circle::draw(unsigned int color, bool interpolate)
+void Circle::draw(const unsigned int color)
 {
-    if (color != 0x00000000) this->color = color;
+    if (color != Colors::BLACK) this->_color = color;
 
     if (filled)
     {
-        int r = static_cast<int>(radius);
+        const int r = static_cast<int>(radius);
 
         for (int y = -r; y <= r; ++y)
             for (int x = -r; x <= r; ++x)
                 if (x * x + y * y <= r * r)
-                    fb.drawPixel(this->x + static_cast<float>(x), this->y + static_cast<float>(y), color, interpolate);
-    } else
+                    _fb.drawPixel(this->_x + static_cast<float>(x),
+                                  this->_y + static_cast<float>(y), color);
+    }
+    else
     {
         int r = static_cast<int>(radius), x = 0, y = r, d = 3 - 2 * r;
 
         while (y >= x)
         {
-            fb.drawPixel(this->x + static_cast<float>(x), this->y + static_cast<float>(y), color, interpolate);
-            fb.drawPixel(this->x + static_cast<float>(y), this->y + static_cast<float>(x), color, interpolate);
-            fb.drawPixel(this->x - static_cast<float>(x), this->y + static_cast<float>(y), color, interpolate);
-            fb.drawPixel(this->x - static_cast<float>(y), this->y + static_cast<float>(x), color, interpolate);
-            fb.drawPixel(this->x + static_cast<float>(x), this->y - static_cast<float>(y), color, interpolate);
-            fb.drawPixel(this->x + static_cast<float>(y), this->y - static_cast<float>(x), color, interpolate);
-            fb.drawPixel(this->x - static_cast<float>(x), this->y - static_cast<float>(y), color, interpolate);
-            fb.drawPixel(this->x - static_cast<float>(y), this->y - static_cast<float>(x), color, interpolate);
+            _fb.drawPixel(this->_x + static_cast<float>(x), this->_y + static_cast<float>(y), color);
+            _fb.drawPixel(this->_x + static_cast<float>(y), this->_y + static_cast<float>(x), color);
+            _fb.drawPixel(this->_x - static_cast<float>(x), this->_y + static_cast<float>(y), color);
+            _fb.drawPixel(this->_x - static_cast<float>(y), this->_y + static_cast<float>(x), color);
+            _fb.drawPixel(this->_x + static_cast<float>(x), this->_y - static_cast<float>(y), color);
+            _fb.drawPixel(this->_x + static_cast<float>(y), this->_y - static_cast<float>(x), color);
+            _fb.drawPixel(this->_x - static_cast<float>(x), this->_y - static_cast<float>(y), color);
+            _fb.drawPixel(this->_x - static_cast<float>(y), this->_y - static_cast<float>(x), color);
 
             if (d < 0) d += 4 * x + 6;
             else
@@ -118,49 +120,43 @@ void Circle::draw(unsigned int color, bool interpolate)
     }
 }
 
-void Circle::update(float newRadius)
-{
-    draw(0x00000000);
+void Circle::update(const float newRadius) { radius = newRadius; }
 
-    radius = newRadius;
-    draw(color);
-}
-
-void Triangle::draw(unsigned int color, bool interpolate)
+void Triangle::draw(const unsigned int color)
 {
-    auto isInside = [&](float x, float y) -> bool
+    auto isInside = [&](const float x, const float y) -> bool
     {
-        float A = 1.0f / 2.0f * (-y2 * x3 + y1 * (-x2 + x3) + x1 * (y2 - y3) + x2 * y3);
-        float sign = A < 0.0f ? -1.0f : 1.0f;
-        float s = (y1 * x3 - x1 * y3 + (y3 - y1) * x + (x1 - x3) * y) * sign;
-        float t = (x1 * y2 - y1 * x2 + (y1 - y2) * x + (x2 - x1) * y) * sign;
+        const float A = 1.0f / 2.0f * (-y2 * x3 + y1 * (-x2 + x3) + x1 * (y2 - y3) + x2 * y3);
+        const float sign = A < 0.0f ? -1.0f : 1.0f;
+        const float s = (y1 * x3 - x1 * y3 + (y3 - y1) * x + (x1 - x3) * y) * sign;
+        const float t = (x1 * y2 - y1 * x2 + (y1 - y2) * x + (x2 - x1) * y) * sign;
 
-        return s > 0.0f && t > 0.0f && (s + t) < 2.0f * A * sign;
+        return s > 0.0f && t > 0.0f && s + t < 2.0f * A * sign;
     };
 
-    if (color != 0x00000000) this->color = color;
-
+    if (color != Colors::BLACK) this->_color = color;
     if (filled)
     {
-        float minX = std::min(x1, std::min(x2, x3)), maxX = std::max(x1, std::max(x2, x3));
-        float minY = std::min(y1, std::min(y2, y3)), maxY = std::max(y1, std::max(y2, y3));
+        const float minX = min(x1, min(x2, x3)), maxX = max(x1, max(x2, x3));
+        const float minY = min(y1, min(y2, y3)), maxY = max(y1, max(y2, y3));
 
         for (int y = static_cast<int>(minY); y <= static_cast<int>(maxY); ++y)
             for (int x = static_cast<int>(minX); x <= static_cast<int>(maxX); ++x)
                 if (isInside(static_cast<float>(x), static_cast<float>(y)))
-                    fb.drawPixel(static_cast<float>(x), static_cast<float>(y), color, interpolate);
-    } else
+                    _fb.drawPixel(
+                        static_cast<float>(x), static_cast<float>(y), color);
+    }
+    else
     {
-        Line(fb, x1, y1, x2, y2).draw(color, interpolate);
-        Line(fb, x2, y2, x3, y3).draw(color, interpolate);
-        Line(fb, x3, y3, x1, y1).draw(color, interpolate);
+        Line(_fb, x1, y1, x2, y2).draw(color);
+        Line(_fb, x2, y2, x3, y3).draw(color);
+        Line(_fb, x3, y3, x1, y1).draw(color);
     }
 }
 
-void Triangle::update(float newX1, float newY1, float newX2, float newY2, float newX3, float newY3)
+void Triangle::update(const float newX1, const float newY1, const float newX2, const float newY2, const float newX3,
+                      const float newY3)
 {
-    draw(0x00000000);
-
     x1 = newX1;
     y1 = newY1;
     x2 = newX2;
@@ -168,7 +164,6 @@ void Triangle::update(float newX1, float newY1, float newX2, float newY2, float 
     x3 = newX3;
     y3 = newY3;
 
-    x = (newX1 + newX2 + newX3) / 3;
-    y = (newY1 + newY2 + newY3) / 3;
-    draw(color);
+    _x = (newX1 + newX2 + newX3) / 3;
+    _y = (newY1 + newY2 + newY3) / 3;
 }

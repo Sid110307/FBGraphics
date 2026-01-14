@@ -1,43 +1,21 @@
-//doomgeneric for FBGraphics
+// doomgeneric for FBGraphics
 
 #include "doomkeys.h"
 #include "m_argv.h"
 #include "doomgeneric.h"
 
 #include <stdio.h>
-#include <unistd.h>
 #include <time.h>
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#else
+#include <unistd.h>
 #include <termios.h>
+#endif
 
 #include "framebuffer.h"
-
-/*
-class Framebuffer
-{
-public:
-    Framebuffer(const std::string &fbPath, int _width, int _height, int _bytesPerPixel);
-    ~Framebuffer();
-
-    void drawPixel(float x, float y, unsigned int color, bool interpolate = true);
-    [[nodiscard]] unsigned int getPixel(int x, int y) const;
-    void clear(unsigned int color);
-
-    void setMousePosition(unsigned int x, unsigned int y);
-    [[nodiscard]] unsigned int getMouseX() const;
-    [[nodiscard]] unsigned int getMouseY() const;
-
-    void setKeyState(int key, bool state);
-    [[nodiscard]] bool getKeyState(int key) const;
-
-    [[nodiscard]] Event pollEvent() const;
-
-    [[nodiscard]] int getWidth() const;
-    [[nodiscard]] int getHeight() const;
-
-private:
-    ...
-}
-*/
 
 static void* fb = NULL;
 
@@ -47,7 +25,7 @@ static unsigned short s_KeyQueue[KEYQUEUE_SIZE];
 static unsigned int s_KeyQueueWriteIndex = 0, s_KeyQueueReadIndex = 0;
 static unsigned int s_PositionX = 0, s_PositionY = 0;
 
-static unsigned char convertToDoomKey(unsigned char scancode)
+static unsigned char convertToDoomKey(const unsigned char scancode)
 {
     unsigned char key = 0;
 
@@ -96,19 +74,20 @@ static unsigned char convertToDoomKey(unsigned char scancode)
     return key;
 }
 
-static void addKeyToQueue(int pressed, unsigned char keyCode)
+static void addKeyToQueue(const int pressed, const unsigned char keyCode)
 {
-    unsigned char key = convertToDoomKey(keyCode);
-    unsigned short keyData = (pressed << 8) | key;
+    const unsigned char key = convertToDoomKey(keyCode);
+    const unsigned short keyData = pressed << 8 | key;
 
     s_KeyQueue[s_KeyQueueWriteIndex] = keyData;
     s_KeyQueueWriteIndex++;
     s_KeyQueueWriteIndex %= KEYQUEUE_SIZE;
 }
 
+#ifndef _WIN32
 struct termios orig_termios;
-
 void disableRawMode() { tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios); }
+
 void enableRawMode()
 {
     tcgetattr(STDIN_FILENO, &orig_termios);
@@ -119,30 +98,31 @@ void enableRawMode()
     raw.c_cc[VMIN] = 0;
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
+#else
+void enableRawMode() {}
+#endif
 
 void DG_Init()
 {
-    fb = framebuffer_create("/dev/fb0", DOOMGENERIC_RESX, DOOMGENERIC_RESY, 4);
+    fb = framebuffer_create(DOOMGENERIC_RESX, DOOMGENERIC_RESY, 4);
     enableRawMode();
 
-    int argPosX = M_CheckParmWithArgs((char*) "-posx", 1);
+    const int argPosX = M_CheckParmWithArgs((char*)"-posx", 1);
     if (argPosX) sscanf(myargv[argPosX + 1], "%d", &s_PositionX);
-//    if (argPosX) s_PositionX = strtol(myargv[argPosX + 1], NULL, 10);
 
-    int argPosY = M_CheckParmWithArgs((char*) "-posy", 1);
+    const int argPosY = M_CheckParmWithArgs((char*)"-posy", 1);
     if (argPosY) sscanf(myargv[argPosY + 1], "%d", &s_PositionY);
-//    if (argPosY) s_PositionY = strtol(myargv[argPosY + 1], NULL, 10);
 }
 
 static void handleKeyInput()
 {
     if (fb)
     {
-        C_Event event = framebuffer_pollEvent(&fb);
+        const C_Event event = framebuffer_pollEvent(fb);
         if (event.type == Quit)
         {
             printf("Quit event received\n");
-            exit(EXIT_SUCCESS);
+            exit(0);
         }
 
         if (event.type == KeyDown) addKeyToQueue(true, event.key);
@@ -153,43 +133,57 @@ static void handleKeyInput()
 void DG_DrawFrame()
 {
     if (fb)
-        for (int i = 0; i < framebuffer_getHeight(&fb); ++i)
-            framebuffer_drawPixel(&fb, (float) s_PositionX, (float) (i + s_PositionY),
-                                  DG_ScreenBuffer[i * DOOMGENERIC_RESX], true);
+    {
+        for (int y = 0; y < DOOMGENERIC_RESY; ++y)
+            for (int x = 0; x < DOOMGENERIC_RESX; ++x)
+                framebuffer_drawPixel(
+                    fb, (float)(x + s_PositionX), (float)(y + s_PositionY), DG_ScreenBuffer[y * DOOMGENERIC_RESX + x]);
+        framebuffer_present(fb, 0, 0);
+    }
     handleKeyInput();
 }
 
-void DG_SleepMs(uint32_t ms) { usleep(ms * 1000); }
+void DG_SleepMs(const uint32_t ms)
+{
+#ifdef _WIN32
+    Sleep(ms);
+#else
+    usleep(ms * 1000);
+#endif
+}
 
 uint32_t DG_GetTicksMs()
 {
+#ifdef _WIN32
+    return (uint32_t)GetTickCount64();
+#else
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
-    return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+
+    return (uint32_t)(ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
+#endif
 }
 
 int DG_GetKey(int* pressed, unsigned char* doomKey)
 {
     if (s_KeyQueueReadIndex == s_KeyQueueWriteIndex) return 0;
-    else
-    {
-        unsigned short keyData = s_KeyQueue[s_KeyQueueReadIndex];
-        s_KeyQueueReadIndex++;
-        s_KeyQueueReadIndex %= KEYQUEUE_SIZE;
+    const unsigned short keyData = s_KeyQueue[s_KeyQueueReadIndex];
 
-        *pressed = keyData >> 8;
-        *doomKey = keyData & 0xFF;
+    s_KeyQueueReadIndex++;
+    s_KeyQueueReadIndex %= KEYQUEUE_SIZE;
 
-        return 1;
-    }
+    *pressed = keyData >> 8;
+    *doomKey = keyData & 0xFF;
+
+    return 1;
 }
 
 void DG_SetWindowTitle(const char* title) { printf("Window title: %s\n", title); }
 
-int main(int argc, char** argv)
+int main(const int argc, char** argv)
 {
     doomgeneric_Create(argc, argv);
     while (true) doomgeneric_Tick();
 
-    return EXIT_SUCCESS;
+    return 0;
 }

@@ -1,69 +1,83 @@
 #include "graphics.h"
 
-void Helpers::warn(const std::string &message) { std::cerr << "Warning: " << message << std::endl; }
-void Helpers::pixel(Framebuffer renderer, short x, short y, unsigned int color) { Pixel(renderer, x, y).draw(color); }
+void Helpers::warn(const std::string& message) { std::cerr << "Warning: " << message << std::endl; }
 
-void Helpers::pixelRGBAWeight(const Framebuffer &renderer, short x, short y, unsigned char r, unsigned char g,
-                              unsigned char b, unsigned char a, unsigned int weight)
+void Helpers::pixel(Framebuffer& renderer, const short x, const short y, const unsigned int color)
+{
+    Pixel(renderer, x, y).draw(color);
+}
+
+void Helpers::pixelRGBAWeight(Framebuffer& renderer, const short x, const short y, const unsigned char r,
+                              const unsigned char g, const unsigned char b, unsigned char a, const unsigned int weight)
 {
     unsigned int ax = a;
-    ax = (ax * weight >> 8);
+    ax = ax * weight >> 8;
     a = ax > 255 ? 255 : static_cast<unsigned char>(ax & 0x000000ff);
 
     pixelRGBA(renderer, x, y, r, g, b, a);
 }
 
-void Helpers::aalineRGBA(const Framebuffer &renderer, short x1, short y1, short x2, short y2, unsigned char r,
-                         unsigned char g, unsigned char b, unsigned char a, bool draw_endpoint)
+void Helpers::aalineRGBA(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                         const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a,
+                         const bool drawEndpoint)
 {
-    int xx0, yy0, xx1, yy1, dx, dy, tmp, xDir, y0p1, x0pxDir;
-    unsigned int intShift, errAcc, errAdj, errAccTmp, weight;
+    int xDir;
+    unsigned int errAdj, errAccTmp, weight;
 
-    xx0 = x1;
-    yy0 = y1;
-    xx1 = x2;
-    yy1 = y2;
+    int xx0 = x1, yy0 = y1;
+    int xx1 = x2, yy1 = y2;
 
     if (yy0 > yy1)
     {
-        tmp = yy0;
-        yy0 = yy1;
-        yy1 = tmp;
-
-        tmp = xx0;
-        xx0 = xx1;
-        xx1 = tmp;
+        std::swap(yy0, yy1);
+        std::swap(xx0, xx1);
     }
 
-    dx = xx1 - xx0;
-    dy = yy1 - yy0;
+    int dx = xx1 - xx0;
+    int dy = yy1 - yy0;
 
     if (dx >= 0) xDir = 1;
     else
     {
         xDir = -1;
-        dx = (-dx);
+        dx = -dx;
     }
 
     if (dx == 0)
-        draw_endpoint ? vlineRGBA(renderer, x1, y1, y2, r, g, b, a)
-                      : dy > 0 ? vlineRGBA(renderer, x1, static_cast<short>(yy0), static_cast<short>(yy0 + dy),
-                                           r, g, b, a) : pixelRGBA(renderer, x1, y1, r, g, b, a);
-    else if (dy == 0)
-        draw_endpoint ? hlineRGBA(renderer, x1, x2, y1, r, g, b, a)
-                      : dx > 0 ? hlineRGBA(renderer, static_cast<short>(xx0),
-                                           static_cast<short>(xx0 + (xDir * dx)), y1, r, g, b, a) : pixelRGBA(
-            renderer, x1, y1, r, g, b, a);
-    else if (dx == dy && draw_endpoint) lineRGBA(renderer, x1, y1, x2, y2, r, g, b, a);
+    {
+        if (drawEndpoint) vlineRGBA(renderer, x1, y1, y2, r, g, b, a);
+        else if (dy > 0) vlineRGBA(renderer, x1, static_cast<short>(yy0), static_cast<short>(yy0 + dy), r, g, b, a);
+        else pixelRGBA(renderer, x1, y1, r, g, b, a);
 
-    errAcc = 0;
-    intShift = 32 - AA_BITS;
+        return;
+    }
+
+    if (dy == 0)
+    {
+        if (drawEndpoint) hlineRGBA(renderer, x1, x2, y1, r, g, b, a);
+        else if (dx > 0)
+            hlineRGBA(renderer, static_cast<short>(xx0), static_cast<short>(xx0 + xDir * dx), y1, r, g, b,
+                      a);
+        else pixelRGBA(renderer, x1, y1, r, g, b, a);
+
+        return;
+    }
+
+    if (dx == dy && drawEndpoint)
+    {
+        lineRGBA(renderer, x1, y1, x2, y2, r, g, b, a);
+        return;
+    }
+
+    unsigned int errAcc = 0;
+    const unsigned int intShift = 32 - AA_BITS;
+
     pixelRGBA(renderer, x1, y1, r, g, b, a);
 
     if (dy > dx)
     {
         errAdj = ((dx << 16) / dy) << 16;
-        x0pxDir = xx0 + xDir;
+        int x0pxDir = xx0 + xDir;
 
         while (--dy)
         {
@@ -78,15 +92,14 @@ void Helpers::aalineRGBA(const Framebuffer &renderer, short x1, short y1, short 
 
             yy0++;
             weight = (errAcc >> intShift) & 255;
-            Helpers::pixelRGBAWeight(renderer, static_cast<short>(xx0), static_cast<short>(yy0), r, g, b, a,
-                                     255 - weight);
-            Helpers::pixelRGBAWeight(renderer, static_cast<short>(x0pxDir), static_cast<short>(yy0), r, g, b, a,
-                                     weight);
+            pixelRGBAWeight(renderer, static_cast<short>(xx0), static_cast<short>(yy0), r, g, b, a, 255 - weight);
+            pixelRGBAWeight(renderer, static_cast<short>(x0pxDir), static_cast<short>(yy0), r, g, b, a, weight);
         }
-    } else
+    }
+    else
     {
         errAdj = ((dy << 16) / dx) << 16;
-        y0p1 = yy0 + 1;
+        int y0p1 = yy0 + 1;
 
         while (--dx)
         {
@@ -101,22 +114,21 @@ void Helpers::aalineRGBA(const Framebuffer &renderer, short x1, short y1, short 
 
             xx0 += xDir;
             weight = (errAcc >> intShift) & 255;
-            Helpers::pixelRGBAWeight(renderer, static_cast<short>(xx0), static_cast<short>(yy0), r, g, b, a,
-                                     255 - weight);
-            Helpers::pixelRGBAWeight(renderer, static_cast<short>(xx0), static_cast<short>(y0p1), r, g, b, a, weight);
+            pixelRGBAWeight(renderer, static_cast<short>(xx0), static_cast<short>(yy0), r, g, b, a, 255 - weight);
+            pixelRGBAWeight(renderer, static_cast<short>(xx0), static_cast<short>(y0p1), r, g, b, a, weight);
         }
     }
 
-    if (draw_endpoint) pixelRGBA(renderer, x2, y2, r, g, b, a);
+    if (drawEndpoint) pixelRGBA(renderer, x2, y2, r, g, b, a);
 }
 
-void Helpers::drawQuadrants(Framebuffer renderer, short x, short y, short dx, short dy, int f, unsigned int color)
+void Helpers::drawQuadrants(Framebuffer& renderer, const short x, const short y, const short dx, const short dy,
+                            const int f, const unsigned int color)
 {
-    short xPdx, xMdx;
     short yPdy, yMdy;
 
     if (dx == 0)
-        if (dy == 0) Helpers::pixel(renderer, x, y, color);
+        if (dy == 0) pixel(renderer, x, y, color);
         else
         {
             yPdy = static_cast<short>(y + dy);
@@ -125,14 +137,14 @@ void Helpers::drawQuadrants(Framebuffer renderer, short x, short y, short dx, sh
             if (f) Line(renderer, x, yMdy, x, yPdy).draw(color);
             else
             {
-                Helpers::pixel(renderer, x, yPdy, color);
-                Helpers::pixel(renderer, x, yMdy, color);
+                pixel(renderer, x, yPdy, color);
+                pixel(renderer, x, yMdy, color);
             }
         }
     else
     {
-        xPdx = static_cast<short>(x + dx);
-        xMdx = static_cast<short>(x - dx);
+        const auto xPdx = static_cast<short>(x + dx);
+        const auto xMdx = static_cast<short>(x - dx);
         yPdy = static_cast<short>(y + dy);
         yMdy = static_cast<short>(y - dy);
 
@@ -140,27 +152,30 @@ void Helpers::drawQuadrants(Framebuffer renderer, short x, short y, short dx, sh
         {
             Line(renderer, xPdx, yMdy, xPdx, yPdy).draw(color);
             Line(renderer, xMdx, yMdy, xMdx, yPdy).draw(color);
-        } else
+        }
+        else
         {
-            Helpers::pixel(renderer, xPdx, yPdy, color);
-            Helpers::pixel(renderer, xMdx, yPdy, color);
-            Helpers::pixel(renderer, xPdx, yMdy, color);
-            Helpers::pixel(renderer, xMdx, yMdy, color);
+            pixel(renderer, xPdx, yPdy, color);
+            pixel(renderer, xMdx, yPdy, color);
+            pixel(renderer, xPdx, yMdy, color);
+            pixel(renderer, xMdx, yMdy, color);
         }
     }
 }
 
-void
-Helpers::ellipseRGBA(Framebuffer renderer, short x, short y, short rx, short ry, unsigned char r, unsigned char g,
-                     unsigned char b, unsigned char a, int f)
+void Helpers::ellipseRGBA(Framebuffer& renderer, const short x, const short y, const short rx, const short ry,
+                          const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a,
+                          const int f)
 {
-    int rxi, ryi, rx2, ry2, rx22, ry22, error, curX, curY, curXp1, curYm1, scrX, scrY, oldX, oldY, deltaX, deltaY, ellipseLimit;
-    unsigned int color = (r << 24) | (g << 16) | (b << 8) | a;
+    int rxi, ryi, rx2, ry2, rx22, ry22, error, curX, curY, scrX, scrY, oldX, oldY, deltaX, deltaY,
+        ellipseLimit;
+    const unsigned int color = (a << 24) | (r << 16) | (g << 8) | b;
 
-    if (rx < 0 || ry < 0) return Helpers::warn("Unable to draw ellipse with negative radius");
+    if (rx < 0 || ry < 0) return warn("Unable to draw ellipse with negative radius");
     if (rx == 0)
-        ry == 0 ? Helpers::pixel(renderer, x, y, color) : Line(renderer, x, static_cast<short>(y - ry),
-                                                               x, static_cast<short>(y + ry)).draw(color);
+        ry == 0
+            ? pixel(renderer, x, y, color)
+            : Line(renderer, x, static_cast<short>(y - ry), x, static_cast<short>(y + ry)).draw(color);
     else if (ry == 0) Line(renderer, static_cast<short>(x - rx), y, static_cast<short>(x + rx), y).draw(color);
 
     rxi = rx;
@@ -210,9 +225,11 @@ Helpers::ellipseRGBA(Framebuffer renderer, short x, short y, short rx, short ry,
 
     if (curY > 0)
     {
+        int curYm1;
+        int curXp1;
         curXp1 = curX + 1;
         curYm1 = curY - 1;
-        error = ry2 * curX * curXp1 + ((ry2 + 3) / 4) + rx2 * curYm1 * curYm1 - rx2 * ry2;
+        error = ry2 * curX * curXp1 + (ry2 + 3) / 4 + rx2 * curYm1 * curYm1 - rx2 * ry2;
 
         while (curY > 0)
         {
@@ -250,32 +267,32 @@ Helpers::ellipseRGBA(Framebuffer renderer, short x, short y, short rx, short ry,
         {
             oldY--;
             for (; oldY >= 0; --oldY)
-                drawQuadrants(renderer, x, y, static_cast<short>(scrX), static_cast<short>(oldY), f, color);
+                drawQuadrants(renderer, x, y, static_cast<short>(scrX), static_cast<short>(oldY),
+                              f, color);
         }
     }
 }
 
-void Helpers::pieRGBA(const Framebuffer &renderer, short x, short y, short rad, short start, short end, unsigned char r,
-                      unsigned char g, unsigned char b, unsigned char a, unsigned char filled)
+void Helpers::pieRGBA(Framebuffer& renderer, const short x, const short y, const short rad, short start,
+                      short end, const unsigned char r, const unsigned char g, const unsigned char b,
+                      const unsigned char a, const unsigned char filled)
 {
-    int numPoints, i;
-    double angle, startAngle, endAngle, deltaAngle, dr;
-    short* vx, * vy;
+    short* vy;
 
-    if (rad < 0) return Helpers::warn("Unable to draw pie with negative radius");
+    if (rad < 0) return warn("Unable to draw pie with negative radius");
     if (rad == 0) pixelRGBA(renderer, x, y, r, g, b, a);
 
     start = static_cast<short>(start % 360);
     end = static_cast<short>(end % 360);
-    dr = static_cast<double>(rad);
-    deltaAngle = 3.0 / dr;
+    const auto dr = static_cast<double>(rad);
+    const double deltaAngle = 3.0 / dr;
 
-    startAngle = static_cast<double>(start * (2.0 * M_PI / 360.0));
-    endAngle = static_cast<double>(end * (2.0 * M_PI / 360.0));
+    const double startAngle = start * (2.0 * M_PI / 360.0);
+    double endAngle = end * (2.0 * M_PI / 360.0);
     if (start > end) endAngle += 2.0 * M_PI;
 
-    numPoints = 2;
-    angle = startAngle;
+    int numPoints = 2;
+    double angle = startAngle;
 
     while (angle < endAngle)
     {
@@ -283,8 +300,8 @@ void Helpers::pieRGBA(const Framebuffer &renderer, short x, short y, short rad, 
         numPoints++;
     }
 
-    vx = vy = reinterpret_cast<short*>(malloc(2 * sizeof(short) * numPoints));
-    if (vx == nullptr) return Helpers::warn("Unable to allocate memory for pie");
+    short* vx = vy = static_cast<short*>(malloc(2 * sizeof(short) * numPoints));
+    if (vx == nullptr) return warn("Unable to allocate memory for pie");
     vy += numPoints;
 
     vx[0] = x;
@@ -297,7 +314,7 @@ void Helpers::pieRGBA(const Framebuffer &renderer, short x, short y, short rad, 
     if (numPoints < 3) lineRGBA(renderer, vx[0], vy[0], vx[1], vy[1], r, g, b, a);
     else
     {
-        i = 2;
+        int i = 2;
         angle = startAngle;
 
         while (angle < endAngle)
@@ -310,23 +327,24 @@ void Helpers::pieRGBA(const Framebuffer &renderer, short x, short y, short rad, 
             i++;
         }
 
-        filled ? filledPolygonRGBA(renderer, vx, vy, numPoints, r, g, b, a) : polygonRGBA(renderer, vx, vy, numPoints,
-                                                                                          r, g, b, a);
+        filled
+            ? filledPolygonRGBA(renderer, vx, vy, numPoints, r, g, b, a)
+            : polygonRGBA(renderer, vx, vy, numPoints, r, g, b, a);
     }
 
     free(vx);
 }
 
-void Helpers::polygon(Framebuffer renderer, const short* vx, const short* vy, int n, unsigned int color)
+void Helpers::polygon(Framebuffer& renderer, const short* vx, const short* vy, const int n, const unsigned int color)
 {
-    int i, nn;
-    std::pair<short, short>* points;
+    int i;
 
-    if (vx == nullptr || vy == nullptr || n < 3) return Helpers::warn("Unable to draw polygon");
+    if (vx == nullptr || vy == nullptr || n < 3) return warn("Unable to draw polygon");
 
-    nn = n + 1;
-    points = reinterpret_cast<std::pair<short, short>*>(malloc(sizeof(std::pair<short, short>) * nn));
-    if (points == nullptr) return Helpers::warn("Unable to allocate memory for polygon");
+    const int nn = n + 1;
+    const auto points = static_cast<std::pair<short, short>*>(malloc(
+        sizeof(std::pair<short, short>) * nn));
+    if (points == nullptr) return warn("Unable to allocate memory for polygon");
 
     for (i = 0; i < n; ++i)
     {
@@ -339,39 +357,36 @@ void Helpers::polygon(Framebuffer renderer, const short* vx, const short* vy, in
 
     Line(renderer, points[0].first, points[0].second, points[1].first, points[1].second).draw(color);
     for (i = 1; i < n; ++i)
-        Line(renderer, points[i].first, points[i].second, points[i + 1].first, points[i + 1].second).draw(color);
+        Line(renderer, points[i].first, points[i].second, points[i + 1].first, points[i + 1].second)
+            .draw(color);
 
     free(points);
 }
 
 auto Helpers::compareInt(const void* a, const void* b) -> int
 {
-    return *reinterpret_cast<const int*>(a) - *reinterpret_cast<const int*>(b);
+    return *static_cast<const int*>(a) - *static_cast<const int*>(b);
 }
 
-auto Helpers::evaluateBezier(double* data, int nData, double t) -> double
+auto Helpers::evaluateBezier(const double* data, const int nData, const double t) -> double
 {
-    double mu, result;
-    int n, k, kn, nn, nkn;
-    double blend, muK, munK;
-
     if (t < 0.0) return data[0];
     if (t >= static_cast<double>(nData)) return data[nData - 1];
 
-    mu = t / static_cast<double>(nData);
-    n = nData - 1;
-    result = 0.0;
-    muK = 1;
-    munK = pow(1 - mu, static_cast<double>(n));
+    const double mu = t / static_cast<double>(nData);
+    const int n = nData - 1;
+    double result = 0.0;
+    double muK = 1;
+    double munK = pow(1 - mu, static_cast<double>(n));
 
-    for (k = 0; k <= n; ++k)
+    for (int k = 0; k <= n; ++k)
     {
-        nn = n;
-        kn = k;
-        nkn = n - k;
-        blend = muK * munK;
+        int nn = n;
+        int kn = k;
+        int nkn = n - k;
+        double blend = muK * munK;
         muK *= mu;
-        munK /= (1 - mu);
+        munK /= 1 - mu;
 
         while (nn >= 1)
         {
@@ -397,52 +412,62 @@ auto Helpers::evaluateBezier(double* data, int nData, double t) -> double
     return result;
 }
 
-void pixelColor(const Framebuffer &renderer, short x, short y, unsigned int color)
+void pixelColor(Framebuffer& renderer, const short x, const short y, const unsigned int color)
 {
-    pixelRGBA(renderer, x, y, color >> 24, color >> 16, color >> 8, color);
+    pixelRGBA(renderer, x, y, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF, (color >> 24) & 0xFF);
 }
 
-void pixelRGBA(Framebuffer renderer, short x, short y, unsigned char r, unsigned char g, unsigned char b,
-               unsigned char a)
+void pixelRGBA(Framebuffer& renderer, const short x, const short y, const unsigned char r, const unsigned char g,
+               const unsigned char b, const unsigned char a)
 {
-    Pixel(renderer, x, y).draw((r << 24) | (g << 16) | (b << 8) | a);
+    Pixel(renderer, x, y).draw((a << 24) | (r << 16) | (g << 8) | b);
 }
 
-void hlineColor(const Framebuffer &renderer, short x1, short x2, short y, unsigned int color)
+void hlineColor(Framebuffer& renderer, const short x1, const short x2, const short y, const unsigned int color)
 {
-    hlineRGBA(renderer, x1, x2, y, color >> 24, color >> 16, color >> 8, color);
+    hlineRGBA(renderer, x1, x2, y, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF, (color >> 24) & 0xFF);
 }
 
-void hlineRGBA(Framebuffer renderer, short x1, short x2, short y, unsigned char r, unsigned char g, unsigned char b,
-               unsigned char a)
+void hlineRGBA(Framebuffer& renderer, const short x1, const short x2, const short y, const unsigned char r,
+               const unsigned char g, const unsigned char b, const unsigned char a)
 {
-    Line(renderer, x1, y, x2, y).draw((r << 24) | (g << 16) | (b << 8) | a);
+    Line(renderer, x1, y, x2, y).draw((a << 24) | (r << 16) | (g << 8) | b);
 }
 
-void vlineColor(const Framebuffer &renderer, short x, short y1, short y2, unsigned int color)
+void vlineColor(Framebuffer& renderer, const short x, const short y1, const short y2, const unsigned int color)
 {
-    vlineRGBA(renderer, x, y1, y2, color >> 24, color >> 16, color >> 8, color);
+    vlineRGBA(renderer, x, y1, y2, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF, (color >> 24) & 0xFF);
 }
 
-void vlineRGBA(Framebuffer renderer, short x, short y1, short y2, unsigned char r, unsigned char g, unsigned char b,
-               unsigned char a)
+void vlineRGBA(Framebuffer& renderer, const short x, const short y1, const short y2, const unsigned char r,
+               const unsigned char g, const unsigned char b, const unsigned char a)
 {
-    Line(renderer, x, y1, x, y2).draw((r << 24) | (g << 16) | (b << 8) | a);
+    Line(renderer, x, y1, x, y2).draw((a << 24) | (r << 16) | (g << 8) | b);
 }
 
-void rectangleColor(const Framebuffer &renderer, short x1, short y1, short x2, short y2, unsigned int color)
+void rectangleColor(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                    const unsigned int color)
 {
-    rectangleRGBA(renderer, x1, y1, x2, y2, color >> 24, color >> 16, color >> 8, color);
+    rectangleRGBA(renderer, x1, y1, x2, y2, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+                  (color >> 24) & 0xFF);
 }
 
-void rectangleRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2, unsigned char r, unsigned char g,
-                   unsigned char b, unsigned char a)
+void rectangleRGBA(Framebuffer& renderer, short x1, short y1, short x2, short y2, const unsigned char r,
+                   const unsigned char g, const unsigned char b, const unsigned char a)
 {
     short tmp;
 
     if (x1 == x2)
+    {
         y1 == y2 ? pixelRGBA(renderer, x1, y1, r, g, b, a) : vlineRGBA(renderer, x1, y1, y2, r, g, b, a);
-    else if (y1 == y2) hlineRGBA(renderer, x1, x2, y1, r, g, b, a);
+        return;
+    }
+
+    if (y1 == y2)
+    {
+        hlineRGBA(renderer, x1, x2, y1, r, g, b, a);
+        return;
+    }
 
     if (x1 > x2)
     {
@@ -458,28 +483,40 @@ void rectangleRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2,
         y2 = tmp;
     }
 
-    Rectangle(renderer, x1, y1, static_cast<float>(x2 - x1), static_cast<float>(y2 - y1))
-        .draw((r << 24) | (g << 16) | (b << 8) | a);
+    Rect(renderer, x1, y1, static_cast<float>(x2 - x1 + 1), static_cast<float>(y2 - y1 + 1), false).draw(
+        (a << 24) | (r << 16) | (g << 8) | b);
 }
 
-void roundedRectangleColor(const Framebuffer &renderer, short x1, short y1, short x2, short y2, short rad,
-                           unsigned int color)
+void roundedRectangleColor(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                           const short rad, const unsigned int color)
 {
-    roundedRectangleRGBA(renderer, x1, y1, x2, y2, rad, color >> 24, color >> 16, color >> 8, color);
+    roundedRectangleRGBA(renderer, x1, y1, x2, y2, rad, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+                         (color >> 24) & 0xFF);
 }
 
-void
-roundedRectangleRGBA(const Framebuffer &renderer, short x1, short y1, short x2, short y2, short rad, unsigned char r,
-                     unsigned char g, unsigned char b, unsigned char a)
+void roundedRectangleRGBA(Framebuffer& renderer, short x1, short y1, short x2, short y2, short rad,
+                          const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 {
-    short tmp, w, h, xx1, xx2, yy1, yy2;
+    short tmp;
 
     if (rad < 0) return Helpers::warn("Unable to draw rounded rectangle with negative radius");
-    if (rad <= 1) rectangleRGBA(renderer, x1, y1, x2, y2, r, g, b, a);
+    if (rad <= 1)
+    {
+        rectangleRGBA(renderer, x1, y1, x2, y2, r, g, b, a);
+        return;
+    }
 
     if (x1 == x2)
+    {
         y1 == y2 ? pixelRGBA(renderer, x1, y1, r, g, b, a) : vlineRGBA(renderer, x1, y1, y2, r, g, b, a);
-    else if (y1 == y2) hlineRGBA(renderer, x1, x2, y1, r, g, b, a);
+        return;
+    }
+
+    if (y1 == y2)
+    {
+        hlineRGBA(renderer, x1, x2, y1, r, g, b, a);
+        return;
+    }
 
     if (x1 > x2)
     {
@@ -495,16 +532,16 @@ roundedRectangleRGBA(const Framebuffer &renderer, short x1, short y1, short x2, 
         y2 = tmp;
     }
 
-    w = static_cast<short>(x2 - x1);
-    h = static_cast<short>(y2 - y1);
+    const auto w = static_cast<short>(x2 - x1);
+    const auto h = static_cast<short>(y2 - y1);
 
     if (rad * 2 > w) rad = static_cast<short>(w / 2);
     if (rad * 2 > h) rad = static_cast<short>(h / 2);
 
-    xx1 = static_cast<short>(x1 + rad);
-    xx2 = static_cast<short>(x2 - rad);
-    yy1 = static_cast<short>(y1 + rad);
-    yy2 = static_cast<short>(y2 - rad);
+    const auto xx1 = static_cast<short>(x1 + rad);
+    const auto xx2 = static_cast<short>(x2 - rad);
+    const auto yy1 = static_cast<short>(y1 + rad);
+    const auto yy2 = static_cast<short>(y2 - rad);
 
     arcRGBA(renderer, xx1, yy1, rad, 180, 270, r, g, b, a);
     arcRGBA(renderer, xx2, yy1, rad, 270, 360, r, g, b, a);
@@ -523,18 +560,19 @@ roundedRectangleRGBA(const Framebuffer &renderer, short x1, short y1, short x2, 
     }
 }
 
-void boxColor(const Framebuffer &renderer, short x1, short y1, short x2, short y2, unsigned int color)
+void boxColor(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+              const unsigned int color)
 {
-    boxRGBA(renderer, x1, y1, x2, y2, color >> 24, color >> 16, color >> 8, color);
+    boxRGBA(renderer, x1, y1, x2, y2, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF, (color >> 24) & 0xFF);
 }
 
-void boxRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2, unsigned char r, unsigned char g,
-             unsigned char b, unsigned char a)
+void boxRGBA(Framebuffer& renderer, short x1, short y1, short x2, short y2, const unsigned char r,
+             const unsigned char g,
+             const unsigned char b, const unsigned char a)
 {
     short tmp;
 
-    if (x1 == x2)
-        y1 == y2 ? pixelRGBA(renderer, x1, y1, r, g, b, a) : vlineRGBA(renderer, x1, y1, y2, r, g, b, a);
+    if (x1 == x2) y1 == y2 ? pixelRGBA(renderer, x1, y1, r, g, b, a) : vlineRGBA(renderer, x1, y1, y2, r, g, b, a);
     else if (y1 == y2) hlineRGBA(renderer, x1, x2, y1, r, g, b, a);
 
     if (x1 > x2)
@@ -551,29 +589,41 @@ void boxRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2, unsig
         y2 = tmp;
     }
 
-    Rectangle(renderer, x1, y1, static_cast<float>(x2 - x1 + 1), static_cast<float>(y2 - y1 + 1))
-        .draw((r << 24) | (g << 16) | (b << 8) | a);
+    Rect(renderer, x1, y1, static_cast<float>(x2 - x1 + 1), static_cast<float>(y2 - y1 + 1), true).draw(
+        (a << 24) | (r << 16) | (g << 8) | b);
 }
 
-void roundedBoxColor(const Framebuffer &renderer, short x1, short y1, short x2, short y2, short rad,
-                     unsigned int color)
+void roundedBoxColor(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                     const short rad, const unsigned int color)
 {
-    roundedBoxRGBA(renderer, x1, y1, x2, y2, rad, color >> 24, color >> 16, color >> 8, color);
+    roundedBoxRGBA(renderer, x1, y1, x2, y2, rad, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+                   (color >> 24) & 0xFF);
 }
 
-void roundedBoxRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2, short rad, unsigned char r,
-                    unsigned char g, unsigned char b, unsigned char a)
+void roundedBoxRGBA(Framebuffer& renderer, short x1, short y1, short x2, short y2, short rad, const unsigned char r,
+                    const unsigned char g, const unsigned char b, const unsigned char a)
 {
-    short w, h, diameter, tmp, cx = 0, cy = rad, ocx = static_cast<short>(0xffff), ocy = static_cast<short>(0xffff),
-        df = static_cast<short>(1 - rad), d_e = 3, d_se = static_cast<short>(-2 * rad + 5), xPcx, xMcx, xPcy, xMcy,
-        yPcy, yMcy, yPcx, yMcx, x, y, dx, dy;
+    short tmp, cx = 0, cy = rad, ocx = static_cast<short>(0xffff), ocy = static_cast<short>(0xffff), df
+              = static_cast<short>(1 - rad), d_e = 3, d_se = static_cast<short>(-2 * rad + 5);
 
     if (rad < 0) return Helpers::warn("Unable to draw rounded box with negative radius");
-    if (rad <= 1) boxRGBA(renderer, x1, y1, x2, y2, r, g, b, a);
+    if (rad <= 1)
+    {
+        boxRGBA(renderer, x1, y1, x2, y2, r, g, b, a);
+        return;
+    }
 
     if (x1 == x2)
+    {
         y1 == y2 ? pixelRGBA(renderer, x1, y1, r, g, b, a) : vlineRGBA(renderer, x1, y1, y2, r, g, b, a);
-    else if (y1 == y2) hlineRGBA(renderer, x1, x2, y1, r, g, b, a);
+        return;
+    }
+
+    if (y1 == y2)
+    {
+        hlineRGBA(renderer, x1, x2, y1, r, g, b, a);
+        return;
+    }
 
     if (x1 > x2)
     {
@@ -589,9 +639,9 @@ void roundedBoxRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2
         y2 = tmp;
     }
 
-    w = static_cast<short>(x2 - x1 + 1);
-    h = static_cast<short>(y2 - y1 + 1);
-    diameter = static_cast<short>(rad + rad);
+    const auto w = static_cast<short>(x2 - x1 + 1);
+    const auto h = static_cast<short>(y2 - y1 + 1);
+    auto diameter = static_cast<short>(rad + rad);
 
     if (diameter > w)
     {
@@ -600,32 +650,33 @@ void roundedBoxRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2
     }
     if (diameter > h) rad = static_cast<short>(h / 2);
 
-    x = static_cast<short>(x1 + rad);
-    y = static_cast<short>(y1 + rad);
-    dx = static_cast<short>(x2 - x1 - rad - rad);
-    dy = static_cast<short>(y2 - y1 - rad - rad);
+    const auto x = static_cast<short>(x1 + rad);
+    const auto y = static_cast<short>(y1 + rad);
+    const auto dx = static_cast<short>(x2 - x1 - rad - rad);
+    const auto dy = static_cast<short>(y2 - y1 - rad - rad);
 
     while (cx <= cy)
     {
-        xPcx = static_cast<short>(x + cx);
-        xMcx = static_cast<short>(x - cx);
-        xPcy = static_cast<short>(x + cy);
-        xMcy = static_cast<short>(x - cy);
+        const auto xPcx = static_cast<short>(x + cx);
+        const auto xMcx = static_cast<short>(x - cx);
+        const auto xPcy = static_cast<short>(x + cy);
+        const auto xMcy = static_cast<short>(x - cy);
 
         if (ocy != cy)
         {
             if (cy > 0)
             {
-                yPcy = static_cast<short>(y + cy);
-                yMcy = static_cast<short>(y - cy);
+                const auto yPcy = static_cast<short>(y + cy);
+                const auto yMcy = static_cast<short>(y - cy);
 
-                Line(renderer, xMcx, yMcy, static_cast<float>(xPcx + dx), yMcy)
-                    .draw((r << 24) | (g << 16) | (b << 8) | a);
+                Line(renderer, xMcx, yMcy, static_cast<float>(xPcx + dx), yMcy).draw(
+                    (a << 24) | (r << 16) | (g << 8) | b);
                 Line(renderer, xMcx, static_cast<float>(yPcy + dy), static_cast<float>(xPcx + dx),
-                     static_cast<float>(yPcy + dy)).draw((r << 24) | (g << 16) | (b << 8) | a);
-            } else
-                Line(renderer, xMcx, y, static_cast<float>(xPcx + dx), y)
-                    .draw((r << 24) | (g << 16) | (b << 8) | a);
+                     static_cast<float>(yPcy + dy)).draw((a << 24) | (r << 16) | (g << 8) | b);
+            }
+            else
+                Line(renderer, xMcx, y, static_cast<float>(xPcx + dx), y).draw(
+                    (a << 24) | (r << 16) | (g << 8) | b);
 
             ocy = cy;
         }
@@ -636,16 +687,17 @@ void roundedBoxRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2
             {
                 if (cx > 0)
                 {
-                    yPcx = static_cast<short>(y + cx);
-                    yMcx = static_cast<short>(y - cx);
+                    const auto yPcx = static_cast<short>(y + cx);
+                    const auto yMcx = static_cast<short>(y - cx);
 
-                    Line(renderer, xMcy, yMcx, static_cast<float>(xPcy + dx), yMcx)
-                        .draw((r << 24) | (g << 16) | (b << 8) | a);
+                    Line(renderer, xMcy, yMcx, static_cast<float>(xPcy + dx), yMcx).draw(
+                        (a << 24) | (r << 16) | (g << 8) | b);
                     Line(renderer, xMcy, static_cast<float>(yPcx + dy), static_cast<float>(xPcy + dx),
-                         static_cast<float>(yPcx + dy)).draw((r << 24) | (g << 16) | (b << 8) | a);
-                } else
-                    Line(renderer, xMcy, y, static_cast<float>(xPcy + dx), y)
-                        .draw((r << 24) | (g << 16) | (b << 8) | a);
+                         static_cast<float>(yPcx + dy)).draw((a << 24) | (r << 16) | (g << 8) | b);
+                }
+                else
+                    Line(renderer, xMcy, y, static_cast<float>(xPcy + dx), y).
+                        draw((a << 24) | (r << 16) | (g << 8) | b);
             }
 
             ocx = cx;
@@ -656,7 +708,8 @@ void roundedBoxRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2
             df = static_cast<short>(df + d_e);
             d_e += 2;
             d_se += 2;
-        } else
+        }
+        else
         {
             df = static_cast<short>(df + d_se);
             d_e += 2;
@@ -668,61 +721,64 @@ void roundedBoxRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2
     }
 
     if (dx > 0 && dy > 0)
-        boxRGBA(renderer, x1, static_cast<short>(y1 + rad + 1), x2, static_cast<short>(y2 - rad), r, g, b, a);
+        boxRGBA(renderer, x1, static_cast<short>(y1 + rad + 1), x2, static_cast<short>(y2 - rad), r,
+                g, b, a);
 }
 
-void lineColor(const Framebuffer &renderer, short x1, short y1, short x2, short y2, unsigned int color)
+void lineColor(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+               const unsigned int color)
 {
-    lineRGBA(renderer, x1, y1, x2, y2, color >> 24, color >> 16, color >> 8, color);
+    lineRGBA(renderer, x1, y1, x2, y2, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF, (color >> 24) & 0xFF);
 }
 
-void lineRGBA(Framebuffer renderer, short x1, short y1, short x2, short y2, unsigned char r, unsigned char g,
-              unsigned char b, unsigned char a)
+void lineRGBA(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+              const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 {
-    Line(renderer, x1, y1, x2, y2).draw((r << 24) | (g << 16) | (b << 8) | a);
+    Line(renderer, x1, y1, x2, y2).draw((a << 24) | (r << 16) | (g << 8) | b);
 }
 
-void aalineColor(const Framebuffer &renderer, short x1, short y1, short x2, short y2, unsigned int color)
+void aalineColor(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                 const unsigned int color)
 {
-    Helpers::aalineRGBA(renderer, x1, y1, x2, y2, color >> 24, color >> 16, color >> 8, color, true);
+    Helpers::aalineRGBA(renderer, x1, y1, x2, y2, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+                        (color >> 24) & 0xFF, true);
 }
 
-void aalineRGBA(const Framebuffer &renderer, short x1, short y1, short x2, short y2, unsigned char r, unsigned char g,
-                unsigned char b, unsigned char a)
+void aalineRGBA(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 {
     Helpers::aalineRGBA(renderer, x1, y1, x2, y2, r, g, b, a, true);
 }
 
-void circleColor(const Framebuffer &renderer, short x, short y, short rad, unsigned int color)
+void circleColor(Framebuffer& renderer, const short x, const short y, const short rad, const unsigned int color)
 {
-    circleRGBA(renderer, x, y, rad, color >> 24, color >> 16, color >> 8, color);
+    circleRGBA(renderer, x, y, rad, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF, (color >> 24) & 0xFF);
 }
 
-void
-circleRGBA(const Framebuffer &renderer, short x, short y, short rad, unsigned char r, unsigned char g, unsigned char b,
-           unsigned char a)
+void circleRGBA(Framebuffer& renderer, const short x, const short y, const short rad, const unsigned char r,
+                const unsigned char g, const unsigned char b, const unsigned char a)
 {
     ellipseRGBA(renderer, x, y, rad, rad, r, g, b, a);
 }
 
-void arcColor(const Framebuffer &renderer, short x, short y, short rad, short start, short end, unsigned int color)
+void arcColor(Framebuffer& renderer, const short x, const short y, const short rad, const short start,
+              const short end, const unsigned int color)
 {
-    arcRGBA(renderer, x, y, rad, start, end, color >> 24, color >> 16, color >> 8, color);
+    arcRGBA(renderer, x, y, rad, start, end, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+            (color >> 24) & 0xFF);
 }
 
-void arcRGBA(const Framebuffer &renderer, short x, short y, short rad, short start, short end, unsigned char r,
-             unsigned char g, unsigned char b, unsigned char a)
+void arcRGBA(Framebuffer& renderer, const short x, const short y, const short rad, short start, short end,
+             const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 {
-    int startOct, endOct, oct, stopValStart = 0, stopValEnd = 0;
-    short cx = 0, cy = rad, df = static_cast<short>(1 - rad), d_e = 3, d_se = static_cast<short>(-2 * rad + 5), xPcx,
-        xMcx, xPcy, xMcy, yPcy, yMcy, yPcx, yMcx;
-    unsigned char drawOctant;
-    double dStart, dEnd, temp = 0.0;
+    int stopValStart = 0, stopValEnd = 0;
+    short cx = 0, cy = rad, df = static_cast<short>(1 - rad), d_e = 3, d_se = static_cast<short>(-2 * rad + 5);
+    double temp = 0.0;
 
     if (rad < 0) return Helpers::warn("Unable to draw arc with negative radius");
     if (rad == 0) pixelRGBA(renderer, x, y, r, g, b, a);
 
-    drawOctant = 0;
+    unsigned char drawOctant = 0;
     start %= 360;
     end %= 360;
 
@@ -731,15 +787,15 @@ void arcRGBA(const Framebuffer &renderer, short x, short y, short rad, short sta
 
     start %= 360;
     end %= 360;
-    startOct = start / 45;
-    endOct = end / 45;
-    oct = startOct % 8;
+    const int startOct = start / 45;
+    const int endOct = end / 45;
+    int oct = startOct % 8;
 
     while (oct != endOct)
     {
         if (oct == startOct)
         {
-            dStart = static_cast<double>(start);
+            const auto dStart = static_cast<double>(start);
             switch (oct)
             {
                 case 0:
@@ -764,12 +820,12 @@ void arcRGBA(const Framebuffer &renderer, short x, short y, short rad, short sta
 
             temp *= rad;
             stopValStart = static_cast<int>(temp);
-            oct % 2 ? drawOctant |= (1 << oct) : drawOctant &= 255 - (1 << oct);
+            oct % 2 ? drawOctant |= 1 << oct : drawOctant &= 255 - (1 << oct);
         }
 
         if (oct == endOct)
         {
-            dEnd = static_cast<double>(end);
+            const auto dEnd = static_cast<double>(end);
             switch (oct)
             {
                 case 0:
@@ -797,61 +853,69 @@ void arcRGBA(const Framebuffer &renderer, short x, short y, short rad, short sta
 
             if (startOct == endOct) start > end ? drawOctant = 255 : drawOctant &= 255 - (1 << oct);
             else if (oct % 2) drawOctant &= 255 - (1 << oct);
-            else drawOctant |= (1 << oct);
-        } else if (oct != startOct) drawOctant |= (1 << oct);
+            else drawOctant |= 1 << oct;
+        }
+        else if (oct != startOct) drawOctant |= 1 << oct;
 
         oct = (oct + 1) % 8;
     }
 
     while (cx <= cy)
     {
-        yPcy = static_cast<short>(y + cy);
-        yMcy = static_cast<short>(y - cy);
+        const auto yPcy = static_cast<short>(y + cy);
+        const auto yMcy = static_cast<short>(y - cy);
 
         if (cx > 0)
         {
-            xPcx = static_cast<short>(x + cx);
-            xMcx = static_cast<short>(x - cx);
+            const auto xPcx = static_cast<short>(x + cx);
+            const auto xMcx = static_cast<short>(x - cx);
 
-            if (drawOctant & 4) Helpers::pixel(renderer, xMcx, yPcy, (r << 24) | (g << 16) | (b << 8) | a);
-            if (drawOctant & 2) Helpers::pixel(renderer, xPcx, yPcy, (r << 24) | (g << 16) | (b << 8) | a);
-            if (drawOctant & 32) Helpers::pixel(renderer, xMcx, yMcy, (r << 24) | (g << 16) | (b << 8) | a);
-            if (drawOctant & 64) Helpers::pixel(renderer, xPcx, yMcy, (r << 24) | (g << 16) | (b << 8) | a);
-        } else
+            if (drawOctant & 4) Helpers::pixel(renderer, xMcx, yPcy, (a << 24) | (r << 16) | (g << 8) | b);
+            if (drawOctant & 2) Helpers::pixel(renderer, xPcx, yPcy, (a << 24) | (r << 16) | (g << 8) | b);
+            if (drawOctant & 32) Helpers::pixel(renderer, xMcx, yMcy, (a << 24) | (r << 16) | (g << 8) | b);
+            if (drawOctant & 64) Helpers::pixel(renderer, xPcx, yMcy, (a << 24) | (r << 16) | (g << 8) | b);
+        }
+        else
         {
-            if (drawOctant & 96) Helpers::pixel(renderer, x, yMcy, (r << 24) | (g << 16) | (b << 8) | a);
-            if (drawOctant & 6) Helpers::pixel(renderer, x, yPcy, (r << 24) | (g << 16) | (b << 8) | a);
+            if (drawOctant & 96) Helpers::pixel(renderer, x, yMcy, (a << 24) | (r << 16) | (g << 8) | b);
+            if (drawOctant & 6) Helpers::pixel(renderer, x, yPcy, (a << 24) | (r << 16) | (g << 8) | b);
         }
 
-        xPcy = static_cast<short>(x + cy);
-        xMcy = static_cast<short>(x - cy);
+        const auto xPcy = static_cast<short>(x + cy);
+        const auto xMcy = static_cast<short>(x - cy);
 
         if (cx > 0 && cx != cy)
         {
-            yPcx = static_cast<short>(y + cx);
-            yMcx = static_cast<short>(y - cx);
+            const auto yPcx = static_cast<short>(y + cx);
+            const auto yMcx = static_cast<short>(y - cx);
 
-            if (drawOctant & 8) Helpers::pixel(renderer, xMcy, yPcx, (r << 24) | (g << 16) | (b << 8) | a);
-            if (drawOctant & 1) Helpers::pixel(renderer, xPcy, yPcx, (r << 24) | (g << 16) | (b << 8) | a);
-            if (drawOctant & 16) Helpers::pixel(renderer, xMcy, yMcx, (r << 24) | (g << 16) | (b << 8) | a);
-            if (drawOctant & 128) Helpers::pixel(renderer, xPcy, yMcx, (r << 24) | (g << 16) | (b << 8) | a);
-        } else if (cx == 0)
+            if (drawOctant & 8) Helpers::pixel(renderer, xMcy, yPcx, (a << 24) | (r << 16) | (g << 8) | b);
+            if (drawOctant & 1) Helpers::pixel(renderer, xPcy, yPcx, (a << 24) | (r << 16) | (g << 8) | b);
+            if (drawOctant & 16) Helpers::pixel(renderer, xMcy, yMcx, (a << 24) | (r << 16) | (g << 8) | b);
+            if (drawOctant & 128) Helpers::pixel(renderer, xPcy, yMcx, (a << 24) | (r << 16) | (g << 8) | b);
+        }
+        else if (cx == 0)
         {
-            if (drawOctant & 24) Helpers::pixel(renderer, xMcy, y, (r << 24) | (g << 16) | (b << 8) | a);
-            if (drawOctant & 129) Helpers::pixel(renderer, xPcy, y, (r << 24) | (g << 16) | (b << 8) | a);
+            if (drawOctant & 24) Helpers::pixel(renderer, xMcy, y, (a << 24) | (r << 16) | (g << 8) | b);
+            if (drawOctant & 129) Helpers::pixel(renderer, xPcy, y, (a << 24) | (r << 16) | (g << 8) | b);
         }
 
         if (stopValStart == cx)
-            drawOctant & (1 << startOct) ? drawOctant &= 255 - (1 << startOct) : drawOctant |= (1 << startOct);
+            drawOctant & 1 << startOct
+                ? drawOctant &= 255 - (1 << startOct)
+                : drawOctant |= 1 << startOct;
         if (stopValEnd == cx)
-            drawOctant & (1 << endOct) ? drawOctant &= 255 - (1 << endOct) : drawOctant |= (1 << endOct);
+            drawOctant & 1 << endOct
+                ? drawOctant &= 255 - (1 << endOct)
+                : drawOctant |= 1 << endOct;
 
         if (df < 0)
         {
             df = static_cast<short>(df + d_e);
             d_e += 2;
             d_se += 2;
-        } else
+        }
+        else
         {
             df = static_cast<short>(df + d_se);
             d_e += 2;
@@ -863,35 +927,40 @@ void arcRGBA(const Framebuffer &renderer, short x, short y, short rad, short sta
     }
 }
 
-void aacircleColor(const Framebuffer &renderer, short x, short y, short rad, unsigned int color)
+void aacircleColor(Framebuffer& renderer, const short x, const short y, const short rad, const unsigned int color)
 {
-    aaellipseRGBA(renderer, x, y, rad, rad, color >> 24, color >> 16, color >> 8, color);
+    aaellipseRGBA(renderer, x, y, rad, rad, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+                  (color >> 24) & 0xFF);
 }
 
-void aacircleRGBA(const Framebuffer &renderer, short x, short y, short rad, unsigned char r, unsigned char g,
-                  unsigned char b, unsigned char a)
+void aacircleRGBA(Framebuffer& renderer, const short x, const short y, const short rad, const unsigned char r,
+                  const unsigned char g, const unsigned char b, const unsigned char a)
 {
     aaellipseRGBA(renderer, x, y, rad, rad, r, g, b, a);
 }
 
-void ellipseColor(const Framebuffer &renderer, short x, short y, short rx, short ry, unsigned int color)
+void ellipseColor(Framebuffer& renderer, const short x, const short y, const short rx, const short ry,
+                  const unsigned int color)
 {
-    Helpers::ellipseRGBA(renderer, x, y, rx, ry, color >> 24, color >> 16, color >> 8, color, false);
+    Helpers::ellipseRGBA(renderer, x, y, rx, ry, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+                         (color >> 24) & 0xFF, false);
 }
 
-void ellipseRGBA(const Framebuffer &renderer, short x, short y, short rx, short ry, unsigned char r, unsigned char g,
-                 unsigned char b, unsigned char a)
+void ellipseRGBA(Framebuffer& renderer, const short x, const short y, const short rx, const short ry,
+                 const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 {
     Helpers::ellipseRGBA(renderer, x, y, rx, ry, r, g, b, a, false);
 }
 
-void filledCircleColor(const Framebuffer &renderer, short x, short y, short r, unsigned int color)
+void filledCircleColor(Framebuffer& renderer, const short x, const short y, const short r,
+                       const unsigned int color)
 {
-    Helpers::ellipseRGBA(renderer, x, y, r, r, color >> 24, color >> 16, color >> 8, color, true);
+    Helpers::ellipseRGBA(renderer, x, y, r, r, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+                         (color >> 24) & 0xFF, true);
 }
 
-void filledCircleRGBA(const Framebuffer &renderer, short x, short y, short rad, unsigned char r, unsigned char g,
-                      unsigned char b, unsigned char a)
+void filledCircleRGBA(Framebuffer& renderer, const short x, const short y, const short rad, const unsigned char r,
+                      const unsigned char g, const unsigned char b, const unsigned char a)
 {
     Helpers::ellipseRGBA(renderer, x, y, rad, rad, r, g, b, a, true);
 }
@@ -900,30 +969,29 @@ void filledCircleRGBA(const Framebuffer &renderer, short x, short y, short rad, 
 #   ifdef _M_X64
 #   include <emmintrin.h>
 
-static __inline long
-    lrint(double d)
+static __inline long lrint(double d)
 {
-    float f = (float)d;
+    const auto f = static_cast<float>(d);
     return _mm_cvtss_si32(_mm_load_ss(&f));
 }
 
 #   elif defined(_M_IX86)
 
-__inline long int lrint (double flt)
+__inline long int lrint(double flt)
 {
     int intgr;
     _asm
-    {
+        {
         fld flt
         fistp intgr
-    };
+        };
 
     return intgr;
 }
 #   elif defined(_M_ARM)
 #       include <armintr.h>
 
-__declspec(naked) long int lrint (double flt)
+__declspec(naked) long int lrint(double flt)
 {
     __emit(0xEC410B10);
     __emit(0xEEBD0B40);
@@ -936,41 +1004,44 @@ __declspec(naked) long int lrint (double flt)
 #   endif
 #endif
 
-void aaellipseColor(const Framebuffer &renderer, short x, short y, short rx, short ry, unsigned int color)
+void aaellipseColor(Framebuffer& renderer, const short x, const short y, const short rx, const short ry,
+                    const unsigned int color)
 {
-    aaellipseRGBA(renderer, x, y, rx, ry, color >> 24, color >> 16, color >> 8, color);
+    aaellipseRGBA(renderer, x, y, rx, ry, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+                  (color >> 24) & 0xFF);
 }
 
-void aaellipseRGBA(const Framebuffer &renderer, short x, short y, short rx, short ry, unsigned char r, unsigned char g,
-                   unsigned char b, unsigned char a)
+void aaellipseRGBA(Framebuffer& renderer, const short x, const short y, const short rx, const short ry,
+                   const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 {
-    int i, a2, b2, ds, dt, dxt, t, s, d;
-    short xp, yp, xs, ys, dyt, overdraw, xx, yy, xc2, yc2;
-    double cp, root;
+    int i;
+    short xs, ys, xx, yy;
+    double cp;
     unsigned char weight, iWeight;
 
     if (rx < 0 || ry < 0) return Helpers::warn("Unable to draw ellipse with negative radius");
     if (rx == 0)
-        ry == 0 ? pixelRGBA(renderer, x, y, r, g, b, a)
-                : vlineRGBA(renderer, x, static_cast<short>(y - ry), static_cast<short>(y + ry), r, g, b, a);
+        ry == 0
+            ? pixelRGBA(renderer, x, y, r, g, b, a)
+            : vlineRGBA(renderer, x, static_cast<short>(y - ry), static_cast<short>(y + ry), r, g, b, a);
     else if (ry == 0) hlineRGBA(renderer, static_cast<short>(x - rx), static_cast<short>(x + rx), y, r, g, b, a);
 
-    a2 = rx * rx;
-    b2 = ry * ry;
-    ds = 2 * a2;
-    dt = 2 * b2;
-    xc2 = static_cast<short>(2 * x);
-    yc2 = static_cast<short>(2 * y);
+    const int a2 = rx * rx;
+    const int b2 = ry * ry;
+    const int ds = 2 * a2;
+    const int dt = 2 * b2;
+    const auto xc2 = static_cast<short>(2 * x);
+    const auto yc2 = static_cast<short>(2 * y);
 
-    root = sqrt(static_cast<double>(a2 + b2));
-    overdraw = static_cast<short>(lrint(root * 0.01) + 1);
-    dxt = static_cast<short>(lrint(static_cast<double>(a2 / root)) + overdraw);
+    const double root = sqrt(static_cast<double>(a2 + b2));
+    const auto overdraw = static_cast<short>(lrint(root * 0.01) + 1);
+    const int dxt = static_cast<short>(lrint(a2 / root) + overdraw);
 
-    t = 0;
-    s = -2 * a2 * ry;
-    d = 0;
-    xp = x;
-    yp = static_cast<short>(y - ry);
+    int t = 0;
+    int s = -2 * a2 * ry;
+    int d = 0;
+    short xp = x;
+    auto yp = static_cast<short>(y - ry);
 
     pixelRGBA(renderer, xp, yp, r, g, b, a);
     pixelRGBA(renderer, static_cast<short>(xc2 - xp), yp, r, g, b, a);
@@ -1004,9 +1075,10 @@ void aaellipseRGBA(const Framebuffer &renderer, short x, short y, short rx, shor
 
         if (s != 0)
         {
-            cp = (float) abs(d) / (float) abs(s);
+            cp = static_cast<float>(abs(d)) / static_cast<float>(abs(s));
             if (cp > 1.0) cp = 1.0;
-        } else cp = 1.0;
+        }
+        else cp = 1.0;
 
         weight = static_cast<unsigned char>(cp * 255);
         iWeight = 255 - weight;
@@ -1027,7 +1099,7 @@ void aaellipseRGBA(const Framebuffer &renderer, short x, short y, short rx, shor
         Helpers::pixelRGBAWeight(renderer, xx, yy, r, g, b, a, weight);
     }
 
-    dyt = static_cast<short>(lrint(static_cast<double>(b2 / root)) + overdraw);
+    const auto dyt = static_cast<short>(lrint(b2 / root) + overdraw);
     for (i = 1; i <= dyt; ++i)
     {
         yp++;
@@ -1044,7 +1116,8 @@ void aaellipseRGBA(const Framebuffer &renderer, short x, short y, short rx, shor
                 d += t - b2;
                 t -= dt;
             }
-        } else
+        }
+        else
         {
             xp--;
             xs = static_cast<short>(xp - 1);
@@ -1057,7 +1130,8 @@ void aaellipseRGBA(const Framebuffer &renderer, short x, short y, short rx, shor
         {
             cp = static_cast<double>(abs(d)) / abs(t);
             if (cp > 1.0) cp = 1.0;
-        } else cp = 1.0;
+        }
+        else cp = 1.0;
 
         weight = static_cast<unsigned char>(cp * 255);
         iWeight = 255 - weight;
@@ -1079,133 +1153,121 @@ void aaellipseRGBA(const Framebuffer &renderer, short x, short y, short rx, shor
     }
 }
 
-void filledEllipseColor(const Framebuffer &renderer, short x, short y, short rx, short ry, unsigned int color)
+void filledEllipseColor(Framebuffer& renderer, const short x, const short y, const short rx, const short ry,
+                        const unsigned int color)
 {
-    Helpers::ellipseRGBA(renderer, x, y, rx, ry, color >> 24, color >> 16, color >> 8, color, true);
+    Helpers::ellipseRGBA(renderer, x, y, rx, ry, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+                         (color >> 24) & 0xFF, true);
 }
 
-void
-filledEllipseRGBA(const Framebuffer &renderer, short x, short y, short rx, short ry, unsigned char r, unsigned char g,
-                  unsigned char b, unsigned char a)
+void filledEllipseRGBA(Framebuffer& renderer, const short x, const short y, const short rx, const short ry,
+                       const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 {
     Helpers::ellipseRGBA(renderer, x, y, rx, ry, r, g, b, a, true);
 }
 
-void pieColor(const Framebuffer &renderer, short x, short y, short rad, short start, short end, unsigned int color)
+void pieColor(Framebuffer& renderer, const short x, const short y, const short rad, const short start,
+              const short end, const unsigned int color)
 {
-    Helpers::pieRGBA(renderer, x, y, rad, start, end, color >> 24, color >> 16, color >> 8, color, false);
+    Helpers::pieRGBA(renderer, x, y, rad, start, end, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+                     (color >> 24) & 0xFF, false);
 }
 
-void pieRGBA(const Framebuffer &renderer, short x, short y, short rad, short start, short end, unsigned char r,
-             unsigned char g, unsigned char b, unsigned char a)
+void pieRGBA(Framebuffer& renderer, const short x, const short y, const short rad, const short start,
+             const short end, const unsigned char r, const unsigned char g, const unsigned char b,
+             const unsigned char a) { Helpers::pieRGBA(renderer, x, y, rad, start, end, r, g, b, a, false); }
+
+void filledPieColor(Framebuffer& renderer, const short x, const short y, const short rad, const short start,
+                    const short end, const unsigned int color)
 {
-    Helpers::pieRGBA(renderer, x, y, rad, start, end, r, g, b, a, false);
+    Helpers::pieRGBA(renderer, x, y, rad, start, end, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+                     (color >> 24) & 0xFF, true);
 }
 
-void filledPieColor(const Framebuffer &renderer, short x, short y, short rad, short start, short end,
-                    unsigned int color)
-{
-    Helpers::pieRGBA(renderer, x, y, rad, start, end, color >> 24, color >> 16, color >> 8, color, true);
-}
+void filledPieRGBA(Framebuffer& renderer, const short x, const short y, const short rad, const short start,
+                   const short end, const unsigned char r, const unsigned char g, const unsigned char b,
+                   const unsigned char a) { Helpers::pieRGBA(renderer, x, y, rad, start, end, r, g, b, a, true); }
 
-void filledPieRGBA(const Framebuffer &renderer, short x, short y, short rad, short start, short end, unsigned char r,
-                   unsigned char g, unsigned char b, unsigned char a)
+void trigonColor(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                 const short x3, const short y3, const unsigned int color)
 {
-    Helpers::pieRGBA(renderer, x, y, rad, start, end, r, g, b, a, true);
-}
-
-void trigonColor(const Framebuffer &renderer, short x1, short y1, short x2, short y2, short x3, short y3,
-                 unsigned int color)
-{
-    short vx[3] = {x1, x2, x3}, vy[3] = {y1, y2, y3};
+    const short vx[3] = {x1, x2, x3}, vy[3] = {y1, y2, y3};
     polygonColor(renderer, vx, vy, 3, color);
 }
 
-void
-trigonRGBA(const Framebuffer &renderer, short x1, short y1, short x2, short y2, short x3, short y3, unsigned char r,
-           unsigned char g, unsigned char b, unsigned char a)
+void trigonRGBA(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                const short x3, const short y3, const unsigned char r, const unsigned char g, const unsigned char b,
+                const unsigned char a)
 {
-    short vx[3] = {x1, x2, x3}, vy[3] = {y1, y2, y3};
+    const short vx[3] = {x1, x2, x3}, vy[3] = {y1, y2, y3};
     polygonRGBA(renderer, vx, vy, 3, r, g, b, a);
 }
 
-void aatrigonColor(const Framebuffer &renderer, short x1, short y1, short x2, short y2, short x3, short y3,
-                   unsigned int color)
+void aatrigonColor(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                   const short x3, const short y3, const unsigned int color)
 {
-    short vx[3] = {x1, x2, x3}, vy[3] = {y1, y2, y3};
+    const short vx[3] = {x1, x2, x3}, vy[3] = {y1, y2, y3};
     aapolygonColor(renderer, vx, vy, 3, color);
 }
 
-void
-aatrigonRGBA(const Framebuffer &renderer, short x1, short y1, short x2, short y2, short x3, short y3, unsigned char r,
-             unsigned char g, unsigned char b, unsigned char a)
+void aatrigonRGBA(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                  const short x3, const short y3, const unsigned char r, const unsigned char g, const unsigned char b,
+                  const unsigned char a)
 {
-    short vx[3] = {x1, x2, x3}, vy[3] = {y1, y2, y3};
+    const short vx[3] = {x1, x2, x3}, vy[3] = {y1, y2, y3};
     aapolygonRGBA(renderer, vx, vy, 3, r, g, b, a);
 }
 
-void filledTrigonColor(const Framebuffer &renderer, short x1, short y1, short x2, short y2, short x3, short y3,
-                       unsigned int color)
+void filledTrigonColor(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                       const short x3, const short y3, const unsigned int color)
 {
-    short vx[3] = {x1, x2, x3}, vy[3] = {y1, y2, y3};
+    const short vx[3] = {x1, x2, x3}, vy[3] = {y1, y2, y3};
     filledPolygonColor(renderer, vx, vy, 3, color);
 }
 
-void filledTrigonRGBA(const Framebuffer &renderer, short x1, short y1, short x2, short y2, short x3, short y3,
-                      unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+void filledTrigonRGBA(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                      const short x3, const short y3, const unsigned char r, const unsigned char g,
+                      const unsigned char b, const unsigned char a)
 {
-    short vx[3] = {x1, x2, x3}, vy[3] = {y1, y2, y3};
+    const short vx[3] = {x1, x2, x3}, vy[3] = {y1, y2, y3};
     filledPolygonRGBA(renderer, vx, vy, 3, r, g, b, a);
 }
 
-void polygonColor(const Framebuffer &renderer, const short* vx, const short* vy, int n, unsigned int color)
+void polygonColor(Framebuffer& renderer, const short* vx, const short* vy, const int n, const unsigned int color)
 {
-    polygonRGBA(renderer, vx, vy, n, color >> 24, color >> 16, color >> 8, color);
+    polygonRGBA(renderer, vx, vy, n, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF, (color >> 24) & 0xFF);
 }
 
-void polygonRGBA(const Framebuffer &renderer, const short* vx, const short* vy, int n, unsigned char r, unsigned char g,
-                 unsigned char b, unsigned char a)
+void polygonRGBA(Framebuffer& renderer, const short* vx, const short* vy, const int n, const unsigned char r,
+                 const unsigned char g, const unsigned char b, const unsigned char a)
 {
     if (vx == nullptr || vy == nullptr || n < 3) return Helpers::warn("Unable to draw polygon with less than 3 points");
 
-    Helpers::polygon(renderer, vx, vy, n, (r << 24) | (g << 16) | (b << 8) | a);
+    Helpers::polygon(renderer, vx, vy, n, (a << 24) | (r << 16) | (g << 8) | b);
 }
 
-void aapolygonColor(const Framebuffer &renderer, const short* vx, const short* vy, int n, unsigned int color)
+void aapolygonColor(Framebuffer& renderer, const short* vx, const short* vy, const int n,
+                    const unsigned int color)
 {
-    aapolygonRGBA(renderer, vx, vy, n, color >> 24, color >> 16, color >> 8, color);
+    aapolygonRGBA(renderer, vx, vy, n, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF, (color >> 24) & 0xFF);
 }
 
-void
-aapolygonRGBA(const Framebuffer &renderer, const short* vx, const short* vy, int n, unsigned char r, unsigned char g,
-              unsigned char b, unsigned char a)
+void aapolygonRGBA(Framebuffer& renderer, const short* vx, const short* vy, const int n, const unsigned char r,
+                   const unsigned char g, const unsigned char b, const unsigned char a)
 {
-    int i;
-    const short* x1, * y1, * x2, * y2;
-
     if (vx == nullptr || vy == nullptr || n < 3) return Helpers::warn("Unable to draw polygon with less than 3 points");
-
-    x1 = x2 = vx;
-    y1 = y2 = vy;
-    x2++;
-    y2++;
-
-    for (i = 1; i < n; ++i)
+    for (int i = 0; i < n; ++i)
     {
-        Helpers::aalineRGBA(renderer, *x1, *y1, *x2, *y2, r, g, b, a, false);
-
-        x1 = x2;
-        y1 = y2;
-        x2++;
-        y2++;
+        const int j = (i + 1) % n;
+        Helpers::aalineRGBA(renderer, vx[i], vy[i], vx[j], vy[j], r, g, b, a, false);
     }
 }
 
-void filledPolygonRGBAMT(const Framebuffer &renderer, const short* vx, const short* vy, int n, unsigned char r,
-                         unsigned char g, unsigned char b, unsigned char a, int** polyInts, int* polyAllocated)
+void filledPolygonRGBAMT(Framebuffer& renderer, const short* vx, const short* vy, const int n,
+                         const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a,
+                         int** polyInts, int* polyAllocated)
 {
-    int i, y, xa, xb, miny, maxy, x1, y1, x2, y2, ind1, ind2, ints, * polygonInts, * polygonIntsNew,
-        polygonAllocated = 0;
+    int i, x1, x2, *polygonInts = nullptr, polygonAllocated = 0;
     if (vx == nullptr || vy == nullptr || n < 3) return Helpers::warn("Unable to draw polygon with less than 3 points");
 
     if (polyInts != nullptr && polyAllocated != nullptr)
@@ -1216,11 +1278,12 @@ void filledPolygonRGBAMT(const Framebuffer &renderer, const short* vx, const sho
 
     if (!polygonAllocated)
     {
-        polygonInts = reinterpret_cast<int*>(malloc(sizeof(int) * n));
+        polygonInts = static_cast<int*>(malloc(sizeof(int) * n));
         polygonAllocated = n;
-    } else if (polygonAllocated < n)
+    }
+    else if (polygonAllocated < n)
     {
-        polygonIntsNew = reinterpret_cast<int*>(realloc(polygonInts, sizeof(int) * n));
+        int* polygonIntsNew = static_cast<int*>(realloc(polygonInts, sizeof(int) * n));
         if (!polygonIntsNew)
         {
             if (!polygonInts)
@@ -1230,7 +1293,8 @@ void filledPolygonRGBAMT(const Framebuffer &renderer, const short* vx, const sho
             }
 
             polygonAllocated = 0;
-        } else
+        }
+        else
         {
             polygonInts = polygonIntsNew;
             polygonAllocated = n;
@@ -1242,46 +1306,49 @@ void filledPolygonRGBAMT(const Framebuffer &renderer, const short* vx, const sho
     if (polyAllocated != nullptr) *polyAllocated = polygonAllocated;
     if (polygonInts == nullptr) return Helpers::warn("Unable to allocate space for polygon fill");
 
-    miny = vy[0];
-    maxy = vy[0];
+    int miny = vy[0];
+    int maxy = vy[0];
 
-    for (i = 1; (i < n); ++i)
+    for (i = 1; i < n; ++i)
         if (vy[i] < miny) miny = vy[i];
         else if (vy[i] > maxy) maxy = vy[i];
 
-    for (y = miny; (y <= maxy); ++y)
+    for (int y = miny; y <= maxy; ++y)
     {
-        ints = 0;
-        for (i = 0; (i < n); ++i)
+        int ints = 0;
+        for (i = 0; i < n; ++i)
         {
-            ind1 = i ? i - 1 : n - 1;
-            ind2 = i ? i : 0;
-            y1 = vy[ind1];
-            y2 = vy[ind2];
+            const int ind1 = i ? i - 1 : n - 1;
+            const int ind2 = i ? i : 0;
+            int y1 = vy[ind1];
+            int y2 = vy[ind2];
 
             if (y1 < y2)
             {
                 x1 = vx[ind1];
                 x2 = vx[ind2];
-            } else if (y1 > y2)
+            }
+            else if (y1 > y2)
             {
                 y2 = vy[ind1];
                 y1 = vy[ind2];
                 x2 = vx[ind1];
                 x1 = vx[ind2];
-            } else continue;
+            }
+            else continue;
 
             if ((y >= y1 && y < y2) || (y == maxy && y > y1 && y <= y2))
-                polygonInts[ints++] = ((65536 * (y - y1)) / (y2 - y1)) * (x2 - x1) + (65536 * x1);
+                polygonInts[ints++] = 65536 * (y - y1) / (y2
+                    - y1) * (x2 - x1) + 65536 * x1;
         }
 
         qsort(polygonInts, ints, sizeof(int), Helpers::compareInt);
 
-        for (i = 0; (i < ints); i += 2)
+        for (i = 0; i < ints; i += 2)
         {
-            xa = polygonInts[i] + 1;
+            int xa = polygonInts[i] + 1;
             xa = (xa >> 16) + ((xa & 32768) >> 15);
-            xb = polygonInts[i + 1] - 1;
+            int xb = polygonInts[i + 1] - 1;
             xb = (xb >> 16) + ((xb & 32768) >> 15);
 
             hlineRGBA(renderer, static_cast<short>(xa), static_cast<short>(xb), static_cast<short>(y), r, g, b, a);
@@ -1289,34 +1356,36 @@ void filledPolygonRGBAMT(const Framebuffer &renderer, const short* vx, const sho
     }
 }
 
-void filledPolygonColor(const Framebuffer &renderer, const short* vx, const short* vy, int n, unsigned int color)
+void filledPolygonColor(Framebuffer& renderer, const short* vx, const short* vy, const int n,
+                        const unsigned int color)
 {
-    filledPolygonRGBAMT(renderer, vx, vy, n, color >> 24, color >> 16, color >> 8, color, nullptr, nullptr);
+    filledPolygonRGBAMT(renderer, vx, vy, n, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+                        (color >> 24) & 0xFF, nullptr, nullptr);
 }
 
-void filledPolygonRGBA(const Framebuffer &renderer, const short* vx, const short* vy, int n, unsigned char r,
-                       unsigned char g, unsigned char b, unsigned char a)
+void filledPolygonRGBA(Framebuffer& renderer, const short* vx, const short* vy, const int n,
+                       const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a)
 {
     filledPolygonRGBAMT(renderer, vx, vy, n, r, g, b, a, nullptr, nullptr);
 }
 
-void bezierColor(const Framebuffer &renderer, const short* vx, const short* vy, int n, int s, unsigned int color)
+void bezierColor(Framebuffer& renderer, const short* vx, const short* vy, const int n, const int s,
+                 const unsigned int color)
 {
-    bezierRGBA(renderer, vx, vy, n, s, color >> 24, color >> 16, color >> 8, color);
+    bezierRGBA(renderer, vx, vy, n, s, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF, (color >> 24) & 0xFF);
 }
 
-void bezierRGBA(Framebuffer renderer, const short* vx, const short* vy, int n, int s, unsigned char r,
-                unsigned char g, unsigned char b, unsigned char a)
+void bezierRGBA(Framebuffer& renderer, const short* vx, const short* vy, const int n, const int s,
+                const unsigned char r,
+                const unsigned char g, const unsigned char b, const unsigned char a)
 {
     int i;
-    double* x, * y, t, stepSize;
-    short x1, y1, x2, y2;
 
     if (n < 3 || s < 2) return Helpers::warn("Unable to draw bezier curve with less than 3 points or 2 subdivisions");
-    stepSize = static_cast<double>(1.0 / s);
+    const double stepSize = 1.0 / s;
 
-    x = reinterpret_cast<double*>(malloc(sizeof(double) * (n + 1)));
-    y = reinterpret_cast<double*>(malloc(sizeof(double) * (n + 1)));
+    const auto x = static_cast<double*>(malloc(sizeof(double) * (n + 1)));
+    const auto y = static_cast<double*>(malloc(sizeof(double) * (n + 1)));
 
     if (x == nullptr || y == nullptr)
     {
@@ -1335,16 +1404,16 @@ void bezierRGBA(Framebuffer renderer, const short* vx, const short* vy, int n, i
     x[n] = static_cast<double>(vx[0]);
     y[n] = static_cast<double>(vy[0]);
 
-    t = 0.0;
-    x1 = static_cast<short>(lrint(Helpers::evaluateBezier(x, n + 1, t)));
-    y1 = static_cast<short>(lrint(Helpers::evaluateBezier(y, n + 1, t)));
+    double t = 0.0;
+    auto x1 = static_cast<short>(lrint(Helpers::evaluateBezier(x, n + 1, t)));
+    auto y1 = static_cast<short>(lrint(Helpers::evaluateBezier(y, n + 1, t)));
 
     for (i = 0; i <= n * s; ++i)
     {
         t += stepSize;
-        x2 = static_cast<short>(Helpers::evaluateBezier(x, n, t));
-        y2 = static_cast<short>(Helpers::evaluateBezier(y, n, t));
-        Line(renderer, x1, y1, x2, y2).draw((r << 24) | (g << 16) | (b << 8) | a);
+        const auto x2 = static_cast<short>(Helpers::evaluateBezier(x, n, t));
+        const auto y2 = static_cast<short>(Helpers::evaluateBezier(y, n, t));
+        Line(renderer, x1, y1, x2, y2).draw((a << 24) | (r << 16) | (g << 8) | b);
 
         x1 = x2;
         y1 = y2;
@@ -1354,49 +1423,51 @@ void bezierRGBA(Framebuffer renderer, const short* vx, const short* vy, int n, i
     free(y);
 }
 
-void thickLineColor(const Framebuffer &renderer, short x1, short y1, short x2, short y2, unsigned char width,
-                    unsigned int color)
+void thickLineColor(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                    const unsigned char width, const unsigned int color)
 {
-    thickLineRGBA(renderer, x1, y1, x2, y2, width, color >> 24, color >> 16, color >> 8, color);
+    thickLineRGBA(renderer, x1, y1, x2, y2, width, (color >> 16) & 0xFF, (color >> 8) & 0xFF, (color) & 0xFF,
+                  (color >> 24) & 0xFF);
 }
 
-void
-thickLineRGBA(const Framebuffer &renderer, short x1, short y1, short x2, short y2, unsigned char width, unsigned char r,
-              unsigned char g, unsigned char b, unsigned char a)
+void thickLineRGBA(Framebuffer& renderer, const short x1, const short y1, const short x2, const short y2,
+                   const unsigned char width, const unsigned char r, const unsigned char g, const unsigned char b,
+                   const unsigned char a)
 {
-    int wh;
-    double dx, dy, dx1, dy1, dx2, dy2, l, wl2, nx, ny, ang, adj;
-
     if (width < 1) return Helpers::warn("Unable to draw thick line with width less than 1");
 
     if (x1 == x2 && y1 == y2)
     {
-        wh = width / 2;
-        boxRGBA(renderer, static_cast<short>(x1 - wh), static_cast<short>(y1 - wh),
-                static_cast<short>(x2 + width), static_cast<short>(y2 + width), r, g, b, a);
+        const int wh = width / 2;
+        boxRGBA(renderer, static_cast<short>(x1 - wh), static_cast<short>(y1 - wh), static_cast<short>(x2 + width),
+                static_cast<short>(y2 + width), r, g, b, a);
     }
 
     if (width == 1) lineRGBA(renderer, x1, y1, x2, y2, r, g, b, a);
 
-    dx = static_cast<double>(x2 - x1);
-    dy = static_cast<double>(y2 - y1);
+    const auto dx = static_cast<double>(x2 - x1);
+    const auto dy = static_cast<double>(y2 - y1);
 
-    l = sqrt(dx * dx + dy * dy);
-    ang = atan2(dx, dy);
-    adj = 0.1 + 0.9 * fabs(cos(2.0 * ang));
-    wl2 = static_cast<double>(width - adj) / (2.0 * l);
-    nx = dx * wl2;
-    ny = dy * wl2;
+    const double l = sqrt(dx * dx + dy * dy);
+    const double ang = atan2(dx, dy);
+    const double adj = 0.1 + 0.9 * fabs(cos(2.0 * ang));
+    const double wl2 = (width - adj) / (2.0 * l);
+    const double nx = dx * wl2;
+    const double ny = dy * wl2;
 
-    dx1 = static_cast<double>(x1);
-    dy1 = static_cast<double>(y1);
-    dx2 = static_cast<double>(x2);
-    dy2 = static_cast<double>(y2);
+    const auto dx1 = static_cast<double>(x1);
+    const auto dy1 = static_cast<double>(y1);
+    const auto dx2 = static_cast<double>(x2);
+    const auto dy2 = static_cast<double>(y2);
 
-    short px[4] = {static_cast<short>(dx1 + ny), static_cast<short>(dx1 - ny), static_cast<short>(dx2 - ny),
-                   static_cast<short>(dx2 + ny)};
-    short py[4] = {static_cast<short>(dy1 - nx), static_cast<short>(dy1 + nx), static_cast<short>(dy2 + nx),
-                   static_cast<short>(dy2 - nx)};
+    const short px[4] = {
+        static_cast<short>(dx1 + ny), static_cast<short>(dx1 - ny), static_cast<short>(dx2 - ny),
+        static_cast<short>(dx2 + ny)
+    };
+    const short py[4] = {
+        static_cast<short>(dy1 - nx), static_cast<short>(dy1 + nx), static_cast<short>(dy2 + nx),
+        static_cast<short>(dy2 - nx)
+    };
 
     filledPolygonRGBA(renderer, px, py, 4, r, g, b, a);
 }

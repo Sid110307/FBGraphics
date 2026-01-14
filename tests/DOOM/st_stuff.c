@@ -18,8 +18,6 @@
 //	Does palette indicators as well (red pain/berserk, bright pickup)
 //
 
-
-
 #include <stdio.h>
 
 #include "i_system.h"
@@ -61,7 +59,6 @@
 //
 // STATUS BAR DATA
 //
-
 
 // Palette indices.
 // For damage/bonus red-/gold-shifts
@@ -121,7 +118,6 @@
 #define ST_RAMPAGEDELAY        (2*TICRATE)
 
 #define ST_MUCHPAIN            20
-
 
 // Location and size of statistics,
 //  justified according to widget type.
@@ -389,16 +385,10 @@ cheatseq_t cheat_ammonokey = CHEAT("idfa", 0);
 cheatseq_t cheat_noclip = CHEAT("idspispopd", 0);
 cheatseq_t cheat_commercial_noclip = CHEAT("idclip", 0);
 
-cheatseq_t cheat_powerup[7] =
-    {
-        CHEAT("idbeholdv", 0),
-        CHEAT("idbeholds", 0),
-        CHEAT("idbeholdi", 0),
-        CHEAT("idbeholdr", 0),
-        CHEAT("idbeholda", 0),
-        CHEAT("idbeholdl", 0),
-        CHEAT("idbehold", 0),
-    };
+cheatseq_t cheat_powerup[7] = {
+    CHEAT("idbeholdv", 0), CHEAT("idbeholds", 0), CHEAT("idbeholdi", 0), CHEAT("idbeholdr", 0), CHEAT("idbeholda", 0),
+    CHEAT("idbeholdl", 0), CHEAT("idbehold", 0),
+};
 
 cheatseq_t cheat_choppers = CHEAT("idchoppers", 0);
 cheatseq_t cheat_clev = CHEAT("idclev", 2);
@@ -411,33 +401,28 @@ void ST_Stop(void);
 
 void ST_refreshBackground(void)
 {
-
     if (st_statusbaron)
     {
         V_UseBuffer(st_backing_screen);
 
         V_DrawPatch(ST_X, 0, sbar);
 
-        if (netgame)
-            V_DrawPatch(ST_FX, 0, faceback);
+        if (netgame) V_DrawPatch(ST_FX, 0, faceback);
 
         V_RestoreBuffer();
 
         V_CopyRect(ST_X, 0, st_backing_screen, ST_WIDTH, ST_HEIGHT, ST_X, ST_Y);
     }
-
 }
 
 // Respond to keyboard input events,
 //  intercept cheats.
-boolean
-ST_Responder(event_t* ev)
+boolean ST_Responder(const event_t* ev)
 {
     int i;
 
     // Filter automap on/off.
-    if (ev->type == ev_keyup
-        && ((ev->data1 & 0xffff0000) == AM_MSGHEADER))
+    if (ev->type == ev_keyup && (ev->data1 & 0xffff0000) == AM_MSGHEADER)
     {
         switch (ev->data1)
         {
@@ -453,7 +438,7 @@ ST_Responder(event_t* ev)
         }
     }
 
-        // if a user keypress...
+    // if a user keypress...
     else if (ev->type == ev_keydown)
     {
         if (!netgame && gameskill != sk_nightmare)
@@ -464,49 +449,42 @@ ST_Responder(event_t* ev)
                 plyr->cheats ^= CF_GODMODE;
                 if (plyr->cheats & CF_GODMODE)
                 {
-                    if (plyr->mo)
-                        plyr->mo->health = 100;
+                    if (plyr->mo) plyr->mo->health = 100;
 
                     plyr->health = deh_god_mode_health;
                     plyr->message = DEH_String(STSTR_DQDON);
-                } else
-                    plyr->message = DEH_String(STSTR_DQDOFF);
+                }
+                else plyr->message = DEH_String(STSTR_DQDOFF);
             }
-                // 'fa' cheat for killer fucking arsenal
+            // 'fa' cheat for killer fucking arsenal
             else if (cht_CheckCheat(&cheat_ammonokey, ev->data2))
             {
                 plyr->armorpoints = deh_idfa_armor;
                 plyr->armortype = deh_idfa_armor_class;
 
-                for (i = 0; i < NUMWEAPONS; i++)
-                    plyr->weaponowned[i] = true;
+                for (i = 0; i < NUMWEAPONS; i++) plyr->weaponowned[i] = true;
 
-                for (i = 0; i < NUMAMMO; i++)
-                    plyr->ammo[i] = plyr->maxammo[i];
+                for (i = 0; i < NUMAMMO; i++) plyr->ammo[i] = plyr->maxammo[i];
 
                 plyr->message = DEH_String(STSTR_FAADDED);
             }
-                // 'kfa' cheat for key full ammo
+            // 'kfa' cheat for key full ammo
             else if (cht_CheckCheat(&cheat_ammo, ev->data2))
             {
                 plyr->armorpoints = deh_idkfa_armor;
                 plyr->armortype = deh_idkfa_armor_class;
 
-                for (i = 0; i < NUMWEAPONS; i++)
-                    plyr->weaponowned[i] = true;
+                for (i = 0; i < NUMWEAPONS; i++) plyr->weaponowned[i] = true;
 
-                for (i = 0; i < NUMAMMO; i++)
-                    plyr->ammo[i] = plyr->maxammo[i];
+                for (i = 0; i < NUMAMMO; i++) plyr->ammo[i] = plyr->maxammo[i];
 
-                for (i = 0; i < NUMCARDS; i++)
-                    plyr->cards[i] = true;
+                for (i = 0; i < NUMCARDS; i++) plyr->cards[i] = true;
 
                 plyr->message = DEH_String(STSTR_KFAADDED);
             }
-                // 'mus' cheat for changing music
+            // 'mus' cheat for changing music
             else if (cht_CheckCheat(&cheat_mus, ev->data2))
             {
-
                 char buf[3];
                 int musnum;
 
@@ -522,23 +500,19 @@ ST_Responder(event_t* ev)
                 {
                     musnum = mus_runnin + (buf[0] - '0') * 10 + buf[1] - '0' - 1;
 
-                    if (((buf[0] - '0') * 10 + buf[1] - '0') > 35)
-                        plyr->message = DEH_String(STSTR_NOMUS);
-                    else
-                        S_ChangeMusic(musnum, 1);
-                } else
+                    if ((buf[0] - '0') * 10 + buf[1] - '0' > 35) plyr->message = DEH_String(STSTR_NOMUS);
+                    else S_ChangeMusic(musnum, 1);
+                }
+                else
                 {
                     musnum = mus_e1m1 + (buf[0] - '1') * 9 + (buf[1] - '1');
 
-                    if (((buf[0] - '1') * 9 + buf[1] - '1') > 31)
-                        plyr->message = DEH_String(STSTR_NOMUS);
-                    else
-                        S_ChangeMusic(musnum, 1);
+                    if ((buf[0] - '1') * 9 + buf[1] - '1' > 31) plyr->message = DEH_String(STSTR_NOMUS);
+                    else S_ChangeMusic(musnum, 1);
                 }
-            } else if ((logical_gamemission == doom
-                        && cht_CheckCheat(&cheat_noclip, ev->data2))
-                       || (logical_gamemission != doom
-                           && cht_CheckCheat(&cheat_commercial_noclip, ev->data2)))
+            }
+            else if ((logical_gamemission == doom && cht_CheckCheat(&cheat_noclip, ev->data2)) || (logical_gamemission
+                != doom && cht_CheckCheat(&cheat_commercial_noclip, ev->data2)))
             {
                 // Noclip cheat.
                 // For Doom 1, use the idspipsopd cheat; for all others, use
@@ -546,47 +520,37 @@ ST_Responder(event_t* ev)
 
                 plyr->cheats ^= CF_NOCLIP;
 
-                if (plyr->cheats & CF_NOCLIP)
-                    plyr->message = DEH_String(STSTR_NCON);
-                else
-                    plyr->message = DEH_String(STSTR_NCOFF);
+                if (plyr->cheats & CF_NOCLIP) plyr->message = DEH_String(STSTR_NCON);
+                else plyr->message = DEH_String(STSTR_NCOFF);
             }
             // 'behold?' power-up cheats
             for (i = 0; i < 6; i++)
             {
                 if (cht_CheckCheat(&cheat_powerup[i], ev->data2))
                 {
-                    if (!plyr->powers[i])
-                        P_GivePower(plyr, i);
-                    else if (i != pw_strength)
-                        plyr->powers[i] = 1;
-                    else
-                        plyr->powers[i] = 0;
+                    if (!plyr->powers[i]) P_GivePower(plyr, i);
+                    else if (i != pw_strength) plyr->powers[i] = 1;
+                    else plyr->powers[i] = 0;
 
                     plyr->message = DEH_String(STSTR_BEHOLDX);
                 }
             }
 
             // 'behold' power-up menu
-            if (cht_CheckCheat(&cheat_powerup[6], ev->data2))
-            {
-                plyr->message = DEH_String(STSTR_BEHOLD);
-            }
-                // 'choppers' invulnerability & chainsaw
+            if (cht_CheckCheat(&cheat_powerup[6], ev->data2)) { plyr->message = DEH_String(STSTR_BEHOLD); }
+            // 'choppers' invulnerability & chainsaw
             else if (cht_CheckCheat(&cheat_choppers, ev->data2))
             {
                 plyr->weaponowned[wp_chainsaw] = true;
                 plyr->powers[pw_invulnerability] = true;
                 plyr->message = DEH_String(STSTR_CHOPPERS);
             }
-                // 'mypos' for player position
+            // 'mypos' for player position
             else if (cht_CheckCheat(&cheat_mypos, ev->data2))
             {
                 static char buf[ST_MSGWIDTH];
-                M_snprintf(buf, sizeof(buf), "ang=0x%x;x,y=(0x%x,0x%x)",
-                           players[consoleplayer].mo->angle,
-                           players[consoleplayer].mo->x,
-                           players[consoleplayer].mo->y);
+                M_snprintf(buf, sizeof(buf), "ang=0x%x;x,y=(0x%x,0x%x)", players[consoleplayer].mo->angle,
+                           players[consoleplayer].mo->x, players[consoleplayer].mo->y);
                 plyr->message = buf;
             }
         }
@@ -604,7 +568,8 @@ ST_Responder(event_t* ev)
             {
                 epsd = 1;
                 map = (buf[0] - '0') * 10 + buf[1] - '0';
-            } else
+            }
+            else
             {
                 epsd = buf[0] - '0';
                 map = buf[1] - '0';
@@ -612,36 +577,23 @@ ST_Responder(event_t* ev)
 
             // Chex.exe always warps to episode 1.
 
-            if (gameversion == exe_chex)
-            {
-                epsd = 1;
-            }
+            if (gameversion == exe_chex) { epsd = 1; }
 
             // Catch invalid maps.
-            if (epsd < 1)
-                return false;
+            if (epsd < 1) return false;
 
-            if (map < 1)
-                return false;
+            if (map < 1) return false;
 
             // Ohmygod - this is not going to work.
-            if ((gamemode == retail)
-                && ((epsd > 4) || (map > 9)))
-                return false;
+            if (gamemode == retail && (epsd > 4 || map > 9)) return false;
 
-            if ((gamemode == registered)
-                && ((epsd > 3) || (map > 9)))
-                return false;
+            if (gamemode == registered && (epsd > 3 || map > 9)) return false;
 
-            if ((gamemode == shareware)
-                && ((epsd > 1) || (map > 9)))
-                return false;
+            if (gamemode == shareware && (epsd > 1 || map > 9)) return false;
 
             // The source release has this check as map > 34. However, Vanilla
             // Doom allows IDCLEV up to MAP40 even though it normally crashes.
-            if ((gamemode == commercial)
-                && ((epsd > 1) || (map > 40)))
-                return false;
+            if (gamemode == commercial && (epsd > 1 || map > 40)) return false;
 
             // So be it.
             plyr->message = DEH_String(STSTR_CLEV);
@@ -653,15 +605,14 @@ ST_Responder(event_t* ev)
 
 int ST_calcPainOffset(void)
 {
-    int health;
     static int lastcalc;
     static int oldhealth = -1;
 
-    health = plyr->health > 100 ? 100 : plyr->health;
+    const int health = plyr->health > 100 ? 100 : plyr->health;
 
     if (health != oldhealth)
     {
-        lastcalc = ST_FACESTRIDE * (((100 - health) * ST_NUMPAINFACES) / 101);
+        lastcalc = ST_FACESTRIDE * ((100 - health) * ST_NUMPAINFACES / 101);
         oldhealth = health;
     }
     return lastcalc;
@@ -676,11 +627,9 @@ int ST_calcPainOffset(void)
 void ST_updateFaceWidget(void)
 {
     int i;
-    angle_t badguyangle;
     angle_t diffang;
     static int lastattackdown = -1;
     static int priority = 0;
-    boolean doevilgrin;
 
     if (priority < 10)
     {
@@ -698,7 +647,7 @@ void ST_updateFaceWidget(void)
         if (plyr->bonuscount)
         {
             // picking up bonus
-            doevilgrin = false;
+            boolean doevilgrin = false;
 
             for (i = 0; i < NUMWEAPONS; i++)
             {
@@ -716,14 +665,11 @@ void ST_updateFaceWidget(void)
                 st_faceindex = ST_calcPainOffset() + ST_EVILGRINOFFSET;
             }
         }
-
     }
 
     if (priority < 8)
     {
-        if (plyr->damagecount
-            && plyr->attacker
-            && plyr->attacker != plyr->mo)
+        if (plyr->damagecount && plyr->attacker && plyr->attacker != plyr->mo)
         {
             // being attacked
             priority = 7;
@@ -732,25 +678,22 @@ void ST_updateFaceWidget(void)
             {
                 st_facecount = ST_TURNCOUNT;
                 st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
-            } else
-            {
-                badguyangle = R_PointToAngle2(plyr->mo->x,
-                                              plyr->mo->y,
-                                              plyr->attacker->x,
-                                              plyr->attacker->y);
+            }
+            else
+            { const angle_t badguyangle = R_PointToAngle2(plyr->mo->x, plyr->mo->y, plyr->attacker->x, plyr->attacker->y);
 
                 if (badguyangle > plyr->mo->angle)
                 {
                     // whether right or left
                     diffang = badguyangle - plyr->mo->angle;
                     i = diffang > ANG180;
-                } else
+                }
+                else
                 {
                     // whether left or right
                     diffang = plyr->mo->angle - badguyangle;
                     i = diffang <= ANG180;
                 } // confusing, aint it?
-
 
                 st_facecount = ST_TURNCOUNT;
                 st_faceindex = ST_calcPainOffset();
@@ -759,11 +702,13 @@ void ST_updateFaceWidget(void)
                 {
                     // head-on
                     st_faceindex += ST_RAMPAGEOFFSET;
-                } else if (i)
+                }
+                else if (i)
                 {
                     // turn face right
                     st_faceindex += ST_TURNOFFSET;
-                } else
+                }
+                else
                 {
                     // turn face left
                     st_faceindex += ST_TURNOFFSET + 1;
@@ -782,15 +727,14 @@ void ST_updateFaceWidget(void)
                 priority = 7;
                 st_facecount = ST_TURNCOUNT;
                 st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
-            } else
+            }
+            else
             {
                 priority = 6;
                 st_facecount = ST_TURNCOUNT;
                 st_faceindex = ST_calcPainOffset() + ST_RAMPAGEOFFSET;
             }
-
         }
-
     }
 
     if (priority < 6)
@@ -798,8 +742,7 @@ void ST_updateFaceWidget(void)
         // rapid firing
         if (plyr->attackdown)
         {
-            if (lastattackdown == -1)
-                lastattackdown = ST_RAMPAGEDELAY;
+            if (lastattackdown == -1) lastattackdown = ST_RAMPAGEDELAY;
             else if (!--lastattackdown)
             {
                 priority = 5;
@@ -807,36 +750,31 @@ void ST_updateFaceWidget(void)
                 st_facecount = 1;
                 lastattackdown = 1;
             }
-        } else
-            lastattackdown = -1;
-
+        }
+        else lastattackdown = -1;
     }
 
     if (priority < 5)
     {
         // invulnerability
-        if ((plyr->cheats & CF_GODMODE)
-            || plyr->powers[pw_invulnerability])
+        if (plyr->cheats & CF_GODMODE || plyr->powers[pw_invulnerability])
         {
             priority = 4;
 
             st_faceindex = ST_GODFACE;
             st_facecount = 1;
-
         }
-
     }
 
     // look left or look right if the facecount has timed out
     if (!st_facecount)
     {
-        st_faceindex = ST_calcPainOffset() + (st_randomnumber % 3);
+        st_faceindex = ST_calcPainOffset() + st_randomnumber % 3;
         st_facecount = ST_STRAIGHTFACECOUNT;
         priority = 0;
     }
 
     st_facecount--;
-
 }
 
 void ST_updateWidgets(void)
@@ -847,10 +785,8 @@ void ST_updateWidgets(void)
     // must redirect the pointer if the ready weapon has changed.
     //  if (w_ready.data != plyr->readyweapon)
     //  {
-    if (weaponinfo[plyr->readyweapon].ammo == am_noammo)
-        w_ready.num = &largeammo;
-    else
-        w_ready.num = &plyr->ammo[weaponinfo[plyr->readyweapon].ammo];
+    if (weaponinfo[plyr->readyweapon].ammo == am_noammo) w_ready.num = &largeammo;
+    else w_ready.num = &plyr->ammo[weaponinfo[plyr->readyweapon].ammo];
     //{
     // static int tic=0;
     // static int dir=-1;
@@ -872,8 +808,7 @@ void ST_updateWidgets(void)
     {
         keyboxes[i] = plyr->cards[i] ? i : -1;
 
-        if (plyr->cards[i + 3])
-            keyboxes[i] = i + 3;
+        if (plyr->cards[i + 3]) keyboxes[i] = i + 3;
     }
 
     // refresh everything if this is him coming back to life
@@ -891,78 +826,63 @@ void ST_updateWidgets(void)
 
     for (i = 0; i < MAXPLAYERS; i++)
     {
-        if (i != consoleplayer)
-            st_fragscount += plyr->frags[i];
-        else
-            st_fragscount -= plyr->frags[i];
+        if (i != consoleplayer) st_fragscount += plyr->frags[i];
+        else st_fragscount -= plyr->frags[i];
     }
 
     // get rid of chat window if up because of message
-    if (!--st_msgcounter)
-        st_chat = st_oldchat;
-
+    if (!--st_msgcounter) st_chat = st_oldchat;
 }
 
 void ST_Ticker(void)
 {
-
     st_clock++;
     st_randomnumber = M_Random();
     ST_updateWidgets();
     st_oldhealth = plyr->health;
-
 }
 
 static int st_palette = 0;
 
 void ST_doPaletteStuff(void)
 {
-
     int palette;
-    byte* pal;
-    int cnt;
-    int bzc;
 
-    cnt = plyr->damagecount;
+    int cnt = plyr->damagecount;
 
     if (plyr->powers[pw_strength])
     {
         // slowly fade the berzerk out
-        bzc = 12 - (plyr->powers[pw_strength] >> 6);
+        const int bzc = 12 - (plyr->powers[pw_strength] >> 6);
 
-        if (bzc > cnt)
-            cnt = bzc;
+        if (bzc > cnt) cnt = bzc;
     }
 
     if (cnt)
     {
         palette = (cnt + 7) >> 3;
 
-        if (palette >= NUMREDPALS)
-            palette = NUMREDPALS - 1;
+        if (palette >= NUMREDPALS) palette = NUMREDPALS - 1;
 
         palette += STARTREDPALS;
-    } else if (plyr->bonuscount)
+    }
+    else if (plyr->bonuscount)
     {
         palette = (plyr->bonuscount + 7) >> 3;
 
-        if (palette >= NUMBONUSPALS)
-            palette = NUMBONUSPALS - 1;
+        if (palette >= NUMBONUSPALS) palette = NUMBONUSPALS - 1;
 
         palette += STARTBONUSPALS;
-    } else if (plyr->powers[pw_ironfeet] > 4 * 32
-               || plyr->powers[pw_ironfeet] & 8)
-        palette = RADIATIONPAL;
-    else
-        palette = 0;
+    }
+    else if (plyr->powers[pw_ironfeet] > 4 * 32 || plyr->powers[pw_ironfeet] & 8) palette = RADIATIONPAL;
+    else palette = 0;
 
     // In Chex Quest, the player never sees red.  Instead, the
     // radiation suit palette is used to tint the screen green,
     // as though the player is being covered in goo by an
     // attacking flemoid.
 
-    if (gameversion == exe_chex
-        && palette >= STARTREDPALS && palette < STARTREDPALS + NUMREDPALS)
+    if (gameversion == exe_chex && palette >= STARTREDPALS && palette < STARTREDPALS + NUMREDPALS)
     {
         palette = RADIATIONPAL;
     }
@@ -970,13 +890,12 @@ void ST_doPaletteStuff(void)
     if (palette != st_palette)
     {
         st_palette = palette;
-        pal = (byte*) W_CacheLumpNum(lu_palette, PU_CACHE) + palette * 768;
+        const byte* pal = (byte*)W_CacheLumpNum(lu_palette, PU_CACHE) + palette * 768;
         I_SetPalette(pal);
     }
-
 }
 
-void ST_drawWidgets(boolean refresh)
+void ST_drawWidgets(const boolean refresh)
 {
     int i;
 
@@ -999,21 +918,17 @@ void ST_drawWidgets(boolean refresh)
 
     STlib_updateBinIcon(&w_armsbg, refresh);
 
-    for (i = 0; i < 6; i++)
-        STlib_updateMultIcon(&w_arms[i], refresh);
+    for (i = 0; i < 6; i++) STlib_updateMultIcon(&w_arms[i], refresh);
 
     STlib_updateMultIcon(&w_faces, refresh);
 
-    for (i = 0; i < 3; i++)
-        STlib_updateMultIcon(&w_keyboxes[i], refresh);
+    for (i = 0; i < 3; i++) STlib_updateMultIcon(&w_keyboxes[i], refresh);
 
     STlib_updateNum(&w_frags, refresh);
-
 }
 
 void ST_doRefresh(void)
 {
-
     st_firsttime = false;
 
     // draw status bar background to off-screen buff
@@ -1021,7 +936,6 @@ void ST_doRefresh(void)
 
     // and refresh all widgets
     ST_drawWidgets(true);
-
 }
 
 void ST_diffDraw(void)
@@ -1030,10 +944,9 @@ void ST_diffDraw(void)
     ST_drawWidgets(false);
 }
 
-void ST_Drawer(boolean fullscreen, boolean refresh)
+void ST_Drawer(const boolean fullscreen, const boolean refresh)
 {
-
-    st_statusbaron = (!fullscreen) || automapactive;
+    st_statusbaron = !fullscreen || automapactive;
     st_firsttime = st_firsttime || refresh;
 
     // Do red-/gold-shifts from damage/items
@@ -1043,20 +956,16 @@ void ST_Drawer(boolean fullscreen, boolean refresh)
     if (st_firsttime) ST_doRefresh();
         // Otherwise, update as little as possible
     else ST_diffDraw();
-
 }
 
-typedef void (* load_callback_t)(char* lumpname, patch_t** variable);
+typedef void (*load_callback_t)(char* lumpname, patch_t** variable);
 
 // Iterates through all graphics to be loaded or unloaded, along with
 // the variable they use, invoking the specified callback function.
 
-static void ST_loadUnloadGraphics(load_callback_t callback)
+static void ST_loadUnloadGraphics(const load_callback_t callback)
 {
-
     int i;
-    int j;
-    int facenum;
 
     char namebuf[9];
 
@@ -1105,28 +1014,28 @@ static void ST_loadUnloadGraphics(load_callback_t callback)
     callback(DEH_String("STBAR"), &sbar);
 
     // face states
-    facenum = 0;
+    int facenum = 0;
     for (i = 0; i < ST_NUMPAINFACES; i++)
     {
-        for (j = 0; j < ST_NUMSTRAIGHTFACES; j++)
+        for (int j = 0; j < ST_NUMSTRAIGHTFACES; j++)
         {
             DEH_snprintf(namebuf, 9, "STFST%d%d", i, j);
             callback(namebuf, &faces[facenum]);
             ++facenum;
         }
-        DEH_snprintf(namebuf, 9, "STFTR%d0", i);    // turn right
+        DEH_snprintf(namebuf, 9, "STFTR%d0", i); // turn right
         callback(namebuf, &faces[facenum]);
         ++facenum;
-        DEH_snprintf(namebuf, 9, "STFTL%d0", i);    // turn left
+        DEH_snprintf(namebuf, 9, "STFTL%d0", i); // turn left
         callback(namebuf, &faces[facenum]);
         ++facenum;
-        DEH_snprintf(namebuf, 9, "STFOUCH%d", i);    // ouch!
+        DEH_snprintf(namebuf, 9, "STFOUCH%d", i); // ouch!
         callback(namebuf, &faces[facenum]);
         ++facenum;
-        DEH_snprintf(namebuf, 9, "STFEVL%d", i);    // evil grin ;)
+        DEH_snprintf(namebuf, 9, "STFEVL%d", i); // evil grin ;)
         callback(namebuf, &faces[facenum]);
         ++facenum;
-        DEH_snprintf(namebuf, 9, "STFKILL%d", i);    // pissed off
+        DEH_snprintf(namebuf, 9, "STFKILL%d", i); // pissed off
         callback(namebuf, &faces[facenum]);
         ++facenum;
     }
@@ -1137,15 +1046,9 @@ static void ST_loadUnloadGraphics(load_callback_t callback)
     ++facenum;
 }
 
-static void ST_loadCallback(char* lumpname, patch_t** variable)
-{
-    *variable = W_CacheLumpName(lumpname, PU_STATIC);
-}
+static void ST_loadCallback(char* lumpname, patch_t** variable) { *variable = W_CacheLumpName(lumpname, PU_STATIC); }
 
-void ST_loadGraphics(void)
-{
-    ST_loadUnloadGraphics(ST_loadCallback);
-}
+void ST_loadGraphics(void) { ST_loadUnloadGraphics(ST_loadCallback); }
 
 void ST_loadData(void)
 {
@@ -1159,19 +1062,12 @@ static void ST_unloadCallback(char* lumpname, patch_t** variable)
     *variable = NULL;
 }
 
-void ST_unloadGraphics(void)
-{
-    ST_loadUnloadGraphics(ST_unloadCallback);
-}
+void ST_unloadGraphics(void) { ST_loadUnloadGraphics(ST_unloadCallback); }
 
-void ST_unloadData(void)
-{
-    ST_unloadGraphics();
-}
+void ST_unloadData(void) { ST_unloadGraphics(); }
 
 void ST_initData(void)
 {
-
     int i;
 
     st_firsttime = true;
@@ -1190,193 +1086,88 @@ void ST_initData(void)
 
     st_oldhealth = -1;
 
-    for (i = 0; i < NUMWEAPONS; i++)
-        oldweaponsowned[i] = plyr->weaponowned[i];
+    for (i = 0; i < NUMWEAPONS; i++) oldweaponsowned[i] = plyr->weaponowned[i];
 
-    for (i = 0; i < 3; i++)
-        keyboxes[i] = -1;
+    for (i = 0; i < 3; i++) keyboxes[i] = -1;
 
     STlib_init();
-
 }
 
 void ST_createWidgets(void)
 {
-
-    int i;
-
     // ready weapon ammo
-    STlib_initNum(&w_ready,
-                  ST_AMMOX,
-                  ST_AMMOY,
-                  tallnum,
-                  &plyr->ammo[weaponinfo[plyr->readyweapon].ammo],
-                  &st_statusbaron,
-                  ST_AMMOWIDTH);
+    STlib_initNum(&w_ready, ST_AMMOX, ST_AMMOY, tallnum, &plyr->ammo[weaponinfo[plyr->readyweapon].ammo],
+                  &st_statusbaron, ST_AMMOWIDTH);
 
     // the last weapon type
     w_ready.data = plyr->readyweapon;
 
     // health percentage
-    STlib_initPercent(&w_health,
-                      ST_HEALTHX,
-                      ST_HEALTHY,
-                      tallnum,
-                      &plyr->health,
-                      &st_statusbaron,
-                      tallpercent);
+    STlib_initPercent(&w_health, ST_HEALTHX, ST_HEALTHY, tallnum, &plyr->health, &st_statusbaron, tallpercent);
 
     // arms background
-    STlib_initBinIcon(&w_armsbg,
-                      ST_ARMSBGX,
-                      ST_ARMSBGY,
-                      armsbg,
-                      &st_notdeathmatch,
-                      &st_statusbaron);
+    STlib_initBinIcon(&w_armsbg, ST_ARMSBGX, ST_ARMSBGY, armsbg, &st_notdeathmatch, &st_statusbaron);
 
     // weapons owned
-    for (i = 0; i < 6; i++)
+    for (int i = 0; i < 6; i++)
     {
-        STlib_initMultIcon(&w_arms[i],
-                           ST_ARMSX + (i % 3) * ST_ARMSXSPACE,
-                           ST_ARMSY + (i / 3) * ST_ARMSYSPACE,
-                           arms[i], (int*) &plyr->weaponowned[i + 1],
-                           &st_armson);
+        STlib_initMultIcon(&w_arms[i], ST_ARMSX + i % 3 * ST_ARMSXSPACE, ST_ARMSY + i / 3 * ST_ARMSYSPACE, arms[i],
+                           (int*)&plyr->weaponowned[i + 1], &st_armson);
     }
 
     // frags sum
-    STlib_initNum(&w_frags,
-                  ST_FRAGSX,
-                  ST_FRAGSY,
-                  tallnum,
-                  &st_fragscount,
-                  &st_fragson,
-                  ST_FRAGSWIDTH);
+    STlib_initNum(&w_frags, ST_FRAGSX, ST_FRAGSY, tallnum, &st_fragscount, &st_fragson, ST_FRAGSWIDTH);
 
     // faces
-    STlib_initMultIcon(&w_faces,
-                       ST_FACESX,
-                       ST_FACESY,
-                       faces,
-                       &st_faceindex,
-                       &st_statusbaron);
+    STlib_initMultIcon(&w_faces, ST_FACESX, ST_FACESY, faces, &st_faceindex, &st_statusbaron);
 
     // armor percentage - should be colored later
-    STlib_initPercent(&w_armor,
-                      ST_ARMORX,
-                      ST_ARMORY,
-                      tallnum,
-                      &plyr->armorpoints,
-                      &st_statusbaron, tallpercent);
+    STlib_initPercent(&w_armor, ST_ARMORX, ST_ARMORY, tallnum, &plyr->armorpoints, &st_statusbaron, tallpercent);
 
     // keyboxes 0-2
-    STlib_initMultIcon(&w_keyboxes[0],
-                       ST_KEY0X,
-                       ST_KEY0Y,
-                       keys,
-                       &keyboxes[0],
-                       &st_statusbaron);
+    STlib_initMultIcon(&w_keyboxes[0], ST_KEY0X, ST_KEY0Y, keys, &keyboxes[0], &st_statusbaron);
 
-    STlib_initMultIcon(&w_keyboxes[1],
-                       ST_KEY1X,
-                       ST_KEY1Y,
-                       keys,
-                       &keyboxes[1],
-                       &st_statusbaron);
+    STlib_initMultIcon(&w_keyboxes[1], ST_KEY1X, ST_KEY1Y, keys, &keyboxes[1], &st_statusbaron);
 
-    STlib_initMultIcon(&w_keyboxes[2],
-                       ST_KEY2X,
-                       ST_KEY2Y,
-                       keys,
-                       &keyboxes[2],
-                       &st_statusbaron);
+    STlib_initMultIcon(&w_keyboxes[2], ST_KEY2X, ST_KEY2Y, keys, &keyboxes[2], &st_statusbaron);
 
     // ammo count (all four kinds)
-    STlib_initNum(&w_ammo[0],
-                  ST_AMMO0X,
-                  ST_AMMO0Y,
-                  shortnum,
-                  &plyr->ammo[0],
-                  &st_statusbaron,
-                  ST_AMMO0WIDTH);
+    STlib_initNum(&w_ammo[0], ST_AMMO0X, ST_AMMO0Y, shortnum, &plyr->ammo[0], &st_statusbaron, ST_AMMO0WIDTH);
 
-    STlib_initNum(&w_ammo[1],
-                  ST_AMMO1X,
-                  ST_AMMO1Y,
-                  shortnum,
-                  &plyr->ammo[1],
-                  &st_statusbaron,
-                  ST_AMMO1WIDTH);
+    STlib_initNum(&w_ammo[1], ST_AMMO1X, ST_AMMO1Y, shortnum, &plyr->ammo[1], &st_statusbaron, ST_AMMO1WIDTH);
 
-    STlib_initNum(&w_ammo[2],
-                  ST_AMMO2X,
-                  ST_AMMO2Y,
-                  shortnum,
-                  &plyr->ammo[2],
-                  &st_statusbaron,
-                  ST_AMMO2WIDTH);
+    STlib_initNum(&w_ammo[2], ST_AMMO2X, ST_AMMO2Y, shortnum, &plyr->ammo[2], &st_statusbaron, ST_AMMO2WIDTH);
 
-    STlib_initNum(&w_ammo[3],
-                  ST_AMMO3X,
-                  ST_AMMO3Y,
-                  shortnum,
-                  &plyr->ammo[3],
-                  &st_statusbaron,
-                  ST_AMMO3WIDTH);
+    STlib_initNum(&w_ammo[3], ST_AMMO3X, ST_AMMO3Y, shortnum, &plyr->ammo[3], &st_statusbaron, ST_AMMO3WIDTH);
 
     // max ammo count (all four kinds)
-    STlib_initNum(&w_maxammo[0],
-                  ST_MAXAMMO0X,
-                  ST_MAXAMMO0Y,
-                  shortnum,
-                  &plyr->maxammo[0],
-                  &st_statusbaron,
+    STlib_initNum(&w_maxammo[0], ST_MAXAMMO0X, ST_MAXAMMO0Y, shortnum, &plyr->maxammo[0], &st_statusbaron,
                   ST_MAXAMMO0WIDTH);
 
-    STlib_initNum(&w_maxammo[1],
-                  ST_MAXAMMO1X,
-                  ST_MAXAMMO1Y,
-                  shortnum,
-                  &plyr->maxammo[1],
-                  &st_statusbaron,
+    STlib_initNum(&w_maxammo[1], ST_MAXAMMO1X, ST_MAXAMMO1Y, shortnum, &plyr->maxammo[1], &st_statusbaron,
                   ST_MAXAMMO1WIDTH);
 
-    STlib_initNum(&w_maxammo[2],
-                  ST_MAXAMMO2X,
-                  ST_MAXAMMO2Y,
-                  shortnum,
-                  &plyr->maxammo[2],
-                  &st_statusbaron,
+    STlib_initNum(&w_maxammo[2], ST_MAXAMMO2X, ST_MAXAMMO2Y, shortnum, &plyr->maxammo[2], &st_statusbaron,
                   ST_MAXAMMO2WIDTH);
 
-    STlib_initNum(&w_maxammo[3],
-                  ST_MAXAMMO3X,
-                  ST_MAXAMMO3Y,
-                  shortnum,
-                  &plyr->maxammo[3],
-                  &st_statusbaron,
+    STlib_initNum(&w_maxammo[3], ST_MAXAMMO3X, ST_MAXAMMO3Y, shortnum, &plyr->maxammo[3], &st_statusbaron,
                   ST_MAXAMMO3WIDTH);
-
 }
 
 static boolean st_stopped = true;
 
 void ST_Start(void)
 {
-
-    if (!st_stopped)
-        ST_Stop();
+    if (!st_stopped) ST_Stop();
 
     ST_initData();
     ST_createWidgets();
     st_stopped = false;
-
 }
 
 void ST_Stop(void)
 {
-    if (st_stopped)
-        return;
+    if (st_stopped) return;
 
     I_SetPalette(W_CacheLumpNum(lu_palette, PU_CACHE));
 
@@ -1386,6 +1177,5 @@ void ST_Stop(void)
 void ST_Init(void)
 {
     ST_loadData();
-    st_backing_screen = (byte*) Z_Malloc(ST_WIDTH * ST_HEIGHT, PU_STATIC, 0);
+    st_backing_screen = (byte*)Z_Malloc(ST_WIDTH * ST_HEIGHT, PU_STATIC, 0);
 }
-

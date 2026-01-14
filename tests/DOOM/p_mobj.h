@@ -16,7 +16,6 @@
 //	Map Objects, MObj, definition and handling.
 //
 
-
 #ifndef __P_MOBJ__
 #define __P_MOBJ__
 
@@ -35,11 +34,6 @@
 //  tied to animation frames.
 // Needs precompiled tables/data structures.
 #include "info.h"
-
-
-
-
-
 
 //
 // NOTES: mobj_t
@@ -193,7 +187,6 @@ typedef enum
     MF_TRANSLATION = 0xc000000,
     // Hmm ???.
     MF_TRANSSHIFT = 26
-
 } mobjflag_t;
 
 // Map Object definition.
@@ -212,9 +205,9 @@ typedef struct mobj_s
     struct mobj_s* sprev;
 
     //More drawing info: to determine current sprite.
-    angle_t angle;    // orientation
-    spritenum_t sprite;    // used to find patch_t and flip value
-    int frame;    // might be ORed with FF_FULLBRIGHT
+    angle_t angle; // orientation
+    spritenum_t sprite; // used to find patch_t and flip value
+    int frame; // might be ORed with FF_FULLBRIGHT
 
     // Interaction info, by BLOCKMAP.
     // Links in blocks (if needed).
@@ -240,16 +233,16 @@ typedef struct mobj_s
     int validcount;
 
     mobjtype_t type;
-    mobjinfo_t* info;    // &mobjinfo[mobj->type]
+    mobjinfo_t* info; // &mobjinfo[mobj->type]
 
-    int tics;    // state tic counter
+    int tics; // state tic counter
     state_t* state;
     int flags;
     int health;
 
     // Movement direction, movement generation (zig-zagging).
-    int movedir;    // 0-7
-    int movecount;    // when 0, select a new dir
+    int movedir; // 0-7
+    int movecount; // when 0, select a new dir
 
     // Thing being chased/attacked (or NULL),
     // also the originator for missiles.
@@ -275,7 +268,6 @@ typedef struct mobj_s
 
     // Thing being chased/attacked for tracers.
     struct mobj_s* tracer;
-
 } mobj_t;
 
 #endif

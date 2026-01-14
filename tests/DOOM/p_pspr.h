@@ -16,7 +16,6 @@
 //  Sprite animation.
 //
 
-
 #ifndef __P_PSPR__
 #define __P_PSPR__
 
@@ -24,7 +23,6 @@
 // Needs fixed point, and BAM angles.
 #include "m_fixed.h"
 #include "tables.h"
-
 
 //
 // Needs to include the precompiled
@@ -34,8 +32,6 @@
 // i.e. the Thing Atrributes table
 // and the Frame Sequence table.
 #include "info.h"
-
-
 
 //
 // Frame flags:
@@ -54,16 +50,14 @@ typedef enum
     ps_weapon,
     ps_flash,
     NUMPSPRITES
-
 } psprnum_t;
 
 typedef struct
 {
-    state_t* state;    // a NULL state means not active
+    state_t* state; // a NULL state means not active
     int tics;
     fixed_t sx;
     fixed_t sy;
-
 } pspdef_t;
 
 #endif

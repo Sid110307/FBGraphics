@@ -61,33 +61,33 @@ struct _net_module_s
 {
     // Initialize this module for use as a client
 
-    boolean (* InitClient)(void);
+    boolean (*InitClient)(void);
 
     // Initialize this module for use as a server
 
-    boolean (* InitServer)(void);
+    boolean (*InitServer)(void);
 
     // Send a packet
 
-    void (* SendPacket)(net_addr_t* addr, net_packet_t* packet);
+    void (*SendPacket)(net_addr_t* addr, net_packet_t* packet);
 
     // Check for new packets to receive
     //
     // Returns true if packet received
 
-    boolean (* RecvPacket)(net_addr_t** addr, net_packet_t** packet);
+    boolean (*RecvPacket)(net_addr_t** addr, net_packet_t** packet);
 
     // Converts an address to a string
 
-    void (* AddrToString)(net_addr_t* addr, char* buffer, int buffer_len);
+    void (*AddrToString)(net_addr_t* addr, char* buffer, int buffer_len);
 
     // Free back an address when no longer in use
 
-    void (* FreeAddress)(net_addr_t* addr);
+    void (*FreeAddress)(net_addr_t* addr);
 
     // Try to resolve a name to an address
 
-    net_addr_t* (* ResolveAddress)(char* addr);
+    net_addr_t* (*ResolveAddress)(char* addr);
 };
 
 // net_addr_t
@@ -176,7 +176,7 @@ typedef struct
     int new_sync;
     int timelimit;
     int loadgame;
-    int random;  // [Strife only]
+    int random; // [Strife only]
 
     // These fields are only used by the server when sending a game
     // start message:
@@ -187,7 +187,6 @@ typedef struct
     // Hexen player classes:
 
     int player_classes[NET_MAXPLAYERS];
-
 } net_gamesettings_t;
 
 #define NET_TICDIFF_FORWARD      (1 << 0)

@@ -15,8 +15,6 @@
 // DESCRIPTION:
 //
 
-
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -70,11 +68,9 @@ struct atexit_listentry_s
 
 static atexit_listentry_t* exit_funcs = NULL;
 
-void I_AtExit(atexit_func_t func, boolean run_on_error)
+void I_AtExit(const atexit_func_t func, const boolean run_on_error)
 {
-    atexit_listentry_t* entry;
-
-    entry = malloc(sizeof(*entry));
+    atexit_listentry_t* entry = malloc(sizeof(*entry));
 
     entry->func = func;
     entry->run_on_error = run_on_error;
@@ -84,33 +80,26 @@ void I_AtExit(atexit_func_t func, boolean run_on_error)
 
 // Tactile feedback function, probably used for the Logitech Cyberman
 
-void I_Tactile(int on, int off, int total)
-{
-}
+void I_Tactile(int on, int off, int total) {}
 
 // Zone memory auto-allocation function that allocates the zone size
 // by trying progressively smaller zone sizes until one is found that
 // works.
 
-static byte* AutoAllocMemory(int* size, int default_ram, int min_ram)
+static byte* AutoAllocMemory(int* size, int default_ram, const int min_ram)
 {
-    byte* zonemem;
-
     // Allocate the zone memory.  This loop tries progressively smaller
     // zone sizes until a size is found that can be allocated.
     // If we used the -mb command line parameter, only the parameter
     // provided is accepted.
 
-    zonemem = NULL;
+    byte* zonemem = NULL;
 
     while (zonemem == NULL)
     {
         // We need a reasonable minimum amount of RAM to start.
 
-        if (default_ram < min_ram)
-        {
-            I_Error("Unable to allocate %i MiB of RAM for zone", default_ram);
-        }
+        if (default_ram < min_ram) { I_Error("Unable to allocate %i MiB of RAM for zone", default_ram); }
 
         // Try to allocate the zone memory.
 
@@ -121,10 +110,7 @@ static byte* AutoAllocMemory(int* size, int default_ram, int min_ram)
         // Failed to allocate?  Reduce zone size until we reach a size
         // that is acceptable.
 
-        if (zonemem == NULL)
-        {
-            default_ram -= 1;
-        }
+        if (zonemem == NULL) { default_ram -= 1; }
     }
 
     return zonemem;
@@ -132,9 +118,7 @@ static byte* AutoAllocMemory(int* size, int default_ram, int min_ram)
 
 byte* I_ZoneBase(int* size)
 {
-    byte* zonemem;
     int min_ram, default_ram;
-    int p;
 
     //!
     // @arg <mb>
@@ -142,45 +126,38 @@ byte* I_ZoneBase(int* size)
     // Specify the heap size, in MiB (default 16).
     //
 
-    p = M_CheckParmWithArgs("-mb", 1);
+    const int p = M_CheckParmWithArgs("-mb", 1);
 
     if (p > 0)
     {
         default_ram = atoi(myargv[p + 1]);
         min_ram = default_ram;
-    } else
+    }
+    else
     {
         default_ram = DEFAULT_RAM;
         min_ram = MIN_RAM;
     }
 
-    zonemem = AutoAllocMemory(size, default_ram, min_ram);
+    byte* zonemem = AutoAllocMemory(size, default_ram, min_ram);
 
-    printf("zone memory: %p, %x allocated for zone\n",
-           zonemem, *size);
+    printf("zone memory: %p, %x allocated for zone\n", zonemem, *size);
 
     return zonemem;
 }
 
-void I_PrintBanner(char* msg)
+void I_PrintBanner(const char* msg)
 {
-    int i;
-    int spaces = 35 - (strlen(msg) / 2);
+    const int spaces = 35 - strlen(msg) / 2;
 
-    for (i = 0; i < spaces; ++i)
-        putchar(' ');
+    for (int i = 0; i < spaces; ++i) putchar(' ');
 
     puts(msg);
 }
 
 void I_PrintDivider(void)
 {
-    int i;
-
-    for (i = 0; i < 75; ++i)
-    {
-        putchar('=');
-    }
+    for (int i = 0; i < 75; ++i) { putchar('='); }
 
     putchar('\n');
 }
@@ -244,11 +221,9 @@ void I_BindVariables(void)
 
 void I_Quit(void)
 {
-    atexit_listentry_t* entry;
-
     // Run through all exit functions
 
-    entry = exit_funcs;
+    const atexit_listentry_t* entry = exit_funcs;
 
     while (entry != NULL)
     {
@@ -257,9 +232,7 @@ void I_Quit(void)
     }
 
 #if ORIGCODE
-    SDL_Quit();
-
-    exit(0);
+    SDL_Quit(); exit(0);
 #endif
 }
 
@@ -268,10 +241,7 @@ void I_Quit(void)
 
 // returns non-zero if zenity is available
 
-static int ZenityAvailable(void)
-{
-    return system(ZENITY_BINARY " --help >/dev/null 2>&1") == 0;
-}
+static int ZenityAvailable(void) { return system(ZENITY_BINARY " --help >/dev/null 2>&1") == 0; }
 
 // Escape special characters in the given string so that they can be
 // safely enclosed in shell quotes.
@@ -279,7 +249,7 @@ static int ZenityAvailable(void)
 static char* EscapeShellString(char* string)
 {
     char* result;
-    char* r, * s;
+    char *r, *s;
 
     // In the worst case, every character might be escaped.
     result = malloc(strlen(string) * 2 + 3);
@@ -326,17 +296,13 @@ static int ZenityErrorBox(char* message)
     char* errorboxpath;
     static size_t errorboxpath_size;
 
-    if (!ZenityAvailable())
-    {
-        return 0;
-    }
+    if (!ZenityAvailable()) { return 0; }
 
     escaped_message = EscapeShellString(message);
 
     errorboxpath_size = strlen(ZENITY_BINARY) + strlen(escaped_message) + 19;
     errorboxpath = malloc(errorboxpath_size);
-    M_snprintf(errorboxpath, errorboxpath_size, "%s --error --text=%s",
-               ZENITY_BINARY, escaped_message);
+    M_snprintf(errorboxpath, errorboxpath_size, "%s --error --text=%s", ZENITY_BINARY, escaped_message);
 
     result = system(errorboxpath);
 
@@ -348,7 +314,6 @@ static int ZenityErrorBox(char* message)
 
 #endif /* !defined(_WIN32) && !defined(__MACOSX__) */
 
-
 //
 // I_Error
 //
@@ -359,8 +324,6 @@ void I_Error(char* error, ...)
 {
     char msgbuf[512];
     va_list argptr;
-    atexit_listentry_t* entry;
-    boolean exit_gui_popup;
 
     if (already_quitting)
     {
@@ -368,10 +331,8 @@ void I_Error(char* error, ...)
 #if ORIGCODE
         exit(-1);
 #endif
-    } else
-    {
-        already_quitting = true;
     }
+    else { already_quitting = true; }
 
     // Message first.
     va_start(argptr, error);
@@ -389,63 +350,45 @@ void I_Error(char* error, ...)
 
     // Shutdown. Here might be other errors.
 
-    entry = exit_funcs;
+    const atexit_listentry_t* entry = exit_funcs;
 
     while (entry != NULL)
     {
-        if (entry->run_on_error)
-        {
-            entry->func();
-        }
+        if (entry->run_on_error) { entry->func(); }
 
         entry = entry->next;
     }
 
-    exit_gui_popup = !M_ParmExists("-nogui");
+    const boolean exit_gui_popup = !M_ParmExists("-nogui");
 
     // Pop up a GUI dialog box to show the error message, if the
     // game was not run from the console (and the user will
     // therefore be unable to otherwise see the message).
     if (exit_gui_popup && !I_ConsoleStdout())
 #ifdef _WIN32
-        {
-            wchar_t wmsgbuf[512];
+    {
+        wchar_t wmsgbuf[512];
 
-            MultiByteToWideChar(CP_ACP, 0,
-                                msgbuf, strlen(msgbuf) + 1,
-                                wmsgbuf, sizeof(wmsgbuf));
+        MultiByteToWideChar(CP_ACP, 0, msgbuf, strlen(msgbuf) + 1, wmsgbuf, sizeof(wmsgbuf));
 
-            MessageBoxW(NULL, wmsgbuf, L"", MB_OK);
-        }
+        MessageBoxW(NULL, wmsgbuf, L"", MB_OK);
+    }
 #elif defined(__MACOSX__)
-        {
-            CFStringRef message;
+    {
+        CFStringRef message;
         int i;
 
         // The CoreFoundation message box wraps text lines, so replace
         // newline characters with spaces so that multiline messages
         // are continuous.
 
-        for (i = 0; msgbuf[i] != '\0'; ++i)
-            {
-                if (msgbuf[i] == '\n')
-                {
-                    msgbuf[i] = ' ';
-                }
-            }
+        for (i = 0; msgbuf[i] != '\0'; ++i) { if (msgbuf[i] == '\n') { msgbuf[i] = ' '; } }
 
-            message = CFStringCreateWithCString(NULL, msgbuf,
-                                                kCFStringEncodingUTF8);
+        message = CFStringCreateWithCString(NULL, msgbuf, kCFStringEncodingUTF8);
 
-            CFUserNotificationDisplayNotice(0,
-                                            kCFUserNotificationCautionAlertLevel,
-                                            NULL,
-                                            NULL,
-                                            NULL,
-                                            CFSTR(PACKAGE_STRING),
-                                            message,
-                                            NULL);
-        }
+        CFUserNotificationDisplayNotice(0, kCFUserNotificationCautionAlertLevel, NULL, NULL, NULL,
+                                        CFSTR(PACKAGE_STRING), message, NULL);
+    }
 #else
     {
         ZenityErrorBox(msgbuf);
@@ -454,13 +397,9 @@ void I_Error(char* error, ...)
 
     // abort();
 #if ORIGCODE
-    SDL_Quit();
-
-    exit(-1);
+    SDL_Quit(); exit(-1);
 #else
-    while (true)
-    {
-    }
+    while (true) {}
 #endif
 }
 
@@ -485,25 +424,28 @@ void I_Error(char* error, ...)
 #define DOS_MEM_DUMP_SIZE 10
 
 static const unsigned char mem_dump_dos622[DOS_MEM_DUMP_SIZE] = {
-    0x57, 0x92, 0x19, 0x00, 0xF4, 0x06, 0x70, 0x00, 0x16, 0x00};
+    0x57, 0x92, 0x19, 0x00, 0xF4, 0x06, 0x70, 0x00, 0x16, 0x00
+};
 static const unsigned char mem_dump_win98[DOS_MEM_DUMP_SIZE] = {
-    0x9E, 0x0F, 0xC9, 0x00, 0x65, 0x04, 0x70, 0x00, 0x16, 0x00};
+    0x9E, 0x0F, 0xC9, 0x00, 0x65, 0x04, 0x70, 0x00, 0x16, 0x00
+};
 static const unsigned char mem_dump_dosbox[DOS_MEM_DUMP_SIZE] = {
-    0x00, 0x00, 0x00, 0xF1, 0x00, 0x00, 0x00, 0x00, 0x07, 0x00};
+    0x00, 0x00, 0x00, 0xF1, 0x00, 0x00, 0x00, 0x00, 0x07, 0x00
+};
 static unsigned char mem_dump_custom[DOS_MEM_DUMP_SIZE];
 
 static const unsigned char* dos_mem_dump = mem_dump_dos622;
 
-boolean I_GetMemoryValue(unsigned int offset, void* value, int size)
+boolean I_GetMemoryValue(const unsigned int offset, void* value, const int size)
 {
     static boolean firsttime = true;
 
     if (firsttime)
     {
-        int p, i, val;
+        int val;
 
         firsttime = false;
-        i = 0;
+        int i = 0;
 
         //!
         // @category compat
@@ -514,33 +456,23 @@ boolean I_GetMemoryValue(unsigned int offset, void* value, int size)
         // The default is to emulate DOS 7.1 (Windows 98).
         //
 
-        p = M_CheckParmWithArgs("-setmem", 1);
+        int p = M_CheckParmWithArgs("-setmem", 1);
 
         if (p > 0)
         {
-            if (!strcasecmp(myargv[p + 1], "dos622"))
-            {
-                dos_mem_dump = mem_dump_dos622;
-            }
-            if (!strcasecmp(myargv[p + 1], "dos71"))
-            {
-                dos_mem_dump = mem_dump_win98;
-            } else if (!strcasecmp(myargv[p + 1], "dosbox"))
-            {
-                dos_mem_dump = mem_dump_dosbox;
-            } else
+            if (!strcasecmp(myargv[p + 1], "dos622")) { dos_mem_dump = mem_dump_dos622; }
+            if (!strcasecmp(myargv[p + 1], "dos71")) { dos_mem_dump = mem_dump_win98; }
+            else if (!strcasecmp(myargv[p + 1], "dosbox")) { dos_mem_dump = mem_dump_dosbox; }
+            else
             {
                 for (i = 0; i < DOS_MEM_DUMP_SIZE; ++i)
                 {
                     ++p;
 
-                    if (p >= myargc || myargv[p][0] == '-')
-                    {
-                        break;
-                    }
+                    if (p >= myargc || myargv[p][0] == '-') { break; }
 
                     M_StrToInt(myargv[p], &val);
-                    mem_dump_custom[i++] = (unsigned char) val;
+                    mem_dump_custom[i++] = (unsigned char)val;
                 }
 
                 dos_mem_dump = mem_dump_custom;
@@ -551,20 +483,16 @@ boolean I_GetMemoryValue(unsigned int offset, void* value, int size)
     switch (size)
     {
         case 1:
-            *((unsigned char*) value) = dos_mem_dump[offset];
+            *(unsigned char*)value = dos_mem_dump[offset];
             return true;
         case 2:
-            *((unsigned short*) value) = dos_mem_dump[offset]
-                                         | (dos_mem_dump[offset + 1] << 8);
+            *(unsigned short*)value = dos_mem_dump[offset] | dos_mem_dump[offset + 1] << 8;
             return true;
         case 4:
-            *((unsigned int*) value) = dos_mem_dump[offset]
-                                       | (dos_mem_dump[offset + 1] << 8)
-                                       | (dos_mem_dump[offset + 2] << 16)
-                                       | (dos_mem_dump[offset + 3] << 24);
+            *(unsigned int*)value = dos_mem_dump[offset] | dos_mem_dump[offset + 1] << 8 | dos_mem_dump[offset + 2]
+                << 16 | dos_mem_dump[offset + 3] << 24;
             return true;
     }
 
     return false;
 }
-

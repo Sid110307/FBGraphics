@@ -9,7 +9,7 @@ uint32_t* DG_ScreenBuffer = 0;
 void M_FindResponseFile(void);
 void D_DoomMain(void);
 
-void doomgeneric_Create(int argc, char** argv)
+void doomgeneric_Create(const int argc, char** argv)
 {
     // save arguments
     myargc = argc;
@@ -23,4 +23,3 @@ void doomgeneric_Create(int argc, char** argv)
 
     D_DoomMain();
 }
-

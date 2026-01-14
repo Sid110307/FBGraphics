@@ -16,7 +16,6 @@
 //  Nil.
 //
 
-
 #ifndef __M_ARGV__
 #define __M_ARGV__
 
@@ -34,7 +33,7 @@ int M_CheckParm(char* check);
 
 // Same as M_CheckParm, but checks that num_args arguments are available
 // following the specified argument.
-int M_CheckParmWithArgs(char* check, int num_args);
+int M_CheckParmWithArgs(const char* check, int num_args);
 
 void M_FindResponseFile(void);
 

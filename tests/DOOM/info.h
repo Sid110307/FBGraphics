@@ -165,7 +165,6 @@ typedef enum
     SPR_TLMP,
     SPR_TLP2,
     NUMSPRITES
-
 } spritenum_t;
 
 typedef enum
@@ -1295,7 +1294,6 @@ typedef enum
     MT_MISC85,
     MT_MISC86,
     NUMMOBJTYPES
-
 } mobjtype_t;
 
 typedef struct
@@ -1323,7 +1321,6 @@ typedef struct
     int activesound;
     int flags;
     int raisestate;
-
 } mobjinfo_t;
 
 extern mobjinfo_t mobjinfo[NUMMOBJTYPES];

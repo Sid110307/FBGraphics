@@ -16,7 +16,6 @@
 //	The status bar widget code.
 //
 
-
 #include <stdio.h>
 #include <ctype.h>
 
@@ -44,21 +43,10 @@ extern boolean automapactive;
 //
 patch_t* sttminus;
 
-void STlib_init(void)
-{
-    sttminus = (patch_t*) W_CacheLumpName(DEH_String("STTMINUS"), PU_STATIC);
-}
+void STlib_init(void) { sttminus = (patch_t*)W_CacheLumpName(DEH_String("STTMINUS"), PU_STATIC); }
 
 // ?
-void
-STlib_initNum
-    (st_number_t* n,
-     int x,
-     int y,
-     patch_t** pl,
-     int* num,
-     boolean* on,
-     int width)
+void STlib_initNum(st_number_t* n, const int x, const int y, patch_t** pl, int* num, boolean* on, const int width)
 {
     n->x = x;
     n->y = y;
@@ -74,31 +62,23 @@ STlib_initNum
 //  based on differences from the old number.
 // Note: worth the trouble?
 //
-void
-STlib_drawNum
-    (st_number_t* n,
-     boolean refresh)
+void STlib_drawNum(st_number_t* n, boolean refresh)
 {
-
     int numdigits = n->width;
     int num = *n->num;
 
-    int w = SHORT(n->p[0]->width);
-    int h = SHORT(n->p[0]->height);
+    const int w = SHORT(n->p[0]->width);
+    const int h = SHORT(n->p[0]->height);
     int x = n->x;
-
-    int neg;
 
     n->oldnum = *n->num;
 
-    neg = num < 0;
+    const int neg = num < 0;
 
     if (neg)
     {
-        if (numdigits == 2 && num < -9)
-            num = -9;
-        else if (numdigits == 3 && num < -99)
-            num = -99;
+        if (numdigits == 2 && num < -9) num = -9;
+        else if (numdigits == 3 && num < -99) num = -99;
 
         num = -num;
     }
@@ -106,20 +86,17 @@ STlib_drawNum
     // clear the area
     x = n->x - numdigits * w;
 
-    if (n->y - ST_Y < 0)
-        I_Error("drawNum: n->y - ST_Y < 0");
+    if (n->y - ST_Y < 0) I_Error("drawNum: n->y - ST_Y < 0");
 
     V_CopyRect(x, n->y - ST_Y, st_backing_screen, w * numdigits, h, x, n->y);
 
     // if non-number, do not draw it
-    if (num == 1994)
-        return;
+    if (num == 1994) return;
 
     x = n->x;
 
     // in the special case of 0, you draw 0
-    if (!num)
-        V_DrawPatch(x - w, n->y, n->p[0]);
+    if (!num) V_DrawPatch(x - w, n->y, n->p[0]);
 
     // draw the new number
     while (num && numdigits--)
@@ -130,53 +107,27 @@ STlib_drawNum
     }
 
     // draw a minus sign if necessary
-    if (neg)
-        V_DrawPatch(x - 8, n->y, sttminus);
+    if (neg) V_DrawPatch(x - 8, n->y, sttminus);
 }
 
 //
-void
-STlib_updateNum
-    (st_number_t* n,
-     boolean refresh)
-{
-    if (*n->on) STlib_drawNum(n, refresh);
-}
+void STlib_updateNum(st_number_t* n, const boolean refresh) { if (*n->on) STlib_drawNum(n, refresh); }
 
 //
-void
-STlib_initPercent
-    (st_percent_t* p,
-     int x,
-     int y,
-     patch_t** pl,
-     int* num,
-     boolean* on,
-     patch_t* percent)
+void STlib_initPercent(st_percent_t* p, const int x, const int y, patch_t** pl, int* num, boolean* on, patch_t* percent)
 {
     STlib_initNum(&p->n, x, y, pl, num, on, 3);
     p->p = percent;
 }
 
-void
-STlib_updatePercent
-    (st_percent_t* per,
-     int refresh)
+void STlib_updatePercent(st_percent_t* per, const int refresh)
 {
-    if (refresh && *per->n.on)
-        V_DrawPatch(per->n.x, per->n.y, per->p);
+    if (refresh && *per->n.on) V_DrawPatch(per->n.x, per->n.y, per->p);
 
     STlib_updateNum(&per->n, refresh);
 }
 
-void
-STlib_initMultIcon
-    (st_multicon_t* i,
-     int x,
-     int y,
-     patch_t** il,
-     int* inum,
-     boolean* on)
+void STlib_initMultIcon(st_multicon_t* i, const int x, const int y, patch_t** il, int* inum, boolean* on)
 {
     i->x = x;
     i->y = y;
@@ -186,27 +137,17 @@ STlib_initMultIcon
     i->p = il;
 }
 
-void
-STlib_updateMultIcon
-    (st_multicon_t* mi,
-     boolean refresh)
+void STlib_updateMultIcon(st_multicon_t* mi, const boolean refresh)
 {
-    int w;
-    int h;
-    int x;
-    int y;
-
-    if (*mi->on && (mi->oldinum != *mi->inum || refresh) && (*mi->inum != -1))
+    if (*mi->on && (mi->oldinum != *mi->inum || refresh) && *mi->inum != -1)
     {
         if (mi->oldinum != -1)
-        {
-            x = mi->x - SHORT(mi->p[mi->oldinum]->leftoffset);
-            y = mi->y - SHORT(mi->p[mi->oldinum]->topoffset);
-            w = SHORT(mi->p[mi->oldinum]->width);
-            h = SHORT(mi->p[mi->oldinum]->height);
+        { const int x = mi->x - SHORT(mi->p[mi->oldinum]->leftoffset);
+            const int y = mi->y - SHORT(mi->p[mi->oldinum]->topoffset);
+            const int w = SHORT(mi->p[mi->oldinum]->width);
+            const int h = SHORT(mi->p[mi->oldinum]->height);
 
-            if (y - ST_Y < 0)
-                I_Error("updateMultIcon: y - ST_Y < 0");
+            if (y - ST_Y < 0) I_Error("updateMultIcon: y - ST_Y < 0");
 
             V_CopyRect(x, y - ST_Y, st_backing_screen, w, h, x, y);
         }
@@ -215,14 +156,7 @@ STlib_updateMultIcon
     }
 }
 
-void
-STlib_initBinIcon
-    (st_binicon_t* b,
-     int x,
-     int y,
-     patch_t* i,
-     boolean* val,
-     boolean* on)
+void STlib_initBinIcon(st_binicon_t* b, const int x, const int y, patch_t* i, boolean* val, boolean* on)
 {
     b->x = x;
     b->y = y;
@@ -232,34 +166,19 @@ STlib_initBinIcon
     b->p = i;
 }
 
-void
-STlib_updateBinIcon
-    (st_binicon_t* bi,
-     boolean refresh)
+void STlib_updateBinIcon(st_binicon_t* bi, const boolean refresh)
 {
-    int x;
-    int y;
-    int w;
-    int h;
+    if (*bi->on && (bi->oldval != *bi->val || refresh))
+    { const int x = bi->x - SHORT(bi->p->leftoffset);
+        const int y = bi->y - SHORT(bi->p->topoffset);
+        const int w = SHORT(bi->p->width);
+        const int h = SHORT(bi->p->height);
 
-    if (*bi->on
-        && (bi->oldval != *bi->val || refresh))
-    {
-        x = bi->x - SHORT(bi->p->leftoffset);
-        y = bi->y - SHORT(bi->p->topoffset);
-        w = SHORT(bi->p->width);
-        h = SHORT(bi->p->height);
+        if (y - ST_Y < 0) I_Error("updateBinIcon: y - ST_Y < 0");
 
-        if (y - ST_Y < 0)
-            I_Error("updateBinIcon: y - ST_Y < 0");
-
-        if (*bi->val)
-            V_DrawPatch(bi->x, bi->y, bi->p);
-        else
-            V_CopyRect(x, y - ST_Y, st_backing_screen, w, h, x, y);
+        if (*bi->val) V_DrawPatch(bi->x, bi->y, bi->p);
+        else V_CopyRect(x, y - ST_Y, st_backing_screen, w, h, x, y);
 
         bi->oldval = *bi->val;
     }
-
 }
-

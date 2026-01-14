@@ -16,12 +16,8 @@
 //	Fixed point arithemtics, implementation.
 //
 
-
 #ifndef __M_FIXED__
 #define __M_FIXED__
-
-
-
 
 //
 // Fixed point, 32bit as 16.16.

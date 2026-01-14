@@ -21,7 +21,6 @@
 //   In practice, things are a bit messy.
 //
 
-
 #ifndef __D_STATE__
 #define __D_STATE__
 
@@ -41,12 +40,11 @@
 // ------------------------
 // Command line parameters.
 //
-extern boolean nomonsters;    // checkparm of -nomonsters
-extern boolean respawnparm;    // checkparm of -respawn
-extern boolean fastparm;    // checkparm of -fast
+extern boolean nomonsters; // checkparm of -nomonsters
+extern boolean respawnparm; // checkparm of -respawn
+extern boolean fastparm; // checkparm of -fast
 
-extern boolean devparm;    // DEBUG: launched with -devparm
-
+extern boolean devparm; // DEBUG: launched with -devparm
 
 // -----------------------------------------------------
 // Game Mode - identify IWAD as shareware, retail etc.
@@ -70,7 +68,6 @@ extern boolean bfgedition;
 
 // Set if homebrew PWAD stuff has been added.
 extern boolean modifiedgame;
-
 
 // -------------------------------------------
 // Selected skill type, map etc.
@@ -128,7 +125,6 @@ extern int snd_SfxDevice;
 extern int snd_DesiredMusicDevice;
 extern int snd_DesiredSfxDevice;
 
-
 // -------------------------
 // Status flags for refresh.
 //
@@ -138,10 +134,9 @@ extern int snd_DesiredSfxDevice;
 //  status bar explicitely.
 extern boolean statusbaractive;
 
-extern boolean automapactive;    // In AutoMap mode?
-extern boolean menuactive;    // Menu overlayed?
-extern boolean paused;        // Game Pause?
-
+extern boolean automapactive; // In AutoMap mode?
+extern boolean menuactive; // Menu overlayed?
+extern boolean paused; // Game Pause?
 
 extern boolean viewactive;
 
@@ -167,10 +162,8 @@ extern int totalitems;
 extern int totalsecret;
 
 // Timer, for scores.
-extern int levelstarttic;    // gametic at level start
-extern int leveltime;    // tics in game play for par
-
-
+extern int levelstarttic; // gametic at level start
+extern int leveltime; // tics in game play for par
 
 // --------------------------------------
 // DEMO playback/recording related stuff.
@@ -193,25 +186,17 @@ extern boolean singledemo;
 //?
 extern gamestate_t gamestate;
 
-
-
-
-
-
 //-----------------------------
 // Internal parameters, fixed.
 // These are set by the engine, and not changed
 //  according to user inputs. Partly load from
 //  WAD, partly set at startup time.
 
-
-
 // Bookkeeping on players - state.
 extern player_t players[MAXPLAYERS];
 
 // Alive? Disconnected?
 extern boolean playeringame[MAXPLAYERS];
-
 
 // Player spawn spots for deathmatch.
 #define MAX_DM_STARTS   10
@@ -224,12 +209,6 @@ extern mapthing_t playerstarts[MAXPLAYERS];
 // Intermission stats.
 // Parameters for world map / intermission.
 extern wbstartstruct_t wminfo;
-
-
-
-
-
-
 
 //-----------------------------------------
 // Internal parameters, used for engine.
@@ -255,10 +234,7 @@ extern int bodyqueslot;
 //  as well as tracking projectiles etc.
 extern int skyflatnum;
 
-
-
 // Netgame stuff (buffers and pointers, i.e. indices).
-
 
 extern int rndindex;
 

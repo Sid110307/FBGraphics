@@ -30,7 +30,6 @@
 //	  maps tan(angle) to angle fast. Gotta search.
 //
 
-
 #ifndef __TABLES__
 #define __TABLES__
 
@@ -40,7 +39,6 @@
 
 #define FINEANGLES        8192
 #define FINEMASK        (FINEANGLES-1)
-
 
 // 0x100000000 to 0x2000
 #define ANGLETOFINESHIFT    19
@@ -89,4 +87,3 @@ extern const angle_t tantoangle[SLOPERANGE + 1];
 int SlopeDiv(unsigned int num, unsigned int den);
 
 #endif
-

@@ -1,4 +1,5 @@
 /* config.hin.  Generated from configure.ac by autoheader.  */
+#pragma once
 
 /* Define to 1 if you have the <dev/isa/spkrio.h> header file. */
 #undef HAVE_DEV_ISA_SPKRIO_H
@@ -49,7 +50,11 @@
 #define HAVE_STDLIB_H 1
 
 /* Define to 1 if you have the <strings.h> header file. */
+#if defined(_WIN32)
+#undef HAVE_STRINGS_H
+#else
 #define HAVE_STRINGS_H 1
+#endif
 
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
@@ -61,7 +66,11 @@
 #define HAVE_SYS_TYPES_H 1
 
 /* Define to 1 if you have the <unistd.h> header file. */
+#if defined(_WIN32)
 #undef HAVE_UNISTD_H
+#else
+#define HAVE_UNISTD_H 1
+#endif
 
 /* Name of package */
 #define PACKAGE "Doom"

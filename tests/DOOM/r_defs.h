@@ -16,10 +16,8 @@
 //      Refresh/rendering module, shared data struct definitions.
 //
 
-
 #ifndef __R_DEFS__
 #define __R_DEFS__
-
 
 // Screenwidth.
 #include "doomdef.h"
@@ -38,9 +36,6 @@
 
 #include "v_patch.h"
 
-
-
-
 // Silhouette, needed for clipping Segs (mainly)
 // and sprites representing things.
 #define SIL_NONE        0
@@ -49,10 +44,6 @@
 #define SIL_BOTH        3
 
 #define MAXDRAWSEGS        256
-
-
-
-
 
 //
 // INTERNAL MAP TYPES
@@ -68,7 +59,6 @@ typedef struct
 {
     fixed_t x;
     fixed_t y;
-
 } vertex_t;
 
 // Forward of LineDefs, for Sectors.
@@ -82,11 +72,10 @@ struct line_s;
 //  updated.
 typedef struct
 {
-    thinker_t thinker;    // not used for anything
+    thinker_t thinker; // not used for anything
     fixed_t x;
     fixed_t y;
     fixed_t z;
-
 } degenmobj_t;
 
 //
@@ -125,12 +114,8 @@ typedef struct
     void* specialdata;
 
     int linecount;
-    struct line_s** lines;    // [linecount] size
-
+    struct line_s** lines; // [linecount] size
 } sector_t;
-
-
-
 
 //
 // The SideDef.
@@ -152,7 +137,6 @@ typedef struct
 
     // Sector the SideDef is facing.
     sector_t* sector;
-
 } side_t;
 
 //
@@ -164,7 +148,6 @@ typedef enum
     ST_VERTICAL,
     ST_POSITIVE,
     ST_NEGATIVE
-
 } slopetype_t;
 
 typedef struct line_s
@@ -217,7 +200,6 @@ typedef struct subsector_s
     sector_t* sector;
     short numlines;
     short firstline;
-
 } subsector_t;
 
 //
@@ -240,7 +222,6 @@ typedef struct
     // backsector is NULL for one sided lines
     sector_t* frontsector;
     sector_t* backsector;
-
 } seg_t;
 
 //
@@ -259,20 +240,12 @@ typedef struct
 
     // If NF_SUBSECTOR its a subsector.
     unsigned short children[2];
-
 } node_t;
-
-
-
 
 // PC direct to screen pointers
 //B UNUSED - keep till detailshift in r_draw.c resolved
 //extern byte*	destview;
 //extern byte*	destscreen;
-
-
-
-
 
 //
 // OTHER TYPES
@@ -312,7 +285,6 @@ typedef struct drawseg_s
     short* sprtopclip;
     short* sprbottomclip;
     short* maskedtexturecol;
-
 } drawseg_t;
 
 // A vissprite_t is a thing
@@ -351,7 +323,6 @@ typedef struct vissprite_s
     lighttable_t* colormap;
 
     int mobjflags;
-
 } vissprite_t;
 
 //
@@ -381,7 +352,6 @@ typedef struct
 
     // Flip bit (1 = flip) to use for view angles 0-7.
     byte flip[8];
-
 } spriteframe_t;
 
 //
@@ -392,7 +362,6 @@ typedef struct
 {
     int numframes;
     spriteframe_t* spriteframes;
-
 } spritedef_t;
 
 //
@@ -417,7 +386,6 @@ typedef struct
     // See above.
     byte bottom[SCREENWIDTH];
     byte pad4;
-
 } visplane_t;
 
 #endif

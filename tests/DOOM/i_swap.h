@@ -16,7 +16,6 @@
 //	Endianess handling, swapping 16bit and 32bit.
 //
 
-
 #ifndef __I_SWAP__
 #define __I_SWAP__
 
@@ -48,7 +47,6 @@
         ((short int)((((unsigned short int)(x) & 0x00ff) << 8) | \
                               (((unsigned short int)(x) & 0xff00) >> 8)))
 
-
 #if ( SDL_BYTEORDER == SDL_BIG_ENDIAN )
 #define doom_wtohs(x) doom_swap_s(x)
 #else
@@ -65,4 +63,3 @@
 #endif /* FEATURE_SOUND */
 
 #endif
-

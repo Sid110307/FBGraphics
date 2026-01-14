@@ -20,7 +20,6 @@
 
 #include "d_event.h"
 
-
 //
 // Globally visible constants.
 //
@@ -46,7 +45,7 @@
 void HU_Init(void);
 void HU_Start(void);
 
-boolean HU_Responder(event_t* ev);
+boolean HU_Responder(const event_t* ev);
 
 void HU_Ticker(void);
 void HU_Drawer(void);
@@ -56,4 +55,3 @@ void HU_Erase(void);
 extern char* chat_macros[10];
 
 #endif
-

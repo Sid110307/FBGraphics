@@ -15,8 +15,6 @@
 // DESCRIPTION:  Ceiling aninmation (lowering, crushing, raising)
 //
 
-
-
 #include "z_zone.h"
 #include "doomdef.h"
 #include "p_local.h"
@@ -34,9 +32,7 @@
 // CEILINGS
 //
 
-
 ceiling_t* activeceilings[MAXCEILINGS];
-
 
 //
 // T_MoveCeiling
@@ -53,10 +49,7 @@ void T_MoveCeiling(ceiling_t* ceiling)
             break;
         case 1:
             // UP
-            res = T_MovePlane(ceiling->sector,
-                              ceiling->speed,
-                              ceiling->topheight,
-                              false, 1, ceiling->direction);
+            res = T_MovePlane(ceiling->sector, ceiling->speed, ceiling->topheight, false, 1, ceiling->direction);
 
             if (!(leveltime & 7))
             {
@@ -89,16 +82,13 @@ void T_MoveCeiling(ceiling_t* ceiling)
                     default:
                         break;
                 }
-
             }
             break;
 
         case -1:
             // DOWN
-            res = T_MovePlane(ceiling->sector,
-                              ceiling->speed,
-                              ceiling->bottomheight,
-                              ceiling->crush, 1, ceiling->direction);
+            res = T_MovePlane(ceiling->sector, ceiling->speed, ceiling->bottomheight, ceiling->crush, 1,
+                              ceiling->direction);
 
             if (!(leveltime & 7))
             {
@@ -131,7 +121,8 @@ void T_MoveCeiling(ceiling_t* ceiling)
                     default:
                         break;
                 }
-            } else // ( res != pastdest )
+            }
+            else // ( res != pastdest )
             {
                 if (res == crushed)
                 {
@@ -156,18 +147,10 @@ void T_MoveCeiling(ceiling_t* ceiling)
 // EV_DoCeiling
 // Move a ceiling up/down and all around!
 //
-int
-EV_DoCeiling
-    (line_t* line,
-     ceiling_e type)
+int EV_DoCeiling(line_t* line, const ceiling_e type)
 {
-    int secnum;
-    int rtn;
-    sector_t* sec;
-    ceiling_t* ceiling;
-
-    secnum = -1;
-    rtn = 0;
+    int secnum = -1;
+    int rtn = 0;
 
     //	Reactivate in-stasis ceilings...for certain types.
     switch (type)
@@ -182,16 +165,15 @@ EV_DoCeiling
 
     while ((secnum = P_FindSectorFromLineTag(line, secnum)) >= 0)
     {
-        sec = &sectors[secnum];
-        if (sec->specialdata)
-            continue;
+        sector_t* sec = &sectors[secnum];
+        if (sec->specialdata) continue;
 
         // new door thinker
         rtn = 1;
-        ceiling = Z_Malloc(sizeof(*ceiling), PU_LEVSPEC, 0);
+        ceiling_t* ceiling = Z_Malloc(sizeof(*ceiling), PU_LEVSPEC, 0);
         P_AddThinker(&ceiling->thinker);
         sec->specialdata = ceiling;
-        ceiling->thinker.function.acp1 = (actionf_p1) T_MoveCeiling;
+        ceiling->thinker.function.acp1 = (actionf_p1)T_MoveCeiling;
         ceiling->sector = sec;
         ceiling->crush = false;
 
@@ -200,7 +182,7 @@ EV_DoCeiling
             case fastCrushAndRaise:
                 ceiling->crush = true;
                 ceiling->topheight = sec->ceilingheight;
-                ceiling->bottomheight = sec->floorheight + (8 * FRACUNIT);
+                ceiling->bottomheight = sec->floorheight + 8 * FRACUNIT;
                 ceiling->direction = -1;
                 ceiling->speed = CEILSPEED * 2;
                 break;
@@ -212,8 +194,7 @@ EV_DoCeiling
             case lowerAndCrush:
             case lowerToFloor:
                 ceiling->bottomheight = sec->floorheight;
-                if (type != lowerToFloor)
-                    ceiling->bottomheight += 8 * FRACUNIT;
+                if (type != lowerToFloor) ceiling->bottomheight += 8 * FRACUNIT;
                 ceiling->direction = -1;
                 ceiling->speed = CEILSPEED;
                 break;
@@ -237,9 +218,7 @@ EV_DoCeiling
 //
 void P_AddActiveCeiling(ceiling_t* c)
 {
-    int i;
-
-    for (i = 0; i < MAXCEILINGS; i++)
+    for (int i = 0; i < MAXCEILINGS; i++)
     {
         if (activeceilings[i] == NULL)
         {
@@ -252,11 +231,9 @@ void P_AddActiveCeiling(ceiling_t* c)
 //
 // Remove a ceiling's thinker
 //
-void P_RemoveActiveCeiling(ceiling_t* c)
+void P_RemoveActiveCeiling(const ceiling_t* c)
 {
-    int i;
-
-    for (i = 0; i < MAXCEILINGS; i++)
+    for (int i = 0; i < MAXCEILINGS; i++)
     {
         if (activeceilings[i] == c)
         {
@@ -271,19 +248,14 @@ void P_RemoveActiveCeiling(ceiling_t* c)
 //
 // Restart a ceiling that's in-stasis
 //
-void P_ActivateInStasisCeiling(line_t* line)
+void P_ActivateInStasisCeiling(const line_t* line)
 {
-    int i;
-
-    for (i = 0; i < MAXCEILINGS; i++)
+    for (int i = 0; i < MAXCEILINGS; i++)
     {
-        if (activeceilings[i]
-            && (activeceilings[i]->tag == line->tag)
-            && (activeceilings[i]->direction == 0))
+        if (activeceilings[i] && activeceilings[i]->tag == line->tag && activeceilings[i]->direction == 0)
         {
             activeceilings[i]->direction = activeceilings[i]->olddirection;
-            activeceilings[i]->thinker.function.acp1
-                = (actionf_p1) T_MoveCeiling;
+            activeceilings[i]->thinker.function.acp1 = (actionf_p1)T_MoveCeiling;
         }
     }
 }
@@ -292,21 +264,16 @@ void P_ActivateInStasisCeiling(line_t* line)
 // EV_CeilingCrushStop
 // Stop a ceiling from crushing!
 //
-int EV_CeilingCrushStop(line_t* line)
+int EV_CeilingCrushStop(const line_t* line)
 {
-    int i;
-    int rtn;
-
-    rtn = 0;
-    for (i = 0; i < MAXCEILINGS; i++)
+    int rtn = 0;
+    for (int i = 0; i < MAXCEILINGS; i++)
     {
-        if (activeceilings[i]
-            && (activeceilings[i]->tag == line->tag)
-            && (activeceilings[i]->direction != 0))
+        if (activeceilings[i] && activeceilings[i]->tag == line->tag && activeceilings[i]->direction != 0)
         {
             activeceilings[i]->olddirection = activeceilings[i]->direction;
-            activeceilings[i]->thinker.function.acv = (actionf_v) NULL;
-            activeceilings[i]->direction = 0;        // in-stasis
+            activeceilings[i]->thinker.function.acv = (actionf_v)NULL;
+            activeceilings[i]->direction = 0; // in-stasis
             rtn = 1;
         }
     }

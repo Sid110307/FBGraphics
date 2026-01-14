@@ -17,10 +17,8 @@
 //	DOOM strings, by language.
 //
 
-
 #ifndef __DSTRINGS__
 #define __DSTRINGS__
-
 
 // All important printed strings.
 
@@ -28,7 +26,6 @@
 
 // Misc. other strings.
 #define SAVEGAMENAME    "doomsav"
-
 
 // QuitDOOM messages
 // 8 per each game type

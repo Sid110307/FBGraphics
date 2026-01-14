@@ -3,23 +3,25 @@
 
 constexpr int WIDTH = 1920, HEIGHT = 1080;
 
-double map(double value, double start1, double stop1, double start2, double stop2)
+double map(const double value, const double start1, const double stop1, const double start2, const double stop2)
 {
     return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
 }
 
-void mandelbrot(Framebuffer &fb)
+void mandelbrot(Framebuffer& fb)
 {
     for (int y = 0; y < HEIGHT; ++y)
         for (int x = 0; x < WIDTH; ++x)
         {
             double a = map(x, 0, WIDTH, -2.5, 1), b = map(y, 0, HEIGHT, -1, 1);
-            double ca = a, cb = b;
+            const double ca = a, cb = b;
 
-            int n = 0, maxIterations = 100;
+            constexpr int maxIterations = 100;
+            int n = 0;
+
             while (n < maxIterations)
             {
-                double aa = a * a - b * b, bb = 2 * a * b;
+                const double aa = a * a - b * b, bb = 2 * a * b;
 
                 a = aa + ca;
                 b = bb + cb;
@@ -31,17 +33,18 @@ void mandelbrot(Framebuffer &fb)
             Pixel(fb, static_cast<float>(x), static_cast<float>(y)).draw(
                 n == maxIterations ? Colors::WHITE : Colors::BLUE);
         }
-
 }
 
 int main()
 {
-    Framebuffer fb("/dev/fb0", WIDTH, HEIGHT, 4);
-    mandelbrot(fb);
+    Framebuffer fb(WIDTH, HEIGHT, 4);
 
     while (true)
     {
-        char c = getChar();
-        if (c == 'q') return EXIT_SUCCESS;
+        if (const char c = getChar(); c == 'q') break;
+
+        mandelbrot(fb);
+        fb.present(0, 0);
     }
+    return 0;
 }

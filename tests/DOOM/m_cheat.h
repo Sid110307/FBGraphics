@@ -16,7 +16,6 @@
 //	Cheat code checking.
 //
 
-
 #ifndef __M_CHEAT__
 #define __M_CHEAT__
 
@@ -47,14 +46,8 @@ typedef struct
     char parameter_buf[MAX_CHEAT_PARAMS];
 } cheatseq_t;
 
-int
-cht_CheckCheat
-    (cheatseq_t* cht,
-     char key);
+int cht_CheckCheat(cheatseq_t* cht, char key);
 
-void
-cht_GetParam
-    (cheatseq_t* cht,
-     char* buffer);
+void cht_GetParam(const cheatseq_t* cht, char* buffer);
 
 #endif

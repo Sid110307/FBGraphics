@@ -16,7 +16,6 @@
 //	Refresh module, BSP traversal and handling.
 //
 
-
 #ifndef __R_BSP__
 #define __R_BSP__
 
@@ -44,7 +43,7 @@ extern lighttable_t** hscalelight;
 extern lighttable_t** vscalelight;
 extern lighttable_t** dscalelight;
 
-typedef void (* drawfunc_t)(int start, int stop);
+typedef void (*drawfunc_t)(int start, int stop);
 
 // BSP?
 void R_ClearClipSegs(void);

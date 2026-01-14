@@ -16,7 +16,6 @@
 //	The not so system specific sound interface.
 //
 
-
 #ifndef __I_SOUND__
 #define __I_SOUND__
 
@@ -81,22 +80,21 @@ typedef struct
 
     // music handle once registered
     void* handle;
-
 } musicinfo_t;
 
 typedef enum
 {
-    SNDDEVICE_NONE = 0,
-    SNDDEVICE_PCSPEAKER = 1,
-    SNDDEVICE_ADLIB = 2,
-    SNDDEVICE_SB = 3,
-    SNDDEVICE_PAS = 4,
-    SNDDEVICE_GUS = 5,
+    SNDDEVICE_NONE        = 0,
+    SNDDEVICE_PCSPEAKER   = 1,
+    SNDDEVICE_ADLIB       = 2,
+    SNDDEVICE_SB          = 3,
+    SNDDEVICE_PAS         = 4,
+    SNDDEVICE_GUS         = 5,
     SNDDEVICE_WAVEBLASTER = 6,
     SNDDEVICE_SOUNDCANVAS = 7,
-    SNDDEVICE_GENMIDI = 8,
-    SNDDEVICE_AWE32 = 9,
-    SNDDEVICE_CD = 10,
+    SNDDEVICE_GENMIDI     = 8,
+    SNDDEVICE_AWE32       = 9,
+    SNDDEVICE_CD          = 10,
 } snddevice_t;
 
 // Interface for sound modules
@@ -111,41 +109,40 @@ typedef struct
     // Initialise sound module
     // Returns true if successfully initialised
 
-    boolean (* Init)(boolean use_sfx_prefix);
+    boolean (*Init)(boolean use_sfx_prefix);
 
     // Shutdown sound module
 
-    void (* Shutdown)(void);
+    void (*Shutdown)(void);
 
     // Returns the lump index of the given sound.
 
-    int (* GetSfxLumpNum)(sfxinfo_t* sfxinfo);
+    int (*GetSfxLumpNum)(sfxinfo_t* sfxinfo);
 
     // Called periodically to update the subsystem.
 
-    void (* Update)(void);
+    void (*Update)(void);
 
     // Update the sound settings on the given channel.
 
-    void (* UpdateSoundParams)(int channel, int vol, int sep);
+    void (*UpdateSoundParams)(int channel, int vol, int sep);
 
     // Start a sound on a given channel.  Returns the channel id
     // or -1 on failure.
 
-    int (* StartSound)(sfxinfo_t* sfxinfo, int channel, int vol, int sep);
+    int (*StartSound)(sfxinfo_t* sfxinfo, int channel, int vol, int sep);
 
     // Stop the sound playing on the given channel.
 
-    void (* StopSound)(int channel);
+    void (*StopSound)(int channel);
 
     // Query if a sound is playing on the given channel
 
-    boolean (* SoundIsPlaying)(int channel);
+    boolean (*SoundIsPlaying)(int channel);
 
     // Called on startup to precache sound effects (if necessary)
 
-    void (* CacheSounds)(sfxinfo_t* sounds, int num_sounds);
-
+    void (*CacheSounds)(sfxinfo_t* sounds, int num_sounds);
 } sound_module_t;
 
 void I_InitSound(boolean use_sfx_prefix);
@@ -169,48 +166,48 @@ typedef struct
 
     // Initialise the music subsystem
 
-    boolean (* Init)(void);
+    boolean (*Init)(void);
 
     // Shutdown the music subsystem
 
-    void (* Shutdown)(void);
+    void (*Shutdown)(void);
 
     // Set music volume - range 0-127
 
-    void (* SetMusicVolume)(int volume);
+    void (*SetMusicVolume)(int volume);
 
     // Pause music
 
-    void (* PauseMusic)(void);
+    void (*PauseMusic)(void);
 
     // Un-pause music
 
-    void (* ResumeMusic)(void);
+    void (*ResumeMusic)(void);
 
     // Register a song handle from data
     // Returns a handle that can be used to play the song
 
-    void* (* RegisterSong)(void* data, int len);
+    void* (*RegisterSong)(void* data, int len);
 
     // Un-register (free) song data
 
-    void (* UnRegisterSong)(void* handle);
+    void (*UnRegisterSong)(void* handle);
 
     // Play the song
 
-    void (* PlaySong)(void* handle, boolean looping);
+    void (*PlaySong)(void* handle, boolean looping);
 
     // Stop playing the current song.
 
-    void (* StopSong)(void);
+    void (*StopSong)(void);
 
     // Query if music is playing.
 
-    boolean (* MusicIsPlaying)(void);
+    boolean (*MusicIsPlaying)(void);
 
     // Invoked periodically to poll.
 
-    void (* Poll)(void);
+    void (*Poll)(void);
 } music_module_t;
 
 void I_InitMusic(void);
@@ -234,4 +231,3 @@ extern char* snd_musiccmd;
 void I_BindSoundVariables(void);
 
 #endif
-

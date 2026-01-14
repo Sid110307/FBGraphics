@@ -16,14 +16,13 @@
 //	System specific interface stuff.
 //
 
-
 #ifndef __I_SYSTEM__
 #define __I_SYSTEM__
 
 #include "d_ticcmd.h"
 #include "d_event.h"
 
-typedef void (* atexit_func_t)(void);
+typedef void (*atexit_func_t)(void);
 
 // Called by DoomMain.
 void I_Init(void);
@@ -34,7 +33,6 @@ void I_Init(void);
 byte* I_ZoneBase(int* size);
 
 boolean I_ConsoleStdout(void);
-
 
 // Asynchronous interrupt functions should maintain private queues
 // that are read by the synchronous functions
@@ -72,11 +70,10 @@ void I_PrintStartupBanner(char* gamedescription);
 
 // Print a centered text banner displaying the given string.
 
-void I_PrintBanner(char* text);
+void I_PrintBanner(const char* text);
 
 // Print a dividing line for startup banners.
 
 void I_PrintDivider(void);
 
 #endif
-

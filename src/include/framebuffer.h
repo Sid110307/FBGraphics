@@ -1,15 +1,17 @@
 #pragma once
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#else
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#endif
 
 #ifdef __cplusplus
 
 #include <iostream>
-#include <vector>
-#include <cmath>
-#include <cstring>
 
 enum class EventType
 {
@@ -28,12 +30,13 @@ struct Event
 class Framebuffer
 {
 public:
-    Framebuffer(const std::string &fbPath, int _width, int _height, int _bytesPerPixel);
+    Framebuffer(int _width, int _height, int _bytesPerPixel);
     ~Framebuffer();
 
-    void drawPixel(float x, float y, unsigned int color, bool interpolate = true);
+    void present(int x, int y) const;
+    void drawPixel(float x, float y, unsigned int color) const;
     [[nodiscard]] unsigned int getPixel(int x, int y) const;
-    void clear(unsigned int color);
+    void clear(unsigned int color) const;
 
     [[nodiscard]] Event pollEvent() const;
     void setKeyState(int key, bool state);
@@ -43,14 +46,19 @@ public:
     [[nodiscard]] int getHeight() const;
 
 private:
-    void* framebuffer;
-    int fbDescriptor, width, height, bytesPerPixel, stride, fbSize;
+    void* framebuffer = nullptr;
+    int fbDescriptor = -1, width, height, bytesPerPixel, stride, fbSize;
     bool keyStates[256] = {};
 
-    [[nodiscard]] std::vector<unsigned int> interpolation(unsigned int color, float dx, float dy) const;
+#ifdef _WIN32
+    HDC desktopDC = nullptr;
+    BITMAPINFO bmi = {};
+    void* bits = nullptr;
+#endif
 };
 
-extern "C" {
+extern "C"
+{
 #endif
 
 typedef enum
@@ -67,10 +75,11 @@ typedef struct
     int key;
 } C_Event;
 
-void* framebuffer_create(const char* fbPath, int width, int height, int bytesPerPixel);
+void* framebuffer_create(int width, int height, int bytesPerPixel);
 void framebuffer_destroy(void* instance);
 
-void framebuffer_drawPixel(void* instance, float x, float y, unsigned int color, int interpolate);
+void framebuffer_present(void* instance, int x, int y);
+void framebuffer_drawPixel(void* instance, float x, float y, unsigned int color);
 unsigned int framebuffer_getPixel(void* instance, int x, int y);
 void framebuffer_clear(void* instance, unsigned int color);
 

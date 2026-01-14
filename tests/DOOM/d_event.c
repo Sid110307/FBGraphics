@@ -32,7 +32,7 @@ static int eventtail;
 // D_PostEvent
 // Called by the I/O functions when input is detected
 //
-void D_PostEvent(event_t* ev)
+void D_PostEvent(const event_t* ev)
 {
     events[eventhead] = *ev;
     eventhead = (eventhead + 1) % MAXEVENTS;
@@ -42,16 +42,11 @@ void D_PostEvent(event_t* ev)
 
 event_t* D_PopEvent(void)
 {
-    event_t* result;
-
     // No more events waiting.
 
-    if (eventtail == eventhead)
-    {
-        return NULL;
-    }
+    if (eventtail == eventhead) { return NULL; }
 
-    result = &events[eventtail];
+    event_t* result = &events[eventtail];
 
     // Advance to the next event in the queue.
 
@@ -59,5 +54,3 @@ event_t* D_PopEvent(void)
 
     return result;
 }
-
-

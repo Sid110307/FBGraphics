@@ -105,7 +105,6 @@ typedef enum
     NUMMUSIC
 } musicenum_t;
 
-
 //
 // Identifiers for all sfx in game.
 //

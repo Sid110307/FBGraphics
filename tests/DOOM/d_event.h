@@ -16,12 +16,10 @@
 //
 //
 
-
 #ifndef __D_EVENT__
 #define __D_EVENT__
 
 #include "doomtype.h"
-
 
 //
 // Event handling.
@@ -77,14 +75,14 @@ typedef enum
     BT_USE = 2,
 
     // Flag: game events, not really buttons.
-    BT_SPECIAL = 128,
+    BT_SPECIAL     = 128,
     BT_SPECIALMASK = 3,
 
     // Flag, weapon change pending.
     // If true, the next 3 bits hold weapon num.
     BT_CHANGE = 4,
     // The 3bit weapon mask and shift, convenience.
-    BT_WEAPONMASK = (8 + 16 + 32),
+    BT_WEAPONMASK  = 8 + 16 + 32,
     BT_WEAPONSHIFT = 3,
 
     // Pause the game.
@@ -94,9 +92,8 @@ typedef enum
 
     // Savegame slot numbers
     //  occupy the second byte of buttons.
-    BTS_SAVEMASK = (4 + 8 + 16),
+    BTS_SAVEMASK  = 4 + 8 + 16,
     BTS_SAVESHIFT = 2,
-
 } buttoncode_t;
 
 // villsa [STRIFE] Strife specific buttons
@@ -117,15 +114,13 @@ typedef enum
     BT2_JUMP = 32,
     // Use medkit
     BT2_HEALTH = 128,
-
 } buttoncode2_t;
 
 // Called by IO functions when input is detected.
-void D_PostEvent(event_t* ev);
+void D_PostEvent(const event_t* ev);
 
 // Read an event from the event queue
 
 event_t* D_PopEvent(void);
 
 #endif
-

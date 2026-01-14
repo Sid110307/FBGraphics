@@ -17,13 +17,11 @@
 //	 separating modules.
 //
 
-
 #ifndef __DOOMTYPE__
 #define __DOOMTYPE__
 
 // #define macros to provide functions missing in Windows.
 // Outside Windows, we use strings.h for str[n]casecmp.
-
 
 #ifdef _WIN32
 
@@ -35,7 +33,6 @@
 #include <strings.h>
 
 #endif
-
 
 //
 // The packed attribute forces structures to be packed into the minimum
@@ -72,6 +69,10 @@ typedef bool boolean;
 
 typedef enum
 {
+
+
+
+
     false = 0,
     true = 1,
     undef = 0xFFFFFFFF
@@ -100,4 +101,3 @@ typedef uint8_t byte;
 #define arrlen(array) (sizeof(array) / sizeof(*array))
 
 #endif
-

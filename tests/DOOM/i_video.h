@@ -16,7 +16,6 @@
 //	System specific interface stuff.
 //
 
-
 #ifndef __I_VIDEO__
 #define __I_VIDEO__
 
@@ -49,12 +48,12 @@ typedef struct
     //
     // If NULL, no init function is called.
 
-    void (* InitMode)(byte* palette);
+    void (*InitMode)(byte* palette);
 
     // Function to call to draw the screen from the source buffer.
     // Return true if draw was successful.
 
-    boolean (* DrawScreen)(int x1, int y1, int x2, int y2);
+    boolean (*DrawScreen)(int x1, int y1, int x2, int y2);
 
     // If true, this is a "poor quality" mode.  The autoadjust
     // code should always attempt to use a different mode to this
@@ -89,7 +88,7 @@ typedef struct
     boolean poor_quality;
 } screen_mode_t;
 
-typedef boolean (* grabmouse_callback_t)(void);
+typedef boolean (*grabmouse_callback_t)(void);
 
 // Called by D_DoomMain,
 // determines the hardware configuration
@@ -101,17 +100,17 @@ void I_GraphicsCheckCommandLine(void);
 void I_ShutdownGraphics(void);
 
 // Takes full 8 bit values.
-void I_SetPalette(byte* palette);
+void I_SetPalette(const byte* palette);
 int I_GetPaletteIndex(int r, int g, int b);
 
 void I_UpdateNoBlit(void);
 void I_FinishUpdate(void);
 
-void I_ReadScreen(byte* scr);
+void I_ReadScreen(byte * scr);
 
 void I_BeginRead(void);
 
-void I_SetWindowTitle(char* title);
+void I_SetWindowTitle(const char* title);
 
 void I_CheckIsScreensaver(void);
 void I_SetGrabMouseCallback(grabmouse_callback_t func);

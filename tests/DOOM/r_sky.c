@@ -20,8 +20,6 @@
 //
 //
 
-
-
 // Needed for FRACUNIT.
 #include "m_fixed.h"
 
@@ -46,4 +44,3 @@ void R_InitSkyMap(void)
     // skyflatnum = R_FlatNumForName ( SKYFLATNAME );
     skytexturemid = 100 * FRACUNIT;
 }
-

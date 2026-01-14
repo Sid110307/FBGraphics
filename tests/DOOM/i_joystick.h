@@ -15,7 +15,6 @@
 //      System-specific joystick interface.
 //
 
-
 #ifndef __I_JOYSTICK__
 #define __I_JOYSTICK__
 
@@ -67,4 +66,3 @@ void I_UpdateJoystick(void);
 void I_BindJoystickVariables(void);
 
 #endif /* #ifndef __I_JOYSTICK__ */
-
