@@ -1023,7 +1023,8 @@ void AM_drawWalls(void)
 //
 void AM_rotate(fixed_t* x, fixed_t* y, const angle_t a)
 {
-    const fixed_t tmpx = FixedMul(*x, finecosine[a >> ANGLETOFINESHIFT]) - FixedMul(*y, finesine[a >> ANGLETOFINESHIFT]);
+    const fixed_t tmpx = FixedMul(*x, finecosine[a >> ANGLETOFINESHIFT]) -
+        FixedMul(*y, finesine[a >> ANGLETOFINESHIFT]);
 
     *y = FixedMul(*x, finesine[a >> ANGLETOFINESHIFT]) + FixedMul(*y, finecosine[a >> ANGLETOFINESHIFT]);
 
@@ -1103,7 +1104,8 @@ void AM_drawPlayers(void)
 void AM_drawThings(const int colors, int colorrange)
 {
     for (int i = 0; i < numsectors; i++)
-    { const mobj_t* t = sectors[i].thinglist;
+    {
+        const mobj_t* t = sectors[i].thinglist;
         while (t)
         {
             AM_drawLineCharacter(thintriangle_guy, arrlen(thintriangle_guy), 16 << FRACBITS, t->angle,

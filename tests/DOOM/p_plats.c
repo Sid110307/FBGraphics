@@ -45,8 +45,7 @@ void T_PlatRaise(plat_t* plat)
 
     switch (plat->status)
     {
-        case up:
-            res = T_MovePlane(plat->sector, plat->speed, plat->high, plat->crush, 0, 1);
+        case up: res = T_MovePlane(plat->sector, plat->speed, plat->high, plat->crush, 0, 1);
 
             if (plat->type == raiseAndChange || plat->type == raiseToNearestAndChange)
             {
@@ -70,24 +69,20 @@ void T_PlatRaise(plat_t* plat)
                     switch (plat->type)
                     {
                         case blazeDWUS:
-                        case downWaitUpStay:
-                            P_RemoveActivePlat(plat);
+                        case downWaitUpStay: P_RemoveActivePlat(plat);
                             break;
 
                         case raiseAndChange:
-                        case raiseToNearestAndChange:
-                            P_RemoveActivePlat(plat);
+                        case raiseToNearestAndChange: P_RemoveActivePlat(plat);
                             break;
 
-                        default:
-                            break;
+                        default: break;
                     }
                 }
             }
             break;
 
-        case down:
-            res = T_MovePlane(plat->sector, plat->speed, plat->low, false, 0, -1);
+        case down: res = T_MovePlane(plat->sector, plat->speed, plat->low, false, 0, -1);
 
             if (res == pastdest)
             {
@@ -97,15 +92,13 @@ void T_PlatRaise(plat_t* plat)
             }
             break;
 
-        case waiting:
-            if (!--plat->count)
+        case waiting: if (!--plat->count)
             {
                 if (plat->sector->floorheight == plat->low) plat->status = up;
                 else plat->status = down;
                 S_StartSound(&plat->sector->soundorg, sfx_pstart);
             }
-        case in_stasis:
-            break;
+        case in_stasis: break;
     }
 }
 
@@ -121,12 +114,10 @@ int EV_DoPlat(line_t* line, const plattype_e type, const int amount)
     //	Activate all <type> plats that are in_stasis
     switch (type)
     {
-        case perpetualRaise:
-            P_ActivateInStasis(line->tag);
+        case perpetualRaise: P_ActivateInStasis(line->tag);
             break;
 
-        default:
-            break;
+        default: break;
     }
 
     while ((secnum = P_FindSectorFromLineTag(line, secnum)) >= 0)
@@ -149,8 +140,7 @@ int EV_DoPlat(line_t* line, const plattype_e type, const int amount)
 
         switch (type)
         {
-            case raiseToNearestAndChange:
-                plat->speed = PLATSPEED / 2;
+            case raiseToNearestAndChange: plat->speed = PLATSPEED / 2;
                 sec->floorpic = sides[line->sidenum[0]].sector->floorpic;
                 plat->high = P_FindNextHighestFloor(sec, sec->floorheight);
                 plat->wait = 0;
@@ -161,8 +151,7 @@ int EV_DoPlat(line_t* line, const plattype_e type, const int amount)
                 S_StartSound(&sec->soundorg, sfx_stnmov);
                 break;
 
-            case raiseAndChange:
-                plat->speed = PLATSPEED / 2;
+            case raiseAndChange: plat->speed = PLATSPEED / 2;
                 sec->floorpic = sides[line->sidenum[0]].sector->floorpic;
                 plat->high = sec->floorheight + amount * FRACUNIT;
                 plat->wait = 0;
@@ -171,8 +160,7 @@ int EV_DoPlat(line_t* line, const plattype_e type, const int amount)
                 S_StartSound(&sec->soundorg, sfx_stnmov);
                 break;
 
-            case downWaitUpStay:
-                plat->speed = PLATSPEED * 4;
+            case downWaitUpStay: plat->speed = PLATSPEED * 4;
                 plat->low = P_FindLowestFloorSurrounding(sec);
 
                 if (plat->low > sec->floorheight) plat->low = sec->floorheight;
@@ -183,8 +171,7 @@ int EV_DoPlat(line_t* line, const plattype_e type, const int amount)
                 S_StartSound(&sec->soundorg, sfx_pstart);
                 break;
 
-            case blazeDWUS:
-                plat->speed = PLATSPEED * 8;
+            case blazeDWUS: plat->speed = PLATSPEED * 8;
                 plat->low = P_FindLowestFloorSurrounding(sec);
 
                 if (plat->low > sec->floorheight) plat->low = sec->floorheight;
@@ -195,8 +182,7 @@ int EV_DoPlat(line_t* line, const plattype_e type, const int amount)
                 S_StartSound(&sec->soundorg, sfx_pstart);
                 break;
 
-            case perpetualRaise:
-                plat->speed = PLATSPEED;
+            case perpetualRaise: plat->speed = PLATSPEED;
                 plat->low = P_FindLowestFloorSurrounding(sec);
 
                 if (plat->low > sec->floorheight) plat->low = sec->floorheight;

@@ -230,7 +230,8 @@ void P_ZMovement(mobj_t* mo)
     {
         // float down towards target if too close
         if (!(mo->flags & MF_SKULLFLY) && !(mo->flags & MF_INFLOAT))
-        { const fixed_t dist = P_AproxDistance(mo->x - mo->target->x, mo->y - mo->target->y);
+        {
+            const fixed_t dist = P_AproxDistance(mo->x - mo->target->x, mo->y - mo->target->y);
 
             const fixed_t delta = mo->target->z + (mo->height >> 1) - mo->z;
 

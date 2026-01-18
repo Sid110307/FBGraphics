@@ -313,7 +313,8 @@ fixed_t R_PointToDist(const fixed_t x, const fixed_t y)
     fixed_t dy = abs(y - viewy);
 
     if (dy > dx)
-    { const fixed_t temp = dx;
+    {
+        const fixed_t temp = dx;
         dx = dy;
         dy = temp;
     }
@@ -501,7 +502,8 @@ void R_InitLightTables(void)
     // Calculate the light levels to use
     //  for each level / distance combination.
     for (int i = 0; i < LIGHTLEVELS; i++)
-    { const int startmap = (LIGHTLEVELS - 1 - i) * 2 * NUMCOLORMAPS / LIGHTLEVELS;
+    {
+        const int startmap = (LIGHTLEVELS - 1 - i) * 2 * NUMCOLORMAPS / LIGHTLEVELS;
         for (int j = 0; j < MAXLIGHTZ; j++)
         {
             int scale = FixedDiv(SCREENWIDTH / 2 * FRACUNIT, (j + 1) << LIGHTZSHIFT);
@@ -598,14 +600,16 @@ void R_ExecuteSetViewSize(void)
     }
 
     for (i = 0; i < viewwidth; i++)
-    { const fixed_t cosadj = abs(finecosine[xtoviewangle[i] >> ANGLETOFINESHIFT]);
+    {
+        const fixed_t cosadj = abs(finecosine[xtoviewangle[i] >> ANGLETOFINESHIFT]);
         distscale[i] = FixedDiv(FRACUNIT, cosadj);
     }
 
     // Calculate the light levels to use
     //  for each level / scale combination.
     for (i = 0; i < LIGHTLEVELS; i++)
-    { const int startmap = (LIGHTLEVELS - 1 - i) * 2 * NUMCOLORMAPS / LIGHTLEVELS;
+    {
+        const int startmap = (LIGHTLEVELS - 1 - i) * 2 * NUMCOLORMAPS / LIGHTLEVELS;
         for (int j = 0; j < MAXLIGHTSCALE; j++)
         {
             int level = startmap - j * SCREENWIDTH / (viewwidth << detailshift) / DISTMAP;
@@ -656,7 +660,8 @@ subsector_t* R_PointInSubsector(const fixed_t x, const fixed_t y)
     int nodenum = numnodes - 1;
 
     while (!(nodenum & NF_SUBSECTOR))
-    { const node_t* node = &nodes[nodenum];
+    {
+        const node_t* node = &nodes[nodenum];
         const int side = R_PointOnSide(x, y, node);
         nodenum = node->children[side];
     }

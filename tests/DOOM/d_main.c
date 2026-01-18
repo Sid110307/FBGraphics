@@ -196,8 +196,7 @@ void D_Display(void)
     // do buffered drawing
     switch (gamestate)
     {
-        case GS_LEVEL:
-            if (!gametic) break;
+        case GS_LEVEL: if (!gametic) break;
             if (automapactive) AM_Drawer();
             if (wipe || (viewheight != 200 && fullscreen)) redrawsbar = true;
             if (inhelpscreensstate && !inhelpscreens) redrawsbar = true; // just put away the help screen
@@ -205,16 +204,13 @@ void D_Display(void)
             fullscreen = viewheight == 200;
             break;
 
-        case GS_INTERMISSION:
-            WI_Drawer();
+        case GS_INTERMISSION: WI_Drawer();
             break;
 
-        case GS_FINALE:
-            F_Drawer();
+        case GS_FINALE: F_Drawer();
             break;
 
-        case GS_DEMOSCREEN:
-            D_PageDrawer();
+        case GS_DEMOSCREEN: D_PageDrawer();
             break;
     }
 
@@ -473,27 +469,22 @@ void D_DoAdvanceDemo(void)
 
     switch (demosequence)
     {
-        case 0:
-            if (gamemode == commercial) pagetic = TICRATE * 11;
+        case 0: if (gamemode == commercial) pagetic = TICRATE * 11;
             else pagetic = 170;
             gamestate = GS_DEMOSCREEN;
             pagename = DEH_String("TITLEPIC");
             if (gamemode == commercial) S_StartMusic(mus_dm2ttl);
             else S_StartMusic(mus_intro);
             break;
-        case 1:
-            G_DeferedPlayDemo(DEH_String("demo1"));
+        case 1: G_DeferedPlayDemo(DEH_String("demo1"));
             break;
-        case 2:
-            pagetic = 200;
+        case 2: pagetic = 200;
             gamestate = GS_DEMOSCREEN;
             pagename = DEH_String("CREDIT");
             break;
-        case 3:
-            G_DeferedPlayDemo(DEH_String("demo2"));
+        case 3: G_DeferedPlayDemo(DEH_String("demo2"));
             break;
-        case 4:
-            gamestate = GS_DEMOSCREEN;
+        case 4: gamestate = GS_DEMOSCREEN;
             if (gamemode == commercial)
             {
                 pagetic = TICRATE * 11;
@@ -508,12 +499,10 @@ void D_DoAdvanceDemo(void)
                 else pagename = DEH_String("HELP2");
             }
             break;
-        case 5:
-            G_DeferedPlayDemo(DEH_String("demo3"));
+        case 5: G_DeferedPlayDemo(DEH_String("demo3"));
             break;
         // THE DEFINITIVE DOOM Special Edition demo
-        case 6:
-            G_DeferedPlayDemo(DEH_String("demo4"));
+        case 6: G_DeferedPlayDemo(DEH_String("demo4"));
             break;
     }
 

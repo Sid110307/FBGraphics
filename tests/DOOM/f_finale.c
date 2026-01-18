@@ -306,68 +306,50 @@ void F_CastTicker(void)
         // sound hacks....
         switch (st)
         {
-            case S_PLAY_ATK1:
-                sfx = sfx_dshtgn;
+            case S_PLAY_ATK1: sfx = sfx_dshtgn;
                 break;
-            case S_POSS_ATK2:
-                sfx = sfx_pistol;
+            case S_POSS_ATK2: sfx = sfx_pistol;
                 break;
-            case S_SPOS_ATK2:
-                sfx = sfx_shotgn;
+            case S_SPOS_ATK2: sfx = sfx_shotgn;
                 break;
-            case S_VILE_ATK2:
-                sfx = sfx_vilatk;
+            case S_VILE_ATK2: sfx = sfx_vilatk;
                 break;
-            case S_SKEL_FIST2:
-                sfx = sfx_skeswg;
+            case S_SKEL_FIST2: sfx = sfx_skeswg;
                 break;
-            case S_SKEL_FIST4:
-                sfx = sfx_skepch;
+            case S_SKEL_FIST4: sfx = sfx_skepch;
                 break;
-            case S_SKEL_MISS2:
-                sfx = sfx_skeatk;
+            case S_SKEL_MISS2: sfx = sfx_skeatk;
                 break;
             case S_FATT_ATK8:
             case S_FATT_ATK5:
-            case S_FATT_ATK2:
-                sfx = sfx_firsht;
+            case S_FATT_ATK2: sfx = sfx_firsht;
                 break;
             case S_CPOS_ATK2:
             case S_CPOS_ATK3:
-            case S_CPOS_ATK4:
-                sfx = sfx_shotgn;
+            case S_CPOS_ATK4: sfx = sfx_shotgn;
                 break;
-            case S_TROO_ATK3:
-                sfx = sfx_claw;
+            case S_TROO_ATK3: sfx = sfx_claw;
                 break;
-            case S_SARG_ATK2:
-                sfx = sfx_sgtatk;
+            case S_SARG_ATK2: sfx = sfx_sgtatk;
                 break;
             case S_BOSS_ATK2:
             case S_BOS2_ATK2:
-            case S_HEAD_ATK2:
-                sfx = sfx_firsht;
+            case S_HEAD_ATK2: sfx = sfx_firsht;
                 break;
-            case S_SKULL_ATK2:
-                sfx = sfx_sklatk;
+            case S_SKULL_ATK2: sfx = sfx_sklatk;
                 break;
             case S_SPID_ATK2:
-            case S_SPID_ATK3:
-                sfx = sfx_shotgn;
+            case S_SPID_ATK3: sfx = sfx_shotgn;
                 break;
-            case S_BSPI_ATK2:
-                sfx = sfx_plasma;
+            case S_BSPI_ATK2: sfx = sfx_plasma;
                 break;
             case S_CYBER_ATK2:
             case S_CYBER_ATK4:
-            case S_CYBER_ATK6:
-                sfx = sfx_rlaunc;
+            case S_CYBER_ATK6: sfx = sfx_rlaunc;
                 break;
-            case S_PAIN_ATK3:
-                sfx = sfx_sklatk;
+            case S_PAIN_ATK3: sfx = sfx_sklatk;
                 break;
-            default:
-                sfx = 0;
+            default: sfx = 0;
                 break;
         }
 
@@ -500,7 +482,8 @@ void F_DrawPatchCol(const int x, patch_t* patch, const int col)
 
     // step through the posts in a column
     while (column->topdelta != 0xff)
-    { const byte* source = (byte*)column + 3;
+    {
+        const byte* source = (byte*)column + 3;
         byte* dest = desttop + column->topdelta * SCREENWIDTH;
         int count = column->length;
 
@@ -566,18 +549,14 @@ static void F_ArtScreenDrawer(void)
     {
         switch (gameepisode)
         {
-            case 1:
-                if (gamemode == retail) { lumpname = "CREDIT"; }
+            case 1: if (gamemode == retail) { lumpname = "CREDIT"; }
                 else { lumpname = "HELP2"; }
                 break;
-            case 2:
-                lumpname = "VICTORY2";
+            case 2: lumpname = "VICTORY2";
                 break;
-            case 4:
-                lumpname = "ENDPIC";
+            case 4: lumpname = "ENDPIC";
                 break;
-            default:
-                return;
+            default: return;
         }
 
         lumpname = DEH_String(lumpname);
@@ -593,14 +572,11 @@ void F_Drawer(void)
 {
     switch (finalestage)
     {
-        case F_STAGE_CAST:
-            F_CastDrawer();
+        case F_STAGE_CAST: F_CastDrawer();
             break;
-        case F_STAGE_TEXT:
-            F_TextWrite();
+        case F_STAGE_TEXT: F_TextWrite();
             break;
-        case F_STAGE_ARTSCREEN:
-            F_ArtScreenDrawer();
+        case F_STAGE_ARTSCREEN: F_ArtScreenDrawer();
             break;
     }
 }

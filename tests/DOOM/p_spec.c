@@ -203,7 +203,8 @@ fixed_t P_FindLowestFloorSurrounding(sector_t* sec)
     fixed_t floor = sec->floorheight;
 
     for (int i = 0; i < sec->linecount; i++)
-    { const line_t* check = sec->lines[i];
+    {
+        const line_t* check = sec->lines[i];
         sector_t* other = getNextSector(check, sec);
 
         if (!other) continue;
@@ -222,7 +223,8 @@ fixed_t P_FindHighestFloorSurrounding(sector_t* sec)
     fixed_t floor = -500 * FRACUNIT;
 
     for (int i = 0; i < sec->linecount; i++)
-    { const line_t* check = sec->lines[i];
+    {
+        const line_t* check = sec->lines[i];
         sector_t* other = getNextSector(check, sec);
 
         if (!other) continue;
@@ -250,7 +252,8 @@ fixed_t P_FindNextHighestFloor(sector_t* sec, const int currentheight)
     fixed_t heightlist[MAX_ADJOINING_SECTORS + 2];
 
     for (i = 0, h = 0; i < sec->linecount; i++)
-    { const line_t* check = sec->lines[i];
+    {
+        const line_t* check = sec->lines[i];
         sector_t* other = getNextSector(check, sec);
 
         if (!other) continue;
@@ -288,7 +291,8 @@ fixed_t P_FindLowestCeilingSurrounding(sector_t* sec)
     fixed_t height = INT_MAX;
 
     for (int i = 0; i < sec->linecount; i++)
-    { const line_t* check = sec->lines[i];
+    {
+        const line_t* check = sec->lines[i];
         sector_t* other = getNextSector(check, sec);
 
         if (!other) continue;
@@ -306,7 +310,8 @@ fixed_t P_FindHighestCeilingSurrounding(sector_t* sec)
     fixed_t height = 0;
 
     for (int i = 0; i < sec->linecount; i++)
-    { const line_t* check = sec->lines[i];
+    {
+        const line_t* check = sec->lines[i];
         sector_t* other = getNextSector(check, sec);
 
         if (!other) continue;
@@ -333,7 +338,8 @@ int P_FindMinSurroundingLight(sector_t* sector, const int max)
 {
     int min = max;
     for (int i = 0; i < sector->linecount; i++)
-    { const line_t* line = sector->lines[i];
+    {
+        const line_t* line = sector->lines[i];
         sector_t* check = getNextSector(line, sector);
 
         if (!check) continue;
@@ -369,12 +375,10 @@ void P_CrossSpecialLine(const int linenum, const int side, mobj_t* thing)
             case MT_BFG:
             case MT_TROOPSHOT:
             case MT_HEADSHOT:
-            case MT_BRUISERSHOT:
-                return;
+            case MT_BRUISERSHOT: return;
                 break;
 
-            default:
-                break;
+            default: break;
         }
 
         int ok = 0;
@@ -898,8 +902,7 @@ void P_PlayerInSpecialSector(player_t* player)
             if (player->health <= 10) G_ExitLevel();
             break;
 
-        default:
-            I_Error("P_PlayerInSpecialSector: " "unknown special %i", sector->special);
+        default: I_Error("P_PlayerInSpecialSector: " "unknown special %i", sector->special);
             break;
     };
 }
@@ -926,7 +929,8 @@ void P_UpdateSpecials(void)
     for (const anim_t* anim = anims; anim < lastanim; anim++)
     {
         for (i = anim->basepic; i < anim->basepic + anim->numpics; i++)
-        { const int pic = anim->basepic + (leveltime / anim->speed + i) % anim->numpics;
+        {
+            const int pic = anim->basepic + (leveltime / anim->speed + i) % anim->numpics;
             if (anim->istexture) texturetranslation[i] = pic;
             else flattranslation[i] = pic;
         }
@@ -934,7 +938,8 @@ void P_UpdateSpecials(void)
 
     //	ANIMATE LINE SPECIALS
     for (i = 0; i < numlinespecials; i++)
-    { const line_t* line = linespeciallist[i];
+    {
+        const line_t* line = linespeciallist[i];
         switch (line->special)
         {
             case 48:
@@ -953,16 +958,13 @@ void P_UpdateSpecials(void)
             {
                 switch (buttonlist[i].where)
                 {
-                    case top:
-                        sides[buttonlist[i].line->sidenum[0]].toptexture = buttonlist[i].btexture;
+                    case top: sides[buttonlist[i].line->sidenum[0]].toptexture = buttonlist[i].btexture;
                         break;
 
-                    case middle:
-                        sides[buttonlist[i].line->sidenum[0]].midtexture = buttonlist[i].btexture;
+                    case middle: sides[buttonlist[i].line->sidenum[0]].midtexture = buttonlist[i].btexture;
                         break;
 
-                    case bottom:
-                        sides[buttonlist[i].line->sidenum[0]].bottomtexture = buttonlist[i].btexture;
+                    case bottom: sides[buttonlist[i].line->sidenum[0]].bottomtexture = buttonlist[i].btexture;
                         break;
                 }
                 S_StartSound(&buttonlist[i].soundorg, sfx_swtchn);
@@ -1089,7 +1091,8 @@ int EV_DoDonut(line_t* line)
         }
 
         for (int i = 0; i < s2->linecount; i++)
-        { const sector_t* s3 = s2->lines[i]->backsector;
+        {
+            const sector_t* s3 = s2->lines[i]->backsector;
 
             if (s3 == s1) continue;
 
@@ -1228,8 +1231,7 @@ void P_SpawnSpecials(void)
                 P_SpawnDoorRaiseIn5Mins(sector, i);
                 break;
 
-            case 17:
-                P_SpawnFireFlicker(sector);
+            case 17: P_SpawnFireFlicker(sector);
                 break;
         }
     }
@@ -1240,8 +1242,7 @@ void P_SpawnSpecials(void)
     {
         switch (lines[i].special)
         {
-            case 48:
-                if (numlinespecials >= MAXLINEANIMS)
+            case 48: if (numlinespecials >= MAXLINEANIMS)
                 {
                     I_Error("Too many scrolling wall linedefs! " "(Vanilla limit is 64)");
                 }

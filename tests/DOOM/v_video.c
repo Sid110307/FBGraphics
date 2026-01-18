@@ -266,7 +266,8 @@ void V_DrawTLPatch(int x, int y, patch_t* patch)
         // step through the posts in a column
 
         while (column->topdelta != 0xff)
-        { const byte* source = (byte*)column + 3;
+        {
+            const byte* source = (byte*)column + 3;
             byte* dest = desttop + column->topdelta * SCREENWIDTH;
             int count = column->length;
 
@@ -304,7 +305,8 @@ void V_DrawXlaPatch(int x, int y, patch_t* patch)
         // step through the posts in a column
 
         while (column->topdelta != 0xff)
-        { const byte* source = (byte*)column + 3;
+        {
+            const byte* source = (byte*)column + 3;
             byte* dest = desttop + column->topdelta * SCREENWIDTH;
             int count = column->length;
 
@@ -346,7 +348,8 @@ void V_DrawAltTLPatch(int x, int y, patch_t* patch)
         // step through the posts in a column
 
         while (column->topdelta != 0xff)
-        { const byte* source = (byte*)column + 3;
+        {
+            const byte* source = (byte*)column + 3;
             byte* dest = desttop + column->topdelta * SCREENWIDTH;
             int count = column->length;
 
@@ -388,7 +391,8 @@ void V_DrawShadowedPatch(int x, int y, patch_t* patch)
         // step through the posts in a column
 
         while (column->topdelta != 0xff)
-        { const byte* source = (byte*)column + 3;
+        {
+            const byte* source = (byte*)column + 3;
             byte* dest = desttop + column->topdelta * SCREENWIDTH;
             byte* dest2 = desttop2 + column->topdelta * SCREENWIDTH;
             int count = column->length;

@@ -176,7 +176,8 @@ lighttable_t* colormaps;
 void R_DrawColumnInCache(column_t* patch, byte* cache, const int originy, const int cacheheight)
 {
     while (patch->topdelta != 0xff)
-    { const byte* source = (byte*)patch + 3;
+    {
+        const byte* source = (byte*)patch + 3;
         int count = patch->length;
         int position = originy + patch->topdelta;
 
@@ -268,7 +269,8 @@ void R_GenerateLookup(const int texnum)
     texpatch_t* patch = texture->patches;
 
     for (i = 0, patch = texture->patches; i < texture->patchcount; i++, patch++)
-    { const patch_t* realpatch = W_CacheLumpNum(patch->patch, PU_CACHE);
+    {
+        const patch_t* realpatch = W_CacheLumpNum(patch->patch, PU_CACHE);
         const int x1 = patch->originx;
         int x2 = x1 + SHORT(realpatch->width);
 
@@ -724,7 +726,8 @@ void R_PrecacheLevel(void)
         if (!spritepresent[i]) continue;
 
         for (j = 0; j < sprites[i].numframes; j++)
-        { const spriteframe_t* sf = &sprites[i].spriteframes[j];
+        {
+            const spriteframe_t* sf = &sprites[i].spriteframes[j];
             for (int k = 0; k < 8; k++)
             {
                 lump = firstspritelump + sf->lump[k];

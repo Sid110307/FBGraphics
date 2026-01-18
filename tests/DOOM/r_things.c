@@ -342,7 +342,8 @@ void R_DrawVisSprite(const vissprite_t* vis, int x1, int x2)
     sprtopscreen = centeryfrac - FixedMul(dc_texturemid, spryscale);
 
     for (dc_x = vis->x1; dc_x <= vis->x2; dc_x++, frac += vis->xiscale)
-    { const int texturecolumn = frac >> FRACBITS;
+    {
+        const int texturecolumn = frac >> FRACBITS;
 #ifdef RANGECHECK
         if (texturecolumn < 0 || texturecolumn >= SHORT(patch->width)) I_Error("R_DrawSpriteRange: bad texturecolumn");
 #endif

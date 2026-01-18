@@ -236,14 +236,11 @@ static void PrintLevelName(FILE* stream, int episode, int level)
 
     switch (discovered_gamemission)
     {
-        case doom:
-            fprintf(stream, "E%iM%i\n", episode + 1, level + 1);
+        case doom: fprintf(stream, "E%iM%i\n", episode + 1, level + 1);
             break;
-        case doom2:
-            fprintf(stream, "MAP%02i\n", level + 1);
+        case doom2: fprintf(stream, "MAP%02i\n", level + 1);
             break;
-        default: case none:
-            fprintf(stream, "E%iM%i / MAP%02i\n", episode + 1, level + 1, level + 1);
+        default: case none: fprintf(stream, "E%iM%i / MAP%02i\n", episode + 1, level + 1, level + 1);
             break;
     }
 

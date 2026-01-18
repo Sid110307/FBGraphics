@@ -178,7 +178,8 @@ void P_LoadSegs(const int lump)
         li->frontsector = sides[ldef->sidenum[side]].sector;
 
         if (ldef->flags & ML_TWOSIDED)
-        { const int sidenum = ldef->sidenum[side ^ 1];
+        {
+            const int sidenum = ldef->sidenum[side ^ 1];
 
             // If the sidenum is out of range, this may be a "glass hack"
             // impassible window.  Point at side #0 (this may not be
@@ -456,7 +457,8 @@ void P_GroupLines(void)
     // look up sector number for each subsector
     subsector_t* ss = subsectors;
     for (i = 0; i < numsubsectors; i++, ss++)
-    { const seg_t* seg = &segs[ss->firstline];
+    {
+        const seg_t* seg = &segs[ss->firstline];
         ss->sector = seg->sidedef->sector;
     }
 
@@ -573,7 +575,8 @@ static void PadRejectArray(byte* array, const unsigned int len)
     byte* dest = array;
 
     for (unsigned int i = 0; i < len && i < sizeof(rejectpad); ++i)
-    { const unsigned int byte_num = i % 4;
+    {
+        const unsigned int byte_num = i % 4;
         *dest = rejectpad[i / 4] >> (byte_num * 8) & 0xff;
         ++dest;
     }

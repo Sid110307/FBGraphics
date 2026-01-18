@@ -310,7 +310,8 @@ boolean PIT_CheckThing(mobj_t* thing)
 
     // check for special pickup
     if (thing->flags & MF_SPECIAL)
-    { const boolean solid = thing->flags & MF_SOLID;
+    {
+        const boolean solid = thing->flags & MF_SOLID;
         if (tmflags & MF_PICKUP)
         {
             // can remove thing
@@ -723,7 +724,8 @@ boolean PTR_AimTraverse(const intercept_t* in)
     fixed_t dist;
 
     if (in->isaline)
-    { const line_t* li = in->d.line;
+    {
+        const line_t* li = in->d.line;
 
         if (!(li->flags & ML_TWOSIDED)) return false; // stop
 
@@ -1179,18 +1181,14 @@ static void SpechitOverrun(const line_t* ld)
         case 9:
         case 10:
         case 11:
-        case 12:
-            tmbbox[numspechit - 9] = addr;
+        case 12: tmbbox[numspechit - 9] = addr;
             break;
-        case 13:
-            crushchange = addr;
+        case 13: crushchange = addr;
             break;
-        case 14:
-            nofit = addr;
+        case 14: nofit = addr;
             break;
-        default:
-            fprintf(stderr, "SpechitOverrun: Warning: unable to emulate" "an overrun where numspechit=%i\n",
-                    numspechit);
+        default: fprintf(stderr, "SpechitOverrun: Warning: unable to emulate" "an overrun where numspechit=%i\n",
+                         numspechit);
             break;
     }
 }

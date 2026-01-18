@@ -411,7 +411,8 @@ void WI_drawOnLnode(const int n, patch_t* c[])
 
     int i = 0;
     do
-    { const int left = lnodes[wbs->epsd][n].x - SHORT(c[i]->leftoffset);
+    {
+        const int left = lnodes[wbs->epsd][n].x - SHORT(c[i]->leftoffset);
         const int top = lnodes[wbs->epsd][n].y - SHORT(c[i]->topoffset);
         const int right = left + SHORT(c[i]->width);
         const int bottom = top + SHORT(c[i]->height);
@@ -463,13 +464,11 @@ void WI_updateAnimatedBack(void)
         {
             switch (a->type)
             {
-                case ANIM_ALWAYS:
-                    if (++a->ctr >= a->nanims) a->ctr = 0;
+                case ANIM_ALWAYS: if (++a->ctr >= a->nanims) a->ctr = 0;
                     a->nexttic = bcnt + a->period;
                     break;
 
-                case ANIM_RANDOM:
-                    a->ctr++;
+                case ANIM_RANDOM: a->ctr++;
                     if (a->ctr == a->nanims)
                     {
                         a->ctr = -1;
@@ -499,7 +498,8 @@ void WI_drawAnimatedBack(void)
     if (wbs->epsd > 2) return;
 
     for (int i = 0; i < NUMANIMS[wbs->epsd]; i++)
-    { const anim_t* a = &anims[wbs->epsd][i];
+    {
+        const anim_t* a = &anims[wbs->epsd][i];
 
         if (a->ctr >= 0) V_DrawPatch(a->loc.x, a->loc.y, a->p[a->ctr]);
     }
@@ -578,7 +578,8 @@ void WI_drawTime(int x, const int y, const int t)
         int div = 1;
 
         do
-        { const int n = t / div % 60;
+        {
+            const int n = t / div % 60;
             x = WI_drawNum(x, y, n, 2) - SHORT(colon->width);
             div *= 60;
 
@@ -1265,18 +1266,15 @@ void WI_Ticker(void)
 
     switch (state)
     {
-        case StatCount:
-            if (deathmatch) WI_updateDeathmatchStats();
+        case StatCount: if (deathmatch) WI_updateDeathmatchStats();
             else if (netgame) WI_updateNetgameStats();
             else WI_updateStats();
             break;
 
-        case ShowNextLoc:
-            WI_updateShowNextLoc();
+        case ShowNextLoc: WI_updateShowNextLoc();
             break;
 
-        case NoState:
-            WI_updateNoState();
+        case NoState: WI_updateNoState();
             break;
     }
 }
@@ -1467,18 +1465,15 @@ void WI_Drawer(void)
 {
     switch (state)
     {
-        case StatCount:
-            if (deathmatch) WI_drawDeathmatchStats();
+        case StatCount: if (deathmatch) WI_drawDeathmatchStats();
             else if (netgame) WI_drawNetgameStats();
             else WI_drawStats();
             break;
 
-        case ShowNextLoc:
-            WI_drawShowNextLoc();
+        case ShowNextLoc: WI_drawShowNextLoc();
             break;
 
-        case NoState:
-            WI_drawNoState();
+        case NoState: WI_drawNoState();
             break;
     }
 }

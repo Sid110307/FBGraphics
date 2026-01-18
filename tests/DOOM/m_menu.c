@@ -611,9 +611,7 @@ void M_DrawReadThis1(void)
         case exe_doom_1_7:
         case exe_doom_1_8:
         case exe_doom_1_9:
-        case exe_hacx:
-
-            if (gamemode == commercial)
+        case exe_hacx: if (gamemode == commercial)
             {
                 // Doom 2
 
@@ -655,8 +653,7 @@ void M_DrawReadThis1(void)
 
             break;
 
-        default:
-            I_Error("Unhandled game version");
+        default: I_Error("Unhandled game version");
             break;
     }
 
@@ -699,11 +696,9 @@ void M_SfxVol(const int choice)
 {
     switch (choice)
     {
-        case 0:
-            if (sfxVolume) sfxVolume--;
+        case 0: if (sfxVolume) sfxVolume--;
             break;
-        case 1:
-            if (sfxVolume < 15) sfxVolume++;
+        case 1: if (sfxVolume < 15) sfxVolume++;
             break;
     }
 
@@ -714,11 +709,9 @@ void M_MusicVol(const int choice)
 {
     switch (choice)
     {
-        case 0:
-            if (musicVolume) musicVolume--;
+        case 0: if (musicVolume) musicVolume--;
             break;
-        case 1:
-            if (musicVolume < 15) musicVolume++;
+        case 1: if (musicVolume < 15) musicVolume++;
             break;
     }
 
@@ -951,11 +944,9 @@ void M_ChangeSensitivity(const int choice)
 {
     switch (choice)
     {
-        case 0:
-            if (mouseSensitivity) mouseSensitivity--;
+        case 0: if (mouseSensitivity) mouseSensitivity--;
             break;
-        case 1:
-            if (mouseSensitivity < 9) mouseSensitivity++;
+        case 1: if (mouseSensitivity < 9) mouseSensitivity++;
             break;
     }
 }
@@ -975,15 +966,13 @@ void M_SizeDisplay(const int choice)
 {
     switch (choice)
     {
-        case 0:
-            if (screenSize > 0)
+        case 0: if (screenSize > 0)
             {
                 screenblocks--;
                 screenSize--;
             }
             break;
-        case 1:
-            if (screenSize < 8)
+        case 1: if (screenSize < 8)
             {
                 screenblocks++;
                 screenSize++;
@@ -1047,7 +1036,8 @@ int M_StringWidth(const char* string)
     int w = 0;
 
     for (size_t i = 0; i < strlen(string); i++)
-    { const int c = toupper(string[i]) - HU_FONTSTART;
+    {
+        const int c = toupper(string[i]) - HU_FONTSTART;
         if (c < 0 || c >= HU_FONTSIZE) w += 4;
         else w += SHORT(hu_font[c]->width);
     }
@@ -1264,21 +1254,18 @@ boolean M_Responder(const event_t* ev)
     {
         switch (key)
         {
-            case KEY_BACKSPACE:
-                if (saveCharIndex > 0)
+            case KEY_BACKSPACE: if (saveCharIndex > 0)
                 {
                     saveCharIndex--;
                     savegamestrings[saveSlot][saveCharIndex] = 0;
                 }
                 break;
 
-            case KEY_ESCAPE:
-                saveStringEnter = 0;
+            case KEY_ESCAPE: saveStringEnter = 0;
                 M_StringCopy(savegamestrings[saveSlot], saveOldString, SAVESTRINGSIZE);
                 break;
 
-            case KEY_ENTER:
-                saveStringEnter = 0;
+            case KEY_ENTER: saveStringEnter = 0;
                 if (savegamestrings[saveSlot][0]) M_DoSave(saveSlot);
                 break;
 
@@ -1745,12 +1732,10 @@ void M_Init(void)
         case shareware:
         // Episode 2 and 3 are handled,
         //  branching to an ad screen.
-        case registered:
-            break;
+        case registered: break;
         case retail:
             // We are fine.
-        default:
-            break;
+        default: break;
     }
 
     // Versions of doom.exe before the Ultimate Doom release only had

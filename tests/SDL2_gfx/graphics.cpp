@@ -799,23 +799,18 @@ void arcRGBA(Framebuffer& renderer, const short x, const short y, const short ra
             switch (oct)
             {
                 case 0:
-                case 3:
-                    temp = sin(dStart * M_PI / 180.0);
+                case 3: temp = sin(dStart * M_PI / 180.0);
                     break;
                 case 1:
-                case 6:
-                    temp = cos(dStart * M_PI / 180.0);
+                case 6: temp = cos(dStart * M_PI / 180.0);
                     break;
                 case 2:
-                case 5:
-                    temp = -cos(dStart * M_PI / 180.0);
+                case 5: temp = -cos(dStart * M_PI / 180.0);
                     break;
                 case 4:
-                case 7:
-                    temp = -sin(dStart * M_PI / 180.0);
+                case 7: temp = -sin(dStart * M_PI / 180.0);
                     break;
-                default:
-                    break;
+                default: break;
             }
 
             temp *= rad;
@@ -829,23 +824,18 @@ void arcRGBA(Framebuffer& renderer, const short x, const short y, const short ra
             switch (oct)
             {
                 case 0:
-                case 3:
-                    temp = sin(dEnd * M_PI / 180);
+                case 3: temp = sin(dEnd * M_PI / 180);
                     break;
                 case 1:
-                case 6:
-                    temp = cos(dEnd * M_PI / 180);
+                case 6: temp = cos(dEnd * M_PI / 180);
                     break;
                 case 2:
-                case 5:
-                    temp = -cos(dEnd * M_PI / 180);
+                case 5: temp = -cos(dEnd * M_PI / 180);
                     break;
                 case 4:
-                case 7:
-                    temp = -sin(dEnd * M_PI / 180);
+                case 7: temp = -sin(dEnd * M_PI / 180);
                     break;
-                default:
-                    break;
+                default: break;
             }
 
             temp *= rad;

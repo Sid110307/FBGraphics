@@ -142,7 +142,8 @@ void STlib_updateMultIcon(st_multicon_t* mi, const boolean refresh)
     if (*mi->on && (mi->oldinum != *mi->inum || refresh) && *mi->inum != -1)
     {
         if (mi->oldinum != -1)
-        { const int x = mi->x - SHORT(mi->p[mi->oldinum]->leftoffset);
+        {
+            const int x = mi->x - SHORT(mi->p[mi->oldinum]->leftoffset);
             const int y = mi->y - SHORT(mi->p[mi->oldinum]->topoffset);
             const int w = SHORT(mi->p[mi->oldinum]->width);
             const int h = SHORT(mi->p[mi->oldinum]->height);
@@ -169,7 +170,8 @@ void STlib_initBinIcon(st_binicon_t* b, const int x, const int y, patch_t* i, bo
 void STlib_updateBinIcon(st_binicon_t* bi, const boolean refresh)
 {
     if (*bi->on && (bi->oldval != *bi->val || refresh))
-    { const int x = bi->x - SHORT(bi->p->leftoffset);
+    {
+        const int x = bi->x - SHORT(bi->p->leftoffset);
         const int y = bi->y - SHORT(bi->p->topoffset);
         const int w = SHORT(bi->p->width);
         const int h = SHORT(bi->p->height);

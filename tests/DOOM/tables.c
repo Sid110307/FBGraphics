@@ -42,7 +42,8 @@ int SlopeDiv(const unsigned int num, const unsigned int den)
 {
     if (den < 512) { return SLOPERANGE; }
     else
-    { const unsigned ans = (num << 3) / (den >> 8);
+    {
+        const unsigned ans = (num << 3) / (den >> 8);
 
         if (ans <= SLOPERANGE) { return ans; }
         else { return SLOPERANGE; }

@@ -78,9 +78,11 @@ void HUlib_drawTextLine(const hu_textline_t* l, const boolean drawcursor)
     // draw the new stuff
     int x = l->x;
     for (int i = 0; i < l->len; i++)
-    { const unsigned char c = toupper(l->l[i]);
+    {
+        const unsigned char c = toupper(l->l[i]);
         if (c != ' ' && c >= l->sc && c <= '_')
-        { const int w = SHORT(l->f[c - l->sc]->width);
+        {
+            const int w = SHORT(l->f[c - l->sc]->width);
             if (x + w > SCREENWIDTH) break;
             V_DrawPatchDirect(x, l->y, l->f[c - l->sc]);
             x += w;
@@ -110,7 +112,8 @@ void HUlib_eraseTextLine(hu_textline_t* l)
     // (because of a recent change back from the automap)
 
     if (!automapactive && viewwindowx && l->needsupdate)
-    { const int lh = SHORT(l->f[0]->height) + 1;
+    {
+        const int lh = SHORT(l->f[0]->height) + 1;
         for (y = l->y, yoffset = y * SCREENWIDTH; y < l->y + lh; y++, yoffset += SCREENWIDTH)
         {
             if (y < viewwindowy || y >= viewwindowy + viewheight) R_VideoErase(yoffset, SCREENWIDTH);

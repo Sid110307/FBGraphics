@@ -94,7 +94,8 @@ void P_RecursiveSound(sector_t* sec, const int soundblocks)
     sec->soundtarget = soundtarget;
 
     for (int i = 0; i < sec->linecount; i++)
-    { const line_t* check = sec->lines[i];
+    {
+        const line_t* check = sec->lines[i];
         if (!(check->flags & ML_TWOSIDED)) continue;
 
         P_LineOpening(check);
@@ -386,10 +387,12 @@ boolean P_LookForPlayers(mobj_t* actor, const boolean allaround)
         if (!P_CheckSight(actor, player->mo)) continue; // out of sight
 
         if (!allaround)
-        { const angle_t an = R_PointToAngle2(actor->x, actor->y, player->mo->x, player->mo->y) - actor->angle;
+        {
+            const angle_t an = R_PointToAngle2(actor->x, actor->y, player->mo->x, player->mo->y) - actor->angle;
 
             if (an > ANG90 && an < ANG270)
-            { const fixed_t dist = P_AproxDistance(player->mo->x - actor->x, player->mo->y - actor->y);
+            {
+                const fixed_t dist = P_AproxDistance(player->mo->x - actor->x, player->mo->y - actor->y);
                 // if real close, react anyway
                 if (dist > MELEERANGE) continue; // behind back
             }
@@ -464,17 +467,14 @@ seeyou:
         {
             case sfx_posit1:
             case sfx_posit2:
-            case sfx_posit3:
-                sound = sfx_posit1 + P_Random() % 3;
+            case sfx_posit3: sound = sfx_posit1 + P_Random() % 3;
                 break;
 
             case sfx_bgsit1:
-            case sfx_bgsit2:
-                sound = sfx_bgsit1 + P_Random() % 2;
+            case sfx_bgsit2: sound = sfx_bgsit1 + P_Random() % 2;
                 break;
 
-            default:
-                sound = actor->info->seesound;
+            default: sound = actor->info->seesound;
                 break;
         }
 
@@ -609,7 +609,8 @@ void A_SPosAttack(mobj_t* actor)
     const int slope = P_AimLineAttack(actor, bangle, MISSILERANGE);
 
     for (int i = 0; i < 3; i++)
-    { const int angle = bangle + ((P_Random() - P_Random()) << 20);
+    {
+        const int angle = bangle + ((P_Random() - P_Random()) << 20);
         const int damage = (P_Random() % 5 + 1) * 3;
         P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
     }
@@ -691,7 +692,8 @@ void A_SargAttack(mobj_t* actor)
 
     A_FaceTarget(actor);
     if (P_CheckMeleeRange(actor))
-    { const int damage = (P_Random() % 10 + 1) * 4;
+    {
+        const int damage = (P_Random() % 10 + 1) * 4;
         P_DamageMobj(actor->target, actor, actor, damage);
     }
 }
@@ -702,7 +704,8 @@ void A_HeadAttack(mobj_t* actor)
 
     A_FaceTarget(actor);
     if (P_CheckMeleeRange(actor))
-    { const int damage = (P_Random() % 6 + 1) * 10;
+    {
+        const int damage = (P_Random() % 6 + 1) * 10;
         P_DamageMobj(actor->target, actor, actor, damage);
         return;
     }
@@ -819,7 +822,8 @@ void A_SkelFist(mobj_t* actor)
     A_FaceTarget(actor);
 
     if (P_CheckMeleeRange(actor))
-    { const int damage = (P_Random() % 10 + 1) * 6;
+    {
+        const int damage = (P_Random() % 10 + 1) * 6;
         S_StartSound(actor, sfx_skepch);
         P_DamageMobj(actor->target, actor, actor, damage);
     }
@@ -1157,22 +1161,18 @@ void A_Scream(mobj_t* actor)
 
     switch (actor->info->deathsound)
     {
-        case 0:
-            return;
+        case 0: return;
 
         case sfx_podth1:
         case sfx_podth2:
-        case sfx_podth3:
-            sound = sfx_podth1 + P_Random() % 3;
+        case sfx_podth3: sound = sfx_podth1 + P_Random() % 3;
             break;
 
         case sfx_bgdth1:
-        case sfx_bgdth2:
-            sound = sfx_bgdth1 + P_Random() % 2;
+        case sfx_bgdth2: sound = sfx_bgdth1 + P_Random() % 2;
             break;
 
-        default:
-            sound = actor->info->deathsound;
+        default: sound = actor->info->deathsound;
             break;
     }
 
@@ -1230,20 +1230,15 @@ static boolean CheckBossEnd(const mobjtype_t motype)
 
         switch (gameepisode)
         {
-            case 1:
-                return gamemap == 8 && motype == MT_BRUISER;
+            case 1: return gamemap == 8 && motype == MT_BRUISER;
 
-            case 2:
-                return gamemap == 8 && motype == MT_CYBORG;
+            case 2: return gamemap == 8 && motype == MT_CYBORG;
 
-            case 3:
-                return gamemap == 8 && motype == MT_SPIDER;
+            case 3: return gamemap == 8 && motype == MT_SPIDER;
 
-            case 4:
-                return (gamemap == 6 && motype == MT_CYBORG) || (gamemap == 8 && motype == MT_SPIDER);
+            case 4: return (gamemap == 6 && motype == MT_CYBORG) || (gamemap == 8 && motype == MT_SPIDER);
 
-            default:
-                return gamemap == 8;
+            default: return gamemap == 8;
         }
     }
 }
@@ -1309,23 +1304,19 @@ void A_BossDeath(const mobj_t* mo)
     {
         switch (gameepisode)
         {
-            case 1:
-                junk.tag = 666;
+            case 1: junk.tag = 666;
                 EV_DoFloor(&junk, lowerFloorToLowest);
                 return;
                 break;
 
-            case 4:
-                switch (gamemap)
+            case 4: switch (gamemap)
                 {
-                    case 6:
-                        junk.tag = 666;
+                    case 6: junk.tag = 666;
                         EV_DoDoor(&junk, vld_blazeOpen);
                         return;
                         break;
 
-                    case 8:
-                        junk.tag = 666;
+                    case 8: junk.tag = 666;
                         EV_DoFloor(&junk, lowerFloorToLowest);
                         return;
                         break;
@@ -1398,7 +1389,8 @@ void A_BrainPain(mobj_t* mo) { S_StartSound(NULL, sfx_bospn); }
 void A_BrainScream(const mobj_t* mo)
 {
     for (int x = mo->x - 196 * FRACUNIT; x < mo->x + 320 * FRACUNIT; x += FRACUNIT * 8)
-    { const int y = mo->y - 320 * FRACUNIT;
+    {
+        const int y = mo->y - 320 * FRACUNIT;
         const int z = 128 + P_Random() * 2 * FRACUNIT;
         mobj_t* th = P_SpawnMobj(x, y, z, MT_ROCKET);
         th->momz = P_Random() * 512;

@@ -7,6 +7,10 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <linux/input.h>
+#include <dirent.h>
+#include <cerrno>
+#include <cstring>
 #endif
 
 #ifdef __cplusplus
@@ -38,7 +42,7 @@ public:
     [[nodiscard]] unsigned int getPixel(int x, int y) const;
     void clear(unsigned int color) const;
 
-    [[nodiscard]] Event pollEvent() const;
+    Event pollEvent();
     void setKeyState(int key, bool state);
     [[nodiscard]] bool getKeyState(int key) const;
 
@@ -54,6 +58,9 @@ private:
     HDC desktopDC = nullptr;
     BITMAPINFO bmi = {};
     void* bits = nullptr;
+    bool prevKeyStates[256] = {};
+#else
+    int inputFd = -1;
 #endif
 };
 

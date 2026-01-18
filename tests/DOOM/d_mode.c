@@ -121,8 +121,7 @@ boolean D_IsEpisodeMap(const GameMission_t mission)
     {
         case doom:
         case heretic:
-        case pack_chex:
-            return true;
+        case pack_chex: return true;
 
         case none:
         case hexen:
@@ -130,8 +129,7 @@ boolean D_IsEpisodeMap(const GameMission_t mission)
         case pack_hacx:
         case pack_tnt:
         case pack_plut:
-        case strife: default:
-            return false;
+        case strife: default: return false;
     }
 }
 
@@ -139,25 +137,15 @@ char* D_GameMissionString(const GameMission_t mission)
 {
     switch (mission)
     {
-        case none: default:
-            return "none";
-        case doom:
-            return "doom";
-        case doom2:
-            return "doom2";
-        case pack_tnt:
-            return "tnt";
-        case pack_plut:
-            return "plutonia";
-        case pack_hacx:
-            return "hacx";
-        case pack_chex:
-            return "chex";
-        case heretic:
-            return "heretic";
-        case hexen:
-            return "hexen";
-        case strife:
-            return "strife";
+        case none: default: return "none";
+        case doom: return "doom";
+        case doom2: return "doom2";
+        case pack_tnt: return "tnt";
+        case pack_plut: return "plutonia";
+        case pack_hacx: return "hacx";
+        case pack_chex: return "chex";
+        case heretic: return "heretic";
+        case hexen: return "hexen";
+        case strife: return "strife";
     }
 }

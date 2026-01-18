@@ -136,7 +136,8 @@ static unsigned int ParseVorbisTime(unsigned int samplerate_hz, char* value)
     for (char* p = value; *p != '\0'; ++p)
     {
         if (*p == '.' || *p == ':')
-        { const char c = *p;
+        {
+            const char c = *p;
             *p = '\0';
             result = result * 60 + atoi(num_start);
             num_start = p + 1;
@@ -276,14 +277,11 @@ static void ParseOggFile(file_metadata_t* metadata, FILE* fs)
         {
             switch (buf[0])
             {
-                case OGG_ID_HEADER:
-                    ParseOggIdHeader(metadata, fs);
+                case OGG_ID_HEADER: ParseOggIdHeader(metadata, fs);
                     break;
-                case OGG_COMMENT_HEADER:
-                    ParseVorbisComments(metadata, fs);
+                case OGG_COMMENT_HEADER: ParseVorbisComments(metadata, fs);
                     break;
-                default:
-                    break;
+                default: break;
             }
         }
     }
@@ -437,7 +435,8 @@ static char* ParseSubstituteLine(char* filename, char* line)
     // Read hash.
     int hash_index = 0;
     while (*p != '\0' && *p != '=' && !isspace(*p))
-    { const int d1 = ParseHexDigit(p[0]);
+    {
+        const int d1 = ParseHexDigit(p[0]);
         const int d2 = ParseHexDigit(p[1]);
 
         if (d1 < 0 || d2 < 0) { return "Invalid hex digit in SHA1 hash"; }
@@ -631,7 +630,8 @@ void I_InitTimidityConfig(void)
     // config file.
 
     if (success)
-    { const char* env_string = M_StringJoin("TIMIDITY_CFG=", temp_timidity_cfg, NULL);
+    {
+        const char* env_string = M_StringJoin("TIMIDITY_CFG=", temp_timidity_cfg, NULL);
         putenv(env_string);
     }
     else
@@ -998,7 +998,8 @@ static void RestartCurrentTrack(void)
 static void I_SDL_PollMusic(void)
 {
     if (playing_substitute && file_metadata.valid)
-    { const double end = (double)file_metadata.end_time / file_metadata.samplerate_hz;
+    {
+        const double end = (double)file_metadata.end_time / file_metadata.samplerate_hz;
 
         // If we have reached the loop end point then we have to take action.
         if (file_metadata.end_time >= 0 && GetMusicPosition() >= end) { RestartCurrentTrack(); }

@@ -188,7 +188,8 @@ result_e T_MovePlane(sector_t* sector, const fixed_t speed, const fixed_t dest, 
 //
 void T_MoveFloor(floormove_t* floor)
 {
-    const result_e res = T_MovePlane(floor->sector, floor->speed, floor->floordestheight, floor->crush, 0, floor->direction);
+    const result_e res = T_MovePlane(floor->sector, floor->speed, floor->floordestheight, floor->crush, 0,
+                                     floor->direction);
 
     if (!(leveltime & 7)) S_StartSound(&floor->sector->soundorg, sfx_stnmov);
 
@@ -200,22 +201,18 @@ void T_MoveFloor(floormove_t* floor)
         {
             switch (floor->type)
             {
-                case donutRaise:
-                    floor->sector->special = floor->newspecial;
+                case donutRaise: floor->sector->special = floor->newspecial;
                     floor->sector->floorpic = floor->texture;
-                default:
-                    break;
+                default: break;
             }
         }
         else if (floor->direction == -1)
         {
             switch (floor->type)
             {
-                case lowerAndChange:
-                    floor->sector->special = floor->newspecial;
+                case lowerAndChange: floor->sector->special = floor->newspecial;
                     floor->sector->floorpic = floor->texture;
-                default:
-                    break;
+                default: break;
             }
         }
         P_RemoveThinker(&floor->thinker);
@@ -251,32 +248,27 @@ int EV_DoFloor(const line_t* line, const floor_e floortype)
 
         switch (floortype)
         {
-            case lowerFloor:
-                floor->direction = -1;
+            case lowerFloor: floor->direction = -1;
                 floor->sector = sec;
                 floor->speed = FLOORSPEED;
                 floor->floordestheight = P_FindHighestFloorSurrounding(sec);
                 break;
 
-            case lowerFloorToLowest:
-                floor->direction = -1;
+            case lowerFloorToLowest: floor->direction = -1;
                 floor->sector = sec;
                 floor->speed = FLOORSPEED;
                 floor->floordestheight = P_FindLowestFloorSurrounding(sec);
                 break;
 
-            case turboLower:
-                floor->direction = -1;
+            case turboLower: floor->direction = -1;
                 floor->sector = sec;
                 floor->speed = FLOORSPEED * 4;
                 floor->floordestheight = P_FindHighestFloorSurrounding(sec);
                 if (floor->floordestheight != sec->floorheight) floor->floordestheight += 8 * FRACUNIT;
                 break;
 
-            case raiseFloorCrush:
-                floor->crush = true;
-            case raiseFloor:
-                floor->direction = 1;
+            case raiseFloorCrush: floor->crush = true;
+            case raiseFloor: floor->direction = 1;
                 floor->sector = sec;
                 floor->speed = FLOORSPEED;
                 floor->floordestheight = P_FindLowestCeilingSurrounding(sec);
@@ -284,35 +276,30 @@ int EV_DoFloor(const line_t* line, const floor_e floortype)
                 floor->floordestheight -= 8 * FRACUNIT * (floortype == raiseFloorCrush);
                 break;
 
-            case raiseFloorTurbo:
-                floor->direction = 1;
+            case raiseFloorTurbo: floor->direction = 1;
                 floor->sector = sec;
                 floor->speed = FLOORSPEED * 4;
                 floor->floordestheight = P_FindNextHighestFloor(sec, sec->floorheight);
                 break;
 
-            case raiseFloorToNearest:
-                floor->direction = 1;
+            case raiseFloorToNearest: floor->direction = 1;
                 floor->sector = sec;
                 floor->speed = FLOORSPEED;
                 floor->floordestheight = P_FindNextHighestFloor(sec, sec->floorheight);
                 break;
 
-            case raiseFloor24:
-                floor->direction = 1;
+            case raiseFloor24: floor->direction = 1;
                 floor->sector = sec;
                 floor->speed = FLOORSPEED;
                 floor->floordestheight = floor->sector->floorheight + 24 * FRACUNIT;
                 break;
-            case raiseFloor512:
-                floor->direction = 1;
+            case raiseFloor512: floor->direction = 1;
                 floor->sector = sec;
                 floor->speed = FLOORSPEED;
                 floor->floordestheight = floor->sector->floorheight + 512 * FRACUNIT;
                 break;
 
-            case raiseFloor24AndChange:
-                floor->direction = 1;
+            case raiseFloor24AndChange: floor->direction = 1;
                 floor->sector = sec;
                 floor->speed = FLOORSPEED;
                 floor->floordestheight = floor->sector->floorheight + 24 * FRACUNIT;
@@ -330,7 +317,8 @@ int EV_DoFloor(const line_t* line, const floor_e floortype)
                 for (i = 0; i < sec->linecount; i++)
                 {
                     if (twoSided(secnum, i))
-                    { const side_t* side = getSide(secnum, i, 0);
+                    {
+                        const side_t* side = getSide(secnum, i, 0);
                         if (side->bottomtexture >= 0)
                             if (textureheight[side->bottomtexture] < minsize)
                                 minsize = textureheight[side->
@@ -346,8 +334,7 @@ int EV_DoFloor(const line_t* line, const floor_e floortype)
             }
             break;
 
-            case lowerAndChange:
-                floor->direction = -1;
+            case lowerAndChange: floor->direction = -1;
                 floor->sector = sec;
                 floor->speed = FLOORSPEED;
                 floor->floordestheight = P_FindLowestFloorSurrounding(sec);
@@ -381,8 +368,7 @@ int EV_DoFloor(const line_t* line, const floor_e floortype)
                         }
                     }
                 }
-            default:
-                break;
+            default: break;
         }
     }
     return rtn;
@@ -417,12 +403,10 @@ int EV_BuildStairs(const line_t* line, const stair_e type)
         floor->sector = sec;
         switch (type)
         {
-            case build8:
-                speed = FLOORSPEED / 4;
+            case build8: speed = FLOORSPEED / 4;
                 stairsize = 8 * FRACUNIT;
                 break;
-            case turbo16:
-                speed = FLOORSPEED * 4;
+            case turbo16: speed = FLOORSPEED * 4;
                 stairsize = 16 * FRACUNIT;
                 break;
         }

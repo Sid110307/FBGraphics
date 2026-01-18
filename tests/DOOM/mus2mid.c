@@ -399,15 +399,13 @@ boolean mus2mid(MEMFILE* musinput, MEMFILE* midioutput)
 
             switch (event)
             {
-                case mus_releasekey:
-                    if (mem_fread(&key, 1, 1, musinput) != 1) { return true; }
+                case mus_releasekey: if (mem_fread(&key, 1, 1, musinput) != 1) { return true; }
 
                     if (WriteReleaseKey(channel, key, midioutput)) { return true; }
 
                     break;
 
-                case mus_presskey:
-                    if (mem_fread(&key, 1, 1, musinput) != 1) { return true; }
+                case mus_presskey: if (mem_fread(&key, 1, 1, musinput) != 1) { return true; }
 
                     if (key & 0x80)
                     {
@@ -420,14 +418,12 @@ boolean mus2mid(MEMFILE* musinput, MEMFILE* midioutput)
 
                     break;
 
-                case mus_pitchwheel:
-                    if (mem_fread(&key, 1, 1, musinput) != 1) { break; }
+                case mus_pitchwheel: if (mem_fread(&key, 1, 1, musinput) != 1) { break; }
                     if (WritePitchWheel(channel, (short)(key * 64), midioutput)) { return true; }
 
                     break;
 
-                case mus_systemevent:
-                    if (mem_fread(&controllernumber, 1, 1, musinput) != 1) { return true; }
+                case mus_systemevent: if (mem_fread(&controllernumber, 1, 1, musinput) != 1) { return true; }
                     if (controllernumber < 10 || controllernumber > 14) { return true; }
 
                     if (WriteChangeController_Valueless(channel, controller_map[controllernumber], midioutput))
@@ -437,8 +433,7 @@ boolean mus2mid(MEMFILE* musinput, MEMFILE* midioutput)
 
                     break;
 
-                case mus_changecontroller:
-                    if (mem_fread(&controllernumber, 1, 1, musinput) != 1) { return true; }
+                case mus_changecontroller: if (mem_fread(&controllernumber, 1, 1, musinput) != 1) { return true; }
 
                     if (mem_fread(&controllervalue, 1, 1, musinput) != 1) { return true; }
 
@@ -456,12 +451,10 @@ boolean mus2mid(MEMFILE* musinput, MEMFILE* midioutput)
 
                     break;
 
-                case mus_scoreend:
-                    hitscoreend = 1;
+                case mus_scoreend: hitscoreend = 1;
                     break;
 
-                default:
-                    return true;
+                default: return true;
                     break;
             }
 

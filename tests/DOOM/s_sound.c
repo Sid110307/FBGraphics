@@ -340,7 +340,8 @@ void S_StartSound(void* origin_p, const int sfx_id)
     // Check to see if it is audible,
     //  and if not, modify the params
     if (origin && origin != players[consoleplayer].mo)
-    { const int rc = S_AdjustSoundParams(players[consoleplayer].mo, origin, &volume, &sep);
+    {
+        const int rc = S_AdjustSoundParams(players[consoleplayer].mo, origin, &volume, &sep);
 
         if (origin->x == players[consoleplayer].mo->x && origin->y == players[consoleplayer].mo->y) { sep = NORM_SEP; }
 
@@ -398,7 +399,8 @@ void S_UpdateSounds(mobj_t* listener)
     I_UpdateSound();
 
     for (int cnum = 0; cnum < snd_channels; cnum++)
-    { const channel_t* c = &channels[cnum];
+    {
+        const channel_t* c = &channels[cnum];
         const sfxinfo_t* sfx = c->sfxinfo;
 
         if (c->sfxinfo)
@@ -423,7 +425,8 @@ void S_UpdateSounds(mobj_t* listener)
                 // check non-local sounds for distance clipping
                 //  or modify their params
                 if (c->origin && listener != c->origin)
-                { const int audible = S_AdjustSoundParams(listener, c->origin, &volume, &sep);
+                {
+                    const int audible = S_AdjustSoundParams(listener, c->origin, &volume, &sep);
 
                     if (!audible) { S_StopChannel(cnum); }
                     else { I_UpdateSoundParams(c->handle, volume, sep); }

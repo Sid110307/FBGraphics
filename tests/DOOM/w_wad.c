@@ -192,7 +192,7 @@ wad_file_t* W_AddFile(char* filename)
 
     lumpinfo_t* lump_p = &lumpinfo[startlump];
 
-    const filelump_t * filerover = fileinfo;
+    const filelump_t* filerover = fileinfo;
 
     for (unsigned int i = startlump; i < numlumps; ++i)
     {
@@ -452,7 +452,8 @@ void W_GenerateHashTable(void)
         memset(lumphash, 0, sizeof(lumpinfo_t*) * numlumps);
 
         for (unsigned int i = 0; i < numlumps; ++i)
-        { const unsigned int hash = W_LumpNameHash(lumpinfo[i].name) % numlumps;
+        {
+            const unsigned int hash = W_LumpNameHash(lumpinfo[i].name) % numlumps;
 
             // Hook into the hash table
 
@@ -478,7 +479,8 @@ void W_CheckCorrectIWAD(const GameMission_t mission)
     for (int i = 0; i < arrlen(unique_lumps); ++i)
     {
         if (mission != unique_lumps[i].mission)
-        { const int lumpnum = W_CheckNumForName(unique_lumps[i].lumpname);
+        {
+            const int lumpnum = W_CheckNumForName(unique_lumps[i].lumpname);
 
             if (lumpnum >= 0)
             {

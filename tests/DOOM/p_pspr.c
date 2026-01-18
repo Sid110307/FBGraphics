@@ -524,7 +524,8 @@ void A_FireShotgun2(player_t* player, pspdef_t* psp)
     P_BulletSlope(player->mo);
 
     for (int i = 0; i < 20; i++)
-    { const int damage = 5 * (P_Random() % 3 + 1);
+    {
+        const int damage = 5 * (P_Random() % 3 + 1);
         angle_t angle = player->mo->angle;
         angle += (P_Random() - P_Random()) << 19;
         P_LineAttack(player->mo, angle, MISSILERANGE, bulletslope + ((P_Random() - P_Random()) << 5), damage);
@@ -567,7 +568,8 @@ void A_BFGSpray(const mobj_t* mo)
 {
     // offset angles from its attack angle
     for (int i = 0; i < 40; i++)
-    { const angle_t an = mo->angle - ANG90 / 2 + ANG90 / 40 * i;
+    {
+        const angle_t an = mo->angle - ANG90 / 2 + ANG90 / 40 * i;
 
         // mo->target is the originator (player)
         //  of the missile

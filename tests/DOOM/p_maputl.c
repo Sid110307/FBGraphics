@@ -85,8 +85,7 @@ int P_BoxOnLineSide(const fixed_t* tmbox, line_t* ld)
 
     switch (ld->slopetype)
     {
-        case ST_HORIZONTAL:
-            p1 = tmbox[BOXTOP] > ld->v1->y;
+        case ST_HORIZONTAL: p1 = tmbox[BOXTOP] > ld->v1->y;
             p2 = tmbox[BOXBOTTOM] > ld->v1->y;
             if (ld->dx < 0)
             {
@@ -95,8 +94,7 @@ int P_BoxOnLineSide(const fixed_t* tmbox, line_t* ld)
             }
             break;
 
-        case ST_VERTICAL:
-            p1 = tmbox[BOXRIGHT] < ld->v1->x;
+        case ST_VERTICAL: p1 = tmbox[BOXRIGHT] < ld->v1->x;
             p2 = tmbox[BOXLEFT] < ld->v1->x;
             if (ld->dy < 0)
             {
@@ -105,13 +103,11 @@ int P_BoxOnLineSide(const fixed_t* tmbox, line_t* ld)
             }
             break;
 
-        case ST_POSITIVE:
-            p1 = P_PointOnLineSide(tmbox[BOXLEFT], tmbox[BOXTOP], ld);
+        case ST_POSITIVE: p1 = P_PointOnLineSide(tmbox[BOXLEFT], tmbox[BOXTOP], ld);
             p2 = P_PointOnLineSide(tmbox[BOXRIGHT], tmbox[BOXBOTTOM], ld);
             break;
 
-        case ST_NEGATIVE:
-            p1 = P_PointOnLineSide(tmbox[BOXRIGHT], tmbox[BOXTOP], ld);
+        case ST_NEGATIVE: p1 = P_PointOnLineSide(tmbox[BOXRIGHT], tmbox[BOXTOP], ld);
             p2 = P_PointOnLineSide(tmbox[BOXLEFT], tmbox[BOXBOTTOM], ld);
             break;
     }
@@ -269,7 +265,8 @@ void P_UnsetThingPosition(const mobj_t* thing)
 
         if (thing->bprev) thing->bprev->bnext = thing->bnext;
         else
-        { const int blockx = (thing->x - bmaporgx) >> MAPBLOCKSHIFT;
+        {
+            const int blockx = (thing->x - bmaporgx) >> MAPBLOCKSHIFT;
             const int blocky = (thing->y - bmaporgy) >> MAPBLOCKSHIFT;
 
             if (blockx >= 0 && blockx < bmapwidth && blocky >= 0 && blocky < bmapheight)

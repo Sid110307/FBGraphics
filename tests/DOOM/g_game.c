@@ -287,7 +287,8 @@ void G_BuildTiccmd(ticcmd_t* cmd, const int maketic)
     // fraggle: support the old "joyb_speed = 31" hack which
     // allowed an autorun effect
 
-    const int speed = key_speed >= NUMKEYS || joybspeed >= MAX_JOY_BUTTONS || gamekeydown[key_speed] || joybuttons[joybspeed];
+    const int speed = key_speed >= NUMKEYS || joybspeed >= MAX_JOY_BUTTONS || gamekeydown[key_speed] || joybuttons[
+        joybspeed];
 
     int forward = side = 0;
 
@@ -654,31 +655,26 @@ boolean G_Responder(event_t* ev)
 
     switch (ev->type)
     {
-        case ev_keydown:
-            if (ev->data1 == key_pause) { sendpause = true; }
+        case ev_keydown: if (ev->data1 == key_pause) { sendpause = true; }
             else if (ev->data1 < NUMKEYS) { gamekeydown[ev->data1] = true; }
 
             return true; // eat key down events
 
-        case ev_keyup:
-            if (ev->data1 < NUMKEYS) gamekeydown[ev->data1] = false;
+        case ev_keyup: if (ev->data1 < NUMKEYS) gamekeydown[ev->data1] = false;
             return false; // always let key up events filter down
 
-        case ev_mouse:
-            SetMouseButtons(ev->data1);
+        case ev_mouse: SetMouseButtons(ev->data1);
             mousex = ev->data2 * (mouseSensitivity + 5) / 10;
             mousey = ev->data3 * (mouseSensitivity + 5) / 10;
             return true; // eat events
 
-        case ev_joystick:
-            SetJoyButtons(ev->data1);
+        case ev_joystick: SetJoyButtons(ev->data1);
             joyxmove = ev->data2;
             joyymove = ev->data3;
             joystrafemove = ev->data4;
             return true; // eat events
 
-        default:
-            break;
+        default: break;
     }
 
     return false;
@@ -700,37 +696,27 @@ void G_Ticker(void)
     {
         switch (gameaction)
         {
-            case ga_loadlevel:
-                G_DoLoadLevel();
+            case ga_loadlevel: G_DoLoadLevel();
                 break;
-            case ga_newgame:
-                G_DoNewGame();
+            case ga_newgame: G_DoNewGame();
                 break;
-            case ga_loadgame:
-                G_DoLoadGame();
+            case ga_loadgame: G_DoLoadGame();
                 break;
-            case ga_savegame:
-                G_DoSaveGame();
+            case ga_savegame: G_DoSaveGame();
                 break;
-            case ga_playdemo:
-                G_DoPlayDemo();
+            case ga_playdemo: G_DoPlayDemo();
                 break;
-            case ga_completed:
-                G_DoCompleted();
+            case ga_completed: G_DoCompleted();
                 break;
-            case ga_victory:
-                F_StartFinale();
+            case ga_victory: F_StartFinale();
                 break;
-            case ga_worlddone:
-                G_DoWorldDone();
+            case ga_worlddone: G_DoWorldDone();
                 break;
-            case ga_screenshot:
-                V_ScreenShot("DOOM%02i.%s");
+            case ga_screenshot: V_ScreenShot("DOOM%02i.%s");
                 players[consoleplayer].message = DEH_String("screen shot");
                 gameaction = ga_nothing;
                 break;
-            case ga_nothing:
-                break;
+            case ga_nothing: break;
         }
     }
 
@@ -789,14 +775,15 @@ void G_Ticker(void)
             {
                 switch (players[i].cmd.buttons & BT_SPECIALMASK)
                 {
-                    case BTS_PAUSE:
-                        paused ^= 1;
+                    case BTS_PAUSE: paused ^= 1;
                         if (paused) S_PauseSound();
                         else S_ResumeSound();
                         break;
 
-                    case BTS_SAVEGAME:
-                        if (!savedescription[0]) { M_StringCopy(savedescription, "NET GAME", sizeof(savedescription)); }
+                    case BTS_SAVEGAME: if (!savedescription[0])
+                        {
+                            M_StringCopy(savedescription, "NET GAME", sizeof(savedescription));
+                        }
 
                         savegameslot = (players[i].cmd.buttons & BTS_SAVEMASK) >> BTS_SAVESHIFT;
                         gameaction = ga_savegame;
@@ -815,23 +802,19 @@ void G_Ticker(void)
     // do main actions
     switch (gamestate)
     {
-        case GS_LEVEL:
-            P_Ticker();
+        case GS_LEVEL: P_Ticker();
             ST_Ticker();
             AM_Ticker();
             HU_Ticker();
             break;
 
-        case GS_INTERMISSION:
-            WI_Ticker();
+        case GS_INTERMISSION: WI_Ticker();
             break;
 
-        case GS_FINALE:
-            F_Ticker();
+        case GS_FINALE: F_Ticker();
             break;
 
-        case GS_DEMOSCREEN:
-            D_PageTicker();
+        case GS_DEMOSCREEN: D_PageTicker();
             break;
     }
 }
@@ -982,12 +965,10 @@ boolean G_CheckSpot(const int playernum, const mapthing_t* mthing)
             case 0:
             case 1024:
             case 2048:
-            case 3072:
-                xa = finecosine[an];
+            case 3072: xa = finecosine[an];
                 ya = finesine[an];
                 break;
-            default:
-                I_Error("G_CheckSpot: unexpected angle %d\n", an);
+            default: I_Error("G_CheckSpot: unexpected angle %d\n", an);
                 xa = ya = 0;
                 break;
         }
@@ -1010,7 +991,8 @@ void G_DeathMatchSpawnPlayer(const int playernum)
     if (selections < 4) I_Error("Only %i deathmatch spots, 4 required", selections);
 
     for (int j = 0; j < 20; j++)
-    { const int i = P_Random() % selections;
+    {
+        const int i = P_Random() % selections;
         if (G_CheckSpot(playernum, &deathmatchstarts[i]))
         {
             deathmatchstarts[i].type = playernum + 1;
@@ -1132,11 +1114,9 @@ void G_DoCompleted(void)
         {
             switch (gamemap)
             {
-                case 8:
-                    gameaction = ga_victory;
+                case 8: gameaction = ga_victory;
                     return;
-                case 9:
-                    for (i = 0; i < MAXPLAYERS; i++) players[i].didsecret = true;
+                case 9: for (i = 0; i < MAXPLAYERS; i++) players[i].didsecret = true;
                     break;
             }
         }
@@ -1167,22 +1147,18 @@ void G_DoCompleted(void)
         if (secretexit)
             switch (gamemap)
             {
-                case 15:
-                    wminfo.next = 30;
+                case 15: wminfo.next = 30;
                     break;
-                case 31:
-                    wminfo.next = 31;
+                case 31: wminfo.next = 31;
                     break;
             }
         else
             switch (gamemap)
             {
                 case 31:
-                case 32:
-                    wminfo.next = 15;
+                case 32: wminfo.next = 15;
                     break;
-                default:
-                    wminfo.next = gamemap;
+                default: wminfo.next = gamemap;
             }
     }
     else
@@ -1193,17 +1169,13 @@ void G_DoCompleted(void)
             // returning from secret level
             switch (gameepisode)
             {
-                case 1:
-                    wminfo.next = 3;
+                case 1: wminfo.next = 3;
                     break;
-                case 2:
-                    wminfo.next = 5;
+                case 2: wminfo.next = 5;
                     break;
-                case 3:
-                    wminfo.next = 6;
+                case 3: wminfo.next = 6;
                     break;
-                case 4:
-                    wminfo.next = 2;
+                case 4: wminfo.next = 2;
                     break;
             }
         }
@@ -1257,13 +1229,11 @@ void G_WorldDone(void)
         switch (gamemap)
         {
             case 15:
-            case 31:
-                if (!secretexit) break;
+            case 31: if (!secretexit) break;
             case 6:
             case 11:
             case 20:
-            case 30:
-                F_StartFinale();
+            case 30: F_StartFinale();
                 break;
         }
     }
@@ -1557,14 +1527,11 @@ void G_InitNew(skill_t skill, int episode, int map)
     {
         switch (gameepisode)
         {
-            default: case 1:
-                skytexturename = "SKY1";
+            default: case 1: skytexturename = "SKY1";
                 break;
-            case 2:
-                skytexturename = "SKY2";
+            case 2: skytexturename = "SKY2";
                 break;
-            case 3:
-                skytexturename = "SKY3";
+            case 3: skytexturename = "SKY3";
                 break;
             case 4: // Special Edition sky
                 skytexturename = "SKY4";
@@ -1710,14 +1677,10 @@ int G_VanillaVersionCode(void)
 {
     switch (gameversion)
     {
-        case exe_doom_1_2:
-            I_Error("Doom 1.2 does not have a version code!");
-        case exe_doom_1_666:
-            return 106;
-        case exe_doom_1_7:
-            return 107;
-        case exe_doom_1_8:
-            return 108;
+        case exe_doom_1_2: I_Error("Doom 1.2 does not have a version code!");
+        case exe_doom_1_666: return 106;
+        case exe_doom_1_7: return 107;
+        case exe_doom_1_8: return 108;
         case exe_doom_1_9: default: // All other versions are variants on v1.9:
             return 109;
     }
@@ -1776,20 +1739,13 @@ static char* DemoVersionDescription(const int version)
 
     switch (version)
     {
-        case 104:
-            return "v1.4";
-        case 105:
-            return "v1.5";
-        case 106:
-            return "v1.6/v1.666";
-        case 107:
-            return "v1.7/v1.7a";
-        case 108:
-            return "v1.8";
-        case 109:
-            return "v1.9";
-        default:
-            break;
+        case 104: return "v1.4";
+        case 105: return "v1.5";
+        case 106: return "v1.6/v1.666";
+        case 107: return "v1.7/v1.7a";
+        case 108: return "v1.8";
+        case 109: return "v1.9";
+        default: break;
     }
 
     // Unknown version.  Perhaps this is a pre-v1.4 IWAD?  If the version
@@ -1886,7 +1842,8 @@ void G_TimeDemo(char* name)
 boolean G_CheckDemoStatus(void)
 {
     if (timingdemo)
-    { const int endtime = I_GetTime();
+    {
+        const int endtime = I_GetTime();
         const int realtics = endtime - starttime;
         const float fps = (float)gametic * TICRATE / realtics;
 

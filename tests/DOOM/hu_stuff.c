@@ -163,20 +163,15 @@ void HU_Start(void)
 
     switch (logical_gamemission)
     {
-        case doom:
-            s = HU_TITLE;
+        case doom: s = HU_TITLE;
             break;
-        case doom2:
-            s = HU_TITLE2;
+        case doom2: s = HU_TITLE2;
             break;
-        case pack_plut:
-            s = HU_TITLEP;
+        case pack_plut: s = HU_TITLEP;
             break;
-        case pack_tnt:
-            s = HU_TITLET;
+        case pack_tnt: s = HU_TITLET;
             break;
-        default:
-            s = "Unknown level";
+        default: s = "Unknown level";
             break;
     }
 
@@ -249,7 +244,8 @@ void HU_Ticker(void)
             {
                 if (c <= HU_BROADCAST) chat_dest[i] = c;
                 else
-                { const int rc = HUlib_keyInIText(&w_inputbuffer[i], c);
+                {
+                    const int rc = HUlib_keyInIText(&w_inputbuffer[i], c);
                     if (rc && c == KEY_ENTER)
                     {
                         if (w_inputbuffer[i].l.len && (chat_dest[i] == consoleplayer + 1 || chat_dest[i] ==

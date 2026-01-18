@@ -1646,20 +1646,16 @@ static void SaveDefaultCollection(default_collection_t* collection)
                 fprintf(f, "%i", v);
                 break;
 
-            case DEFAULT_INT:
-                fprintf(f, "%i", *(int*)defaults[i].location);
+            case DEFAULT_INT: fprintf(f, "%i", *(int*)defaults[i].location);
                 break;
 
-            case DEFAULT_INT_HEX:
-                fprintf(f, "0x%x", *(int*)defaults[i].location);
+            case DEFAULT_INT_HEX: fprintf(f, "0x%x", *(int*)defaults[i].location);
                 break;
 
-            case DEFAULT_FLOAT:
-                fprintf(f, "%f", *(float*)defaults[i].location);
+            case DEFAULT_FLOAT: fprintf(f, "%f", *(float*)defaults[i].location);
                 break;
 
-            case DEFAULT_STRING:
-                fprintf(f, "\"%s\"", *(char**)(defaults[i].location));
+            case DEFAULT_STRING: fprintf(f, "\"%s\"", *(char**)(defaults[i].location));
                 break;
         }
 
@@ -1688,13 +1684,11 @@ static void SetVariable(default_t* def, char* value)
 
     switch (def->type)
     {
-        case DEFAULT_STRING:
-            *(char**)def->location = strdup(value);
+        case DEFAULT_STRING: *(char**)def->location = strdup(value);
             break;
 
         case DEFAULT_INT:
-        case DEFAULT_INT_HEX:
-            *(int*)def->location = ParseIntParameter(value);
+        case DEFAULT_INT_HEX: *(int*)def->location = ParseIntParameter(value);
             break;
 
         case DEFAULT_KEY:
@@ -1711,8 +1705,7 @@ static void SetVariable(default_t* def, char* value)
             *(int*)def->location = intparm;
             break;
 
-        case DEFAULT_FLOAT:
-            *(float*)def->location = (float)atof(value);
+        case DEFAULT_FLOAT: *(float*)def->location = (float)atof(value);
             break;
     }
 }

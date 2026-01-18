@@ -426,8 +426,7 @@ boolean ST_Responder(const event_t* ev)
     {
         switch (ev->data1)
         {
-            case AM_MSGENTERED:
-                st_gamestate = AutomapState;
+            case AM_MSGENTERED: st_gamestate = AutomapState;
                 st_firsttime = true;
                 break;
 
@@ -680,7 +679,9 @@ void ST_updateFaceWidget(void)
                 st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
             }
             else
-            { const angle_t badguyangle = R_PointToAngle2(plyr->mo->x, plyr->mo->y, plyr->attacker->x, plyr->attacker->y);
+            {
+                const angle_t badguyangle = R_PointToAngle2(plyr->mo->x, plyr->mo->y, plyr->attacker->x,
+                                                            plyr->attacker->y);
 
                 if (badguyangle > plyr->mo->angle)
                 {

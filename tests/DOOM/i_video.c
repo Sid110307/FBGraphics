@@ -129,7 +129,8 @@ static uint16_t rgb565_palette[256];
 void cmap_to_rgb565(uint16_t* out, const uint8_t* in, const int in_pixels)
 {
     for (int i = 0; i < in_pixels; i++)
-    { const struct color c = colors[*in];
+    {
+        const struct color c = colors[*in];
         const uint16_t r = (uint16_t)(c.r >> 3) << 11;
         const uint16_t g = (uint16_t)(c.g >> 2) << 5;
         const uint16_t b = (uint16_t)(c.b >> 3) << 0;
@@ -143,7 +144,8 @@ void cmap_to_rgb565(uint16_t* out, const uint8_t* in, const int in_pixels)
 void cmap_to_fb(uint8_t* out, const uint8_t* in, const int in_pixels)
 {
     for (int i = 0; i < in_pixels; i++)
-    { const struct color c = colors[*in]; /* R:8 G:8 B:8 format! */
+    {
+        const struct color c = colors[*in]; /* R:8 G:8 B:8 format! */
         const uint16_t r = (uint16_t)(c.r >> (8 - s_Fb.red.length));
         const uint16_t g = (uint16_t)(c.g >> (8 - s_Fb.green.length));
         const uint16_t b = (uint16_t)(c.b >> (8 - s_Fb.blue.length));

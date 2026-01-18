@@ -198,8 +198,7 @@ boolean P_UseSpecialLine(const mobj_t* thing, line_t* line, const int side)
                 // UNUSED?
                 break;
 
-            default:
-                return false;
+            default: return false;
                 break;
         }
     }
@@ -218,8 +217,7 @@ boolean P_UseSpecialLine(const mobj_t* thing, line_t* line, const int side)
             case 34: // MANUAL YELLOW
                 break;
 
-            default:
-                return false;
+            default: return false;
                 break;
         }
     }

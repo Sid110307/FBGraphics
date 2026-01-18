@@ -290,7 +290,8 @@ static int FindNearestColor(byte* palette, const int r, const int g, const int b
     int best_diff = INT_MAX;
 
     for (int i = 0; i < 256; ++i)
-    { const byte* col = palette + i * 3;
+    {
+        const byte* col = palette + i * 3;
         const int diff = (r - col[0]) * (r - col[0]) + (g - col[1]) * (g - col[1]) + (b - col[2]) * (b - col[2]);
 
         if (diff == 0) { return i; }
@@ -316,7 +317,8 @@ static byte* GenerateStretchTable(byte* palette, const int pct)
     for (int x = 0; x < 256; ++x)
     {
         for (int y = 0; y < 256; ++y)
-        { const byte* col1 = palette + x * 3;
+        {
+            const byte* col1 = palette + x * 3;
             const byte* col2 = palette + y * 3;
             const int r = ((int)col1[0] * pct + (int)col2[0] * (100 - pct)) / 100;
             const int g = ((int)col1[1] * pct + (int)col2[1] * (100 - pct)) / 100;
@@ -476,7 +478,8 @@ static inline void WriteLine2x(byte* dest, const byte* src)
 static inline void WriteBlendedLine2x(byte* dest, const byte* src1, const byte* src2, const byte* stretch_table)
 {
     for (int x = 0; x < SCREENWIDTH; ++x)
-    { const int val = stretch_table[*src1 * 256 + *src2];
+    {
+        const int val = stretch_table[*src1 * 256 + *src2];
         dest[0] = val;
         dest[1] = val;
         dest += 2;
@@ -577,7 +580,8 @@ static inline void WriteLine3x(byte* dest, const byte* src)
 static inline void WriteBlendedLine3x(byte* dest, const byte* src1, const byte* src2, const byte* stretch_table)
 {
     for (int x = 0; x < SCREENWIDTH; ++x)
-    { const int val = stretch_table[*src1 * 256 + *src2];
+    {
+        const int val = stretch_table[*src1 * 256 + *src2];
         dest[0] = val;
         dest[1] = val;
         dest[2] = val;
@@ -704,7 +708,8 @@ static inline void WriteLine4x(byte* dest, const byte* src)
 static inline void WriteBlendedLine4x(byte* dest, const byte* src1, const byte* src2, const byte* stretch_table)
 {
     for (int x = 0; x < SCREENWIDTH; ++x)
-    { const int val = stretch_table[*src1 * 256 + *src2];
+    {
+        const int val = stretch_table[*src1 * 256 + *src2];
         dest[0] = val;
         dest[1] = val;
         dest[2] = val;

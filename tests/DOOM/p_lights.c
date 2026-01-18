@@ -191,7 +191,8 @@ void EV_TurnTagLightsOff(const line_t* line)
         {
             int min = sector->lightlevel;
             for (int i = 0; i < sector->linecount; i++)
-            { const line_t* templine = sector->lines[i];
+            {
+                const line_t* templine = sector->lines[i];
                 sector_t* tsec = getNextSector(templine, sector);
                 if (!tsec) continue;
                 if (tsec->lightlevel < min) min = tsec->lightlevel;
@@ -218,7 +219,8 @@ void EV_LightTurnOn(const line_t* line, int bright)
             if (!bright)
             {
                 for (int j = 0; j < sector->linecount; j++)
-                { const line_t* templine = sector->lines[j];
+                {
+                    const line_t* templine = sector->lines[j];
                     sector_t* temp = getNextSector(templine, sector);
 
                     if (!temp) continue;

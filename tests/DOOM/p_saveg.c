@@ -1479,14 +1479,13 @@ void P_UnArchiveThinkers(void)
 
     // read in saved thinkers
     while (1)
-    { const byte tclass = saveg_read8();
+    {
+        const byte tclass = saveg_read8();
         switch (tclass)
         {
-            case tc_end:
-                return; // end of list
+            case tc_end: return; // end of list
 
-            case tc_mobj:
-                saveg_read_pad();
+            case tc_mobj: saveg_read_pad();
                 mobj = Z_Malloc(sizeof(*mobj), PU_LEVEL, NULL);
                 saveg_read_mobj_t(mobj);
 
@@ -1500,8 +1499,7 @@ void P_UnArchiveThinkers(void)
                 P_AddThinker(&mobj->thinker);
                 break;
 
-            default:
-                I_Error("Unknown tclass %i in savegame", tclass);
+            default: I_Error("Unknown tclass %i in savegame", tclass);
         }
     }
 }
@@ -1628,15 +1626,14 @@ void P_UnArchiveSpecials(void)
 
     // read in saved thinkers
     while (1)
-    { const byte tclass = saveg_read8();
+    {
+        const byte tclass = saveg_read8();
 
         switch (tclass)
         {
-            case tc_endspecials:
-                return; // end of list
+            case tc_endspecials: return; // end of list
 
-            case tc_ceiling:
-                saveg_read_pad();
+            case tc_ceiling: saveg_read_pad();
                 ceiling = Z_Malloc(sizeof(*ceiling), PU_LEVEL, NULL);
                 saveg_read_ceiling_t(ceiling);
                 ceiling->sector->specialdata = ceiling;
@@ -1647,8 +1644,7 @@ void P_UnArchiveSpecials(void)
                 P_AddActiveCeiling(ceiling);
                 break;
 
-            case tc_door:
-                saveg_read_pad();
+            case tc_door: saveg_read_pad();
                 door = Z_Malloc(sizeof(*door), PU_LEVEL, NULL);
                 saveg_read_vldoor_t(door);
                 door->sector->specialdata = door;
@@ -1656,8 +1652,7 @@ void P_UnArchiveSpecials(void)
                 P_AddThinker(&door->thinker);
                 break;
 
-            case tc_floor:
-                saveg_read_pad();
+            case tc_floor: saveg_read_pad();
                 floor = Z_Malloc(sizeof(*floor), PU_LEVEL, NULL);
                 saveg_read_floormove_t(floor);
                 floor->sector->specialdata = floor;
@@ -1665,8 +1660,7 @@ void P_UnArchiveSpecials(void)
                 P_AddThinker(&floor->thinker);
                 break;
 
-            case tc_plat:
-                saveg_read_pad();
+            case tc_plat: saveg_read_pad();
                 plat = Z_Malloc(sizeof(*plat), PU_LEVEL, NULL);
                 saveg_read_plat_t(plat);
                 plat->sector->specialdata = plat;
@@ -1677,32 +1671,28 @@ void P_UnArchiveSpecials(void)
                 P_AddActivePlat(plat);
                 break;
 
-            case tc_flash:
-                saveg_read_pad();
+            case tc_flash: saveg_read_pad();
                 flash = Z_Malloc(sizeof(*flash), PU_LEVEL, NULL);
                 saveg_read_lightflash_t(flash);
                 flash->thinker.function.acp1 = (actionf_p1)T_LightFlash;
                 P_AddThinker(&flash->thinker);
                 break;
 
-            case tc_strobe:
-                saveg_read_pad();
+            case tc_strobe: saveg_read_pad();
                 strobe = Z_Malloc(sizeof(*strobe), PU_LEVEL, NULL);
                 saveg_read_strobe_t(strobe);
                 strobe->thinker.function.acp1 = (actionf_p1)T_StrobeFlash;
                 P_AddThinker(&strobe->thinker);
                 break;
 
-            case tc_glow:
-                saveg_read_pad();
+            case tc_glow: saveg_read_pad();
                 glow = Z_Malloc(sizeof(*glow), PU_LEVEL, NULL);
                 saveg_read_glow_t(glow);
                 glow->thinker.function.acp1 = (actionf_p1)T_Glow;
                 P_AddThinker(&glow->thinker);
                 break;
 
-            default:
-                I_Error("P_UnarchiveSpecials:Unknown tclass %i " "in savegame", tclass);
+            default: I_Error("P_UnarchiveSpecials:Unknown tclass %i " "in savegame", tclass);
         }
     }
 }

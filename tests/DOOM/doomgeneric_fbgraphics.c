@@ -32,43 +32,32 @@ static unsigned char convertToDoomKey(const unsigned char scancode)
     switch (scancode)
     {
         case 0x9C:
-        case 0x1C:
-            key = KEY_ENTER;
+        case 0x1C: key = KEY_ENTER;
             break;
-        case 0x01:
-            key = KEY_ESCAPE;
+        case 0x01: key = KEY_ESCAPE;
             break;
         case 0xCB:
-        case 0x4B:
-            key = KEY_LEFTARROW;
+        case 0x4B: key = KEY_LEFTARROW;
             break;
         case 0xCD:
-        case 0x4D:
-            key = KEY_RIGHTARROW;
+        case 0x4D: key = KEY_RIGHTARROW;
             break;
         case 0xC8:
-        case 0x48:
-            key = KEY_UPARROW;
+        case 0x48: key = KEY_UPARROW;
             break;
         case 0xD0:
-        case 0x50:
-            key = KEY_DOWNARROW;
+        case 0x50: key = KEY_DOWNARROW;
             break;
-        case 0x1D:
-            key = KEY_FIRE;
+        case 0x1D: key = KEY_FIRE;
             break;
-        case 0x39:
-            key = KEY_USE;
+        case 0x39: key = KEY_USE;
             break;
         case 0x2A:
-        case 0x36:
-            key = KEY_RSHIFT;
+        case 0x36: key = KEY_RSHIFT;
             break;
-        case 0x15:
-            key = 'y';
+        case 0x15: key = 'y';
             break;
-        default:
-            break;
+        default: break;
     }
 
     return key;

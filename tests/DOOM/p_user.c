@@ -152,7 +152,8 @@ void P_DeathThink(player_t* player)
     P_CalcHeight(player);
 
     if (player->attacker && player->attacker != player->mo)
-    { const angle_t angle = R_PointToAngle2(player->mo->x, player->mo->y, player->attacker->x, player->attacker->y);
+    {
+        const angle_t angle = R_PointToAngle2(player->mo->x, player->mo->y, player->attacker->x, player->attacker->y);
 
         const angle_t delta = angle - player->mo->angle;
 

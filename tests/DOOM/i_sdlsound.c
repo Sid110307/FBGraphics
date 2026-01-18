@@ -270,21 +270,15 @@ static int SRC_ConversionMode(void)
     {
         // 0 = disabled
 
-        default: case 0:
-            return -1;
+        default: case 0: return -1;
 
         // Ascending numbers give higher quality
 
-        case 1:
-            return SRC_LINEAR;
-        case 2:
-            return SRC_ZERO_ORDER_HOLD;
-        case 3:
-            return SRC_SINC_FASTEST;
-        case 4:
-            return SRC_SINC_MEDIUM_QUALITY;
-        case 5:
-            return SRC_SINC_BEST_QUALITY;
+        case 1: return SRC_LINEAR;
+        case 2: return SRC_ZERO_ORDER_HOLD;
+        case 3: return SRC_SINC_FASTEST;
+        case 4: return SRC_SINC_MEDIUM_QUALITY;
+        case 5: return SRC_SINC_BEST_QUALITY;
     }
 }
 
@@ -506,7 +500,8 @@ static boolean ExpandSoundData_SDL(sfxinfo_t* sfxinfo, byte* data, int samplerat
     const int expand_ratio = (length << 8) / expanded_length;
 
     for (i = 0; i < expanded_length; ++i)
-    { const int src = (i * expand_ratio) >> 8;
+    {
+        const int src = (i * expand_ratio) >> 8;
 
         Sint16 sample = data[src] | data[src] << 8;
         sample -= 32768;

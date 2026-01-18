@@ -35,7 +35,8 @@ fixed_t FixedDiv(const fixed_t a, const fixed_t b)
 {
     if (abs(a) >> 14 >= abs(b)) { return (a ^ b) < 0 ? INT_MIN : INT_MAX; }
     else
-    { const int64_t result = ((int64_t)a << 16) / b;
+    {
+        const int64_t result = ((int64_t)a << 16) / b;
 
         return (fixed_t)result;
     }
