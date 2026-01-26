@@ -220,12 +220,6 @@ void Framebuffer::drawPixel(const float x, const float y, const unsigned int col
     *(static_cast<unsigned int*>(framebuffer) + static_cast<int>(y) * width + static_cast<int>(x)) = color;
 }
 
-unsigned int Framebuffer::getPixel(const int x, const int y) const
-{
-    if (x < 0 || x >= width || y < 0 || y >= height) return 0;
-    return *(static_cast<unsigned int*>(framebuffer) + y * width + x);
-}
-
 void Framebuffer::clear(const unsigned int color) const
 {
     auto* pixelLocation = static_cast<unsigned int*>(framebuffer);
@@ -316,17 +310,12 @@ void framebuffer_drawPixel(void* instance, const float x, const float y, const u
     static_cast<Framebuffer*>(instance)->drawPixel(x, y, color);
 }
 
-unsigned int framebuffer_getPixel(void* instance, const int x, const int y)
-{
-    return static_cast<Framebuffer*>(instance)->getPixel(x, y);
-}
-
 void framebuffer_clear(void* instance, const unsigned int color) { static_cast<Framebuffer*>(instance)->clear(color); }
 
 C_Event framebuffer_pollEvent(void* instance)
 {
-    auto event = static_cast<Framebuffer*>(instance)->pollEvent();
-    return {static_cast<C_EventType>(event.type), event.key};
+    auto [type, key] = static_cast<Framebuffer*>(instance)->pollEvent();
+    return {static_cast<C_EventType>(type), key};
 }
 
 void framebuffer_setKeyState(void* instance, const int key, const int state)

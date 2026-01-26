@@ -39,7 +39,6 @@ public:
 
     void present(int x, int y) const;
     void drawPixel(float x, float y, unsigned int color) const;
-    [[nodiscard]] unsigned int getPixel(int x, int y) const;
     void clear(unsigned int color) const;
 
     Event pollEvent();
@@ -87,7 +86,6 @@ void framebuffer_destroy(void* instance);
 
 void framebuffer_present(void* instance, int x, int y);
 void framebuffer_drawPixel(void* instance, float x, float y, unsigned int color);
-unsigned int framebuffer_getPixel(void* instance, int x, int y);
 void framebuffer_clear(void* instance, unsigned int color);
 
 C_Event framebuffer_pollEvent(void* instance);
